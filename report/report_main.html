@@ -156,7 +156,7 @@ html,body{
 }
 .stamp-gu{ border-radius:1.5px; background:rgba(217,160,102,.15); transition:background .3s ease; }
 .stamp-legend{ display:flex; align-items:center; gap:8px; margin-top:14px; font-size:11px; color:var(--ink-soft); }
-.legend-bar{ flex:1; max-width:120px; height:8px; border-radius:999px; background:linear-gradient(90deg, rgba(217,160,102,.12), var(--gold)); }
+.legend-bar{ flex:1; max-width:120px; height:8px; border-radius:999px; background:linear-gradient(90deg, rgba(216,201,232,.7), rgba(201,106,47,.9)); }
 
 .stamp-side{ flex:1 1 220px; min-width:200px; }
 .stamp-side-list{ display:flex; flex-direction:column; gap:6px; max-height:340px; overflow-y:auto; padding-right:4px; }
@@ -1009,9 +1009,16 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
     return Object.keys(_stampVisits).filter(function(k){ return k.indexOf(province + '_') === 0; }).length;
   }
 
+  // 방문율이 낮으면 차분한 라벤더, 높으면 따뜻한 골드/오렌지로 색 자체가 바뀌도록 보간
   function tileColor(pct) {
-    const alpha = 0.14 + 0.66 * (pct / 100);
-    return 'rgba(217,160,102,' + alpha.toFixed(2) + ')';
+    const t = Math.max(0, Math.min(1, pct / 100));
+    const low  = [216, 201, 232]; // 라벤더 (0%)
+    const high = [201, 106, 47];  // 진한 오렌지/골드 (100%)
+    const r = Math.round(low[0] + (high[0]-low[0]) * t);
+    const g = Math.round(low[1] + (high[1]-low[1]) * t);
+    const b = Math.round(low[2] + (high[2]-low[2]) * t);
+    const alpha = 0.35 + 0.55 * t; // 낮아도 색이 완전히 안 사라지게 최소 불투명도 유지
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha.toFixed(2) + ')';
   }
 
   function renderStampMap() {
