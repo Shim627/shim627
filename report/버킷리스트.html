@@ -9,17 +9,19 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --plum:#3d2a37; --blush:#f7d9de; --blush-soft:#fbe9ec;
+  --plum:#3d2a37; --plum-deep:#2f1c2b;
+  --blush:#f7d9de; --blush-soft:#fbe9ec;
   --gold:#d9a066; --gold-dim:rgba(217,160,102,.14);
   --lavender:#d9c9e8; --cream:#fff8f3;
   --ink:#3d2a37; --ink-soft:#6b5568;
   --border:rgba(217,160,102,.22); --border2:rgba(217,160,102,.4);
   --red:#c76b7a; --green:#7a8f5e;
+  --sidebar-w:230px;
   --font-serif:'Gowun Batang', serif;
   --font-body:'Gowun Dodum', sans-serif;
 }
 html,body{
-  margin:0; padding:0; min-height:100vh;
+  width:100%; height:100vh; overflow:hidden;
   font-family:var(--font-body); color:var(--ink);
   background:
     radial-gradient(circle at 15% 10%, #f9e3e6 0%, transparent 45%),
@@ -29,113 +31,197 @@ html,body{
 ::-webkit-scrollbar{ width:6px; }
 ::-webkit-scrollbar-thumb{ background:var(--border2); border-radius:3px; }
 
-.topbar{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 26px; background:rgba(255,255,255,.5); border-bottom:1px solid var(--border);
-  position:sticky; top:0; z-index:20; backdrop-filter:blur(6px);
+#rpWrap{ display:flex; height:100vh; overflow:hidden; }
+
+#rpSidebar{
+  width:var(--sidebar-w); flex-shrink:0;
+  background:rgba(255,255,255,.55); backdrop-filter:blur(6px);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column; height:100vh; overflow-y:auto;
 }
-.topbar a{ font-family:var(--font-serif); font-size:14px; font-weight:700; color:var(--plum); text-decoration:none; }
-.gas-badge{ font-size:11.5px; font-weight:700; background:var(--gold-dim); color:var(--plum); padding:4px 10px; border-radius:999px; border:1px solid var(--border2); }
+.rps-brand{ display:flex; align-items:center; gap:10px; padding:22px 18px 18px; border-bottom:1px solid var(--border); }
+.rps-brand-icon{ font-size:24px; }
+.rps-brand-name{ font-family:var(--font-serif); font-size:15.5px; font-weight:700; color:var(--plum); }
+.rps-brand-sub{ font-size:12px; font-weight:600; color:var(--ink-soft); margin-top:2px; }
 
-.wrap{ max-width:820px; margin:0 auto; padding:32px 22px 80px; }
+.rps-nav{ padding:14px 0 20px; flex:1; }
+.nav-home-item{ display:flex; align-items:center; gap:10px; padding:11px 16px; margin:0 10px 10px; border-radius:12px; cursor:pointer; transition:all .15s; font-size:14.5px; font-weight:600; color:var(--ink); text-decoration:none; }
+.nav-home-item:hover{ background:rgba(255,255,255,.6); }
+.nav-home-item.active{ background:var(--gold-dim); color:var(--plum); border:1px solid var(--border2); }
+.nav-home-item.home-link{ background:var(--blush-soft); border:1px solid var(--border2); }
+.nav-home-item.home-link:hover{ background:var(--blush); }
 
-.hero{ text-align:center; margin-bottom:24px; }
-.hero .eyebrow{ font-family:var(--font-serif); font-size:13px; font-weight:700; color:var(--gold); letter-spacing:.3em; margin-bottom:8px; }
-.hero h1{ font-family:var(--font-serif); font-size:24px; font-weight:700; color:var(--plum); margin-bottom:8px; }
-.hero .desc{ font-size:14px; font-weight:500; color:var(--ink-soft); line-height:1.7; }
+.rps-footer{ padding:14px 18px; border-top:1px solid var(--border); font-size:12px; font-weight:600; color:var(--ink-soft); }
 
-.add-btn-wrap{ text-align:center; margin-bottom:28px; }
+#rpMain{ flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; min-width:0; }
+#statusBar{ flex-shrink:0; display:flex; align-items:center; justify-content:space-between; padding:0 26px; height:44px; background:rgba(255,255,255,.5); border-bottom:1px solid var(--border); }
+.sb-left{ display:flex; align-items:center; gap:10px; }
+.sb-brand{ font-family:var(--font-serif); font-size:14.5px; font-weight:700; color:var(--plum); }
+.sb-dot{ width:6px; height:6px; border-radius:50%; background:var(--gold); animation:pulse-dot 2s infinite; }
+@keyframes pulse-dot{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
+.sb-crumb{ font-size:13px; font-weight:600; color:var(--ink-soft); }
+.sb-right{ font-size:13px; font-weight:600; color:var(--ink-soft); display:flex; align-items:center; gap:14px; }
+.sb-badge{ font-size:11.5px; font-weight:700; background:var(--gold-dim); color:var(--plum); padding:4px 10px; border-radius:999px; border:1px solid var(--border2); }
+
+#contentWrap{ flex:1; overflow-y:auto; }
+#mainWrap{ padding:34px 40px 60px; max-width:1200px; margin:0 auto; }
+
+.hero{ text-align:center; margin-bottom:22px; }
+.hero .eyebrow{ font-family:var(--font-serif); font-size:14px; font-weight:700; color:var(--gold); letter-spacing:.3em; margin-bottom:8px; }
+.hero h1{ font-family:var(--font-serif); font-size:26px; font-weight:700; color:var(--plum); margin-bottom:8px; }
+.hero .desc{ font-size:15px; font-weight:600; color:var(--ink-soft); line-height:1.7; }
+
+.toolbar{ display:flex; gap:10px; align-items:center; justify-content:center; margin-bottom:26px; flex-wrap:wrap; }
+.search-wrap{ position:relative; flex:0 1 320px; }
+.search-wrap input{
+  width:100%; padding:11px 16px 11px 38px; border-radius:999px; border:1px solid var(--border2);
+  background:rgba(255,255,255,.7); font-family:var(--font-body); font-size:14px; color:var(--ink); outline:none;
+}
+.search-wrap .icon{ position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:13px; opacity:.6; }
 .add-btn{
   font-family:var(--font-serif); font-size:15px; font-weight:700; color:#fff8f0;
   background:linear-gradient(135deg, var(--gold), #cf8c58);
-  padding:12px 30px; border-radius:999px; border:none; cursor:pointer;
-  box-shadow:0 10px 22px -8px rgba(185,113,58,.55);
+  padding:11px 26px; border-radius:999px; border:none; cursor:pointer;
+  box-shadow:0 10px 22px -8px rgba(185,113,58,.55); white-space:nowrap;
 }
 
-.items{ display:flex; flex-direction:column; gap:22px; }
+.items{ display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+@media (max-width: 780px){ .items{ grid-template-columns:1fr; } }
+
 .item-card{
   background:rgba(255,255,255,.55); border:1px solid var(--border); border-radius:18px;
-  padding:18px; box-shadow:0 12px 26px -16px rgba(74,46,68,.3);
+  padding:18px; box-shadow:0 12px 26px -16px rgba(74,46,68,.3); position:relative;
 }
-.item-title{ font-family:var(--font-serif); font-size:16px; font-weight:700; color:var(--plum); margin-bottom:10px; }
+.item-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:10px; }
+.item-title{ font-family:var(--font-serif); font-size:16.5px; font-weight:700; color:var(--plum); line-height:1.4; }
+.item-actions{ display:flex; gap:6px; flex-shrink:0; }
+.icon-btn{ font-size:13px; padding:5px 8px; border-radius:8px; border:1px solid var(--border2); background:rgba(255,255,255,.6); cursor:pointer; }
+.icon-btn:hover{ background:var(--cream); }
+.icon-btn.danger{ color:var(--red); }
+
 .item-media{ width:100%; border-radius:12px; overflow:hidden; background:#000; margin-bottom:12px; }
-.item-media img{ width:100%; display:block; max-height:420px; object-fit:cover; }
-.item-media iframe{ width:100%; height:320px; border:none; display:block; }
-.item-media .link-fallback{ display:block; padding:26px; text-align:center; color:#fff; background:linear-gradient(135deg, var(--plum), var(--gold)); text-decoration:none; font-size:13px; }
-.item-review{ font-size:13.5px; line-height:1.7; color:var(--ink); background:rgba(255,255,255,.5); border-radius:10px; padding:12px 14px; margin-bottom:10px; }
-.item-date{ font-size:11px; color:var(--ink-soft); margin-bottom:14px; }
+.item-media img{ width:100%; display:block; max-height:360px; object-fit:cover; }
+.item-media iframe{ width:100%; height:280px; border:none; display:block; }
+.item-media .link-fallback{ display:block; padding:26px; text-align:center; color:#fff; background:linear-gradient(135deg, var(--plum), var(--gold)); text-decoration:none; font-size:13.5px; font-weight:600; }
+.item-review{ font-size:14px; font-weight:500; line-height:1.75; color:var(--ink); background:rgba(255,255,255,.5); border-radius:10px; padding:12px 14px; margin-bottom:10px; }
+.item-date{ font-size:11.5px; font-weight:600; color:var(--ink-soft); margin-bottom:14px; }
 
 .comments{ border-top:1px dashed var(--border2); padding-top:12px; }
-.comment-row{ display:flex; gap:8px; align-items:flex-start; margin-bottom:8px; font-size:12.5px; }
-.comment-icon{ font-size:16px; flex-shrink:0; }
-.comment-text{ flex:1; line-height:1.5; }
+.comment-row{ display:flex; gap:8px; align-items:flex-start; margin-bottom:9px; font-size:13.5px; }
+.comment-icon{ font-size:17px; flex-shrink:0; }
+.comment-text{ flex:1; line-height:1.6; font-weight:500; }
 .comment-author{ font-weight:700; color:var(--plum); margin-right:4px; }
-.comment-time{ font-size:10px; color:var(--ink-soft); }
+.comment-time{ font-size:10.5px; font-weight:600; color:var(--ink-soft); }
+.comment-edit-icons{ display:flex; gap:4px; flex-shrink:0; }
+.comment-edit-icons span{ font-size:11px; cursor:pointer; opacity:.5; }
+.comment-edit-icons span:hover{ opacity:1; }
 
 .comment-form{ display:flex; gap:6px; margin-top:10px; align-items:center; }
-.comment-form select{ font-size:12px; padding:6px 8px; border-radius:8px; border:1px solid var(--border2); background:#fff; }
-.comment-form input[type="text"]{ flex:1; font-size:12.5px; padding:8px 10px; border-radius:999px; border:1px solid var(--border2); background:#fff; outline:none; }
-.comment-form button{ font-size:12px; font-weight:700; padding:7px 14px; border-radius:999px; border:none; background:linear-gradient(135deg, var(--gold), #cf8c58); color:#fff8f0; cursor:pointer; }
+.comment-form select{ font-size:12.5px; padding:7px 8px; border-radius:8px; border:1px solid var(--border2); background:#fff; }
+.comment-form input[type="text"]{ flex:1; font-size:13.5px; padding:9px 12px; border-radius:999px; border:1px solid var(--border2); background:#fff; outline:none; }
+.comment-form button{ font-size:12.5px; font-weight:700; padding:8px 15px; border-radius:999px; border:none; background:linear-gradient(135deg, var(--gold), #cf8c58); color:#fff8f0; cursor:pointer; }
+.comment-form button:disabled{ opacity:.6; cursor:not-allowed; }
 
-.empty-note{ font-size:13.5px; color:var(--ink-soft); text-align:center; padding:40px 20px; }
+.empty-note{ font-size:14px; font-weight:500; color:var(--ink-soft); text-align:center; padding:40px 20px; }
 
 .modal-overlay{ position:fixed; inset:0; background:rgba(47,28,43,.4); display:none; align-items:center; justify-content:center; z-index:50; padding:20px; }
 .modal{ width:460px; max-width:100%; background:var(--cream); border-radius:20px; padding:26px; box-shadow:0 30px 60px -20px rgba(47,28,43,.5); max-height:88vh; overflow-y:auto; }
-.modal-title{ font-family:var(--font-serif); font-size:17px; font-weight:700; color:var(--plum); margin-bottom:16px; }
+.modal-title{ font-family:var(--font-serif); font-size:18px; font-weight:700; color:var(--plum); margin-bottom:16px; }
 .field{ margin-bottom:14px; }
-.field label{ display:block; font-size:12.5px; font-weight:600; color:var(--ink-soft); margin-bottom:6px; }
+.field label{ display:block; font-size:13px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; }
 .field input[type="text"], .field textarea{
-  width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border2);
-  background:#fff; font-family:var(--font-body); font-size:14px; color:var(--ink); outline:none; resize:vertical;
+  width:100%; padding:11px 13px; border-radius:10px; border:1px solid var(--border2);
+  background:#fff; font-family:var(--font-body); font-size:14.5px; color:var(--ink); outline:none; resize:vertical;
 }
 .field textarea{ min-height:100px; line-height:1.6; }
-.err-box{ font-size:12px; color:var(--red); margin-bottom:10px; display:none; }
+.err-box{ font-size:12.5px; font-weight:600; color:var(--red); margin-bottom:10px; display:none; }
 .modal-actions{ display:flex; justify-content:flex-end; gap:8px; }
-.mbtn{ font-family:var(--font-body); font-size:13px; font-weight:600; padding:9px 18px; border-radius:999px; border:1px solid var(--border2); background:rgba(255,255,255,.6); color:var(--plum); cursor:pointer; }
+.mbtn{ font-family:var(--font-body); font-size:13.5px; font-weight:700; padding:10px 18px; border-radius:999px; border:1px solid var(--border2); background:rgba(255,255,255,.6); color:var(--plum); cursor:pointer; }
 .mbtn.primary{ background:linear-gradient(135deg, var(--gold), #cf8c58); color:#fff8f0; border:none; }
+.mbtn:disabled{ opacity:.6; cursor:not-allowed; }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <a href="../main/home.html">🏠 우리 홈으로</a>
-  <span class="gas-badge" id="gasBadge">GAS 연동 확인 중…</span>
-</div>
+<div id="rpWrap">
+  <aside id="rpSidebar">
+    <div class="rps-brand">
+      <span class="rps-brand-icon">🗺️</span>
+      <div>
+        <div class="rps-brand-name">BUCKET LIST</div>
+        <div class="rps-brand-sub">같이 하고 싶은 것들</div>
+      </div>
+    </div>
+    <nav class="rps-nav">
+      <a href="../main/home.html" class="nav-home-item home-link"><span>🏠</span><span>우리 홈으로</span></a>
+      <a href="편지함.html" class="nav-home-item"><span>✉️</span><span>편지함</span></a>
+      <div class="nav-home-item active"><span>🗺️</span><span>버킷리스트</span></div>
+      <a href="report_main.html" class="nav-home-item"><span>✈️</span><span>여행 기록</span></a>
+    </nav>
+    <div class="rps-footer">only for you, 이성화 🤍</div>
+  </aside>
 
-<div class="wrap">
-  <div class="hero">
-    <p class="eyebrow">WS &amp; SH</p>
-    <h1>버킷리스트</h1>
-    <p class="desc">같이 하고 싶은 것들을 사진이나 영상으로 남겨두는 곳이에요.</p>
+  <div id="rpMain">
+    <div id="statusBar">
+      <div class="sb-left">
+        <span class="sb-dot"></span>
+        <span class="sb-brand">BUCKET LIST</span>
+        <span class="sb-crumb">버킷리스트</span>
+      </div>
+      <div class="sb-right">
+        <span class="sb-badge" id="gasBadge">GAS 연동 확인 중…</span>
+        <span id="todayLine"></span>
+      </div>
+    </div>
+
+    <div id="contentWrap">
+      <div id="mainWrap">
+        <div class="hero">
+          <p class="eyebrow">WS &amp; SH</p>
+          <h1>버킷리스트</h1>
+          <p class="desc">같이 하고 싶은 것들을 사진이나 영상으로 남겨두는 곳이에요.</p>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-wrap">
+            <span class="icon">🔎</span>
+            <input type="text" id="searchInput" placeholder="제목·리뷰·댓글로 검색" oninput="onSearch()">
+          </div>
+          <button class="add-btn" onclick="openAddModal()">➕ 항목 추가</button>
+        </div>
+
+        <div class="items" id="itemsWrap"></div>
+      </div>
+    </div>
   </div>
-
-  <div class="add-btn-wrap">
-    <button class="add-btn" onclick="openAddModal()">➕ 항목 추가</button>
-  </div>
-
-  <div class="items" id="itemsWrap"></div>
 </div>
 
 <!-- 추가 모달 -->
 <div class="modal-overlay" id="addModal" onclick="if(event.target===this) closeAddModal()">
   <div class="modal">
     <p class="modal-title">버킷리스트 추가</p>
-    <div class="field">
-      <label>제목</label>
-      <input type="text" id="itemTitle" placeholder="예: 발리 여행 가기">
-    </div>
-    <div class="field">
-      <label>사진 또는 영상 링크</label>
-      <input type="text" id="itemMediaUrl" placeholder="이미지 URL 또는 유튜브 링크">
-    </div>
-    <div class="field">
-      <label>느낌 / 의견</label>
-      <textarea id="itemReview" placeholder="왜 하고 싶은지, 어떤 느낌인지 적어봐"></textarea>
-    </div>
+    <div class="field"><label>제목</label><input type="text" id="itemTitle" placeholder="예: 발리 여행 가기"></div>
+    <div class="field"><label>사진 또는 영상 링크</label><input type="text" id="itemMediaUrl" placeholder="이미지 URL 또는 유튜브 링크"></div>
+    <div class="field"><label>느낌 / 의견</label><textarea id="itemReview" placeholder="왜 하고 싶은지, 어떤 느낌인지 적어봐"></textarea></div>
     <div class="err-box" id="addErr"></div>
     <div class="modal-actions">
       <button class="mbtn" onclick="closeAddModal()">취소</button>
-      <button class="mbtn primary" onclick="submitItem()">추가</button>
+      <button class="mbtn primary" id="addSubmitBtn" onclick="submitItem()">추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- 수정 모달 -->
+<div class="modal-overlay" id="editModal" onclick="if(event.target===this) closeEditModal()">
+  <div class="modal">
+    <p class="modal-title">항목 수정</p>
+    <div class="field"><label>제목</label><input type="text" id="editTitle"></div>
+    <div class="field"><label>사진 또는 영상 링크</label><input type="text" id="editMediaUrl"></div>
+    <div class="field"><label>느낌 / 의견</label><textarea id="editReview"></textarea></div>
+    <div class="err-box" id="editErr"></div>
+    <div class="modal-actions">
+      <button class="mbtn" onclick="closeEditModal()">취소</button>
+      <button class="mbtn primary" id="editSubmitBtn" onclick="submitEdit()">저장</button>
     </div>
   </div>
 </div>
@@ -146,7 +232,6 @@ html,body{
   }
 
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
-
   const AUTHORS = [
     { key:'우승', label:'우승 💙', icon:'💙' },
     { key:'성화', label:'성화 💗', icon:'💗' }
@@ -154,6 +239,11 @@ html,body{
 
   let _items = [];
   let _comments = [];
+  let _searchQuery = '';
+  let _addSubmitting = false;
+  let _editSubmitting = false;
+  let _editingId = null;
+  const _commentSubmitting = {}; // bucketId -> bool
 
   function detectMediaType(url) {
     if (!url) return 'none';
@@ -162,18 +252,15 @@ html,body{
     if (/\.(mp4|webm|mov)(\?.*)?$/i.test(url)) return 'video';
     return 'link';
   }
-
   function youtubeEmbed(url) {
     const m = url.match(/(?:youtu\.be\/|v=|embed\/)([A-Za-z0-9_-]{6,})/);
-    const id = m ? m[1] : '';
-    return 'https://www.youtube.com/embed/' + id;
+    return 'https://www.youtube.com/embed/' + (m ? m[1] : '');
   }
-
   function renderMedia(url) {
     const type = detectMediaType(url);
     if (type === 'youtube') return '<iframe src="' + youtubeEmbed(url) + '" allowfullscreen></iframe>';
     if (type === 'image') return '<img src="' + url + '" alt="">';
-    if (type === 'video') return '<video src="' + url + '" controls style="width:100%; max-height:420px;"></video>';
+    if (type === 'video') return '<video src="' + url + '" controls style="width:100%; max-height:360px;"></video>';
     if (type === 'link') return '<a class="link-fallback" href="' + url + '" target="_blank" rel="noopener">🔗 링크 열어보기</a>';
     return '';
   }
@@ -188,6 +275,7 @@ html,body{
   function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
 
   async function submitItem() {
+    if (_addSubmitting) return;
     const title = document.getElementById('itemTitle').value.trim();
     const mediaUrl = document.getElementById('itemMediaUrl').value.trim();
     const review = document.getElementById('itemReview').value.trim();
@@ -195,6 +283,9 @@ html,body{
     errEl.style.display = 'none';
     if (!title) { errEl.textContent = '제목을 입력해주세요.'; errEl.style.display = 'block'; return; }
 
+    _addSubmitting = true;
+    const btn = document.getElementById('addSubmitBtn');
+    btn.disabled = true; btn.textContent = '게시 중입니다…';
     try {
       const res = await fetch(GAS_URL, {
         method:'POST',
@@ -208,6 +299,65 @@ html,body{
     } catch(e) {
       errEl.textContent = e.message;
       errEl.style.display = 'block';
+    } finally {
+      _addSubmitting = false;
+      btn.disabled = false; btn.textContent = '추가';
+    }
+  }
+
+  function openEditModal(id) {
+    const it = _items.find(function(x){ return x.id === id; });
+    if (!it) return;
+    _editingId = id;
+    document.getElementById('editTitle').value = it.title || '';
+    document.getElementById('editMediaUrl').value = it.mediaUrl || '';
+    document.getElementById('editReview').value = it.review || '';
+    document.getElementById('editErr').style.display = 'none';
+    document.getElementById('editModal').style.display = 'flex';
+  }
+  function closeEditModal() { document.getElementById('editModal').style.display = 'none'; _editingId = null; }
+
+  async function submitEdit() {
+    if (_editSubmitting) return;
+    const title = document.getElementById('editTitle').value.trim();
+    const mediaUrl = document.getElementById('editMediaUrl').value.trim();
+    const review = document.getElementById('editReview').value.trim();
+    const errEl = document.getElementById('editErr');
+    errEl.style.display = 'none';
+    if (!title) { errEl.textContent = '제목을 입력해주세요.'; errEl.style.display = 'block'; return; }
+
+    _editSubmitting = true;
+    const btn = document.getElementById('editSubmitBtn');
+    btn.disabled = true; btn.textContent = '저장 중…';
+    try {
+      const patch = { title, mediaUrl, mediaType: detectMediaType(mediaUrl), review };
+      const res = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updateBucket', id:_editingId, patch }) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || '수정 실패');
+      const it = _items.find(function(x){ return x.id === _editingId; });
+      Object.assign(it, patch);
+      renderItems();
+      closeEditModal();
+    } catch(e) {
+      errEl.textContent = e.message;
+      errEl.style.display = 'block';
+    } finally {
+      _editSubmitting = false;
+      btn.disabled = false; btn.textContent = '저장';
+    }
+  }
+
+  async function deleteItem(id) {
+    if (!confirm('이 항목을 삭제할까요? 댓글도 함께 삭제돼요.')) return;
+    try {
+      const res = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'deleteBucket', id }) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || '삭제 실패');
+      _items = _items.filter(function(x){ return x.id !== id; });
+      _comments = _comments.filter(function(c){ return c.bucketId !== id; });
+      renderItems();
+    } catch(e) {
+      alert('삭제 실패: ' + e.message);
     }
   }
 
@@ -215,11 +365,16 @@ html,body{
     return _comments.filter(function(c){ return c.bucketId === bucketId; });
   }
 
-  async function submitComment(bucketId, idx) {
-    const authorSel = document.getElementById('cAuthor_' + idx);
-    const textInput = document.getElementById('cText_' + idx);
+  async function submitComment(bucketId) {
+    if (_commentSubmitting[bucketId]) return; // 중복 제출 방지
+    const authorSel = document.getElementById('cAuthor_' + bucketId);
+    const textInput = document.getElementById('cText_' + bucketId);
+    const btn = document.getElementById('cBtn_' + bucketId);
     const text = textInput.value.trim();
     if (!text) return;
+
+    _commentSubmitting[bucketId] = true;
+    textInput.disabled = true; btn.disabled = true; btn.textContent = '등록 중…';
     try {
       const res = await fetch(GAS_URL, {
         method:'POST',
@@ -228,10 +383,41 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '저장 실패');
       _comments.push(data.comment);
-      textInput.value = '';
       renderItems();
     } catch(e) {
       alert('댓글 저장 실패: ' + e.message);
+    } finally {
+      _commentSubmitting[bucketId] = false;
+      // renderItems()가 새로 그리면서 입력창을 초기화하므로 별도 복구 불필요
+    }
+  }
+
+  async function editComment(commentId, bucketId) {
+    const c = _comments.find(function(x){ return x.id === commentId; });
+    if (!c) return;
+    const newText = prompt('댓글 수정', c.text);
+    if (newText === null || !newText.trim()) return;
+    try {
+      const res = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updateBucketComment', id:commentId, patch:{ text:newText.trim() } }) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || '수정 실패');
+      c.text = newText.trim();
+      renderItems();
+    } catch(e) {
+      alert('수정 실패: ' + e.message);
+    }
+  }
+
+  async function deleteComment(commentId) {
+    if (!confirm('댓글을 삭제할까요?')) return;
+    try {
+      const res = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'deleteBucketComment', id:commentId }) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || '삭제 실패');
+      _comments = _comments.filter(function(c){ return c.id !== commentId; });
+      renderItems();
+    } catch(e) {
+      alert('삭제 실패: ' + e.message);
     }
   }
 
@@ -240,35 +426,61 @@ html,body{
     return a ? a.icon : '💬';
   }
 
+  function onSearch() {
+    _searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+    renderItems();
+  }
+
+  function matchesSearch(it) {
+    if (!_searchQuery) return true;
+    const q = _searchQuery;
+    if ((it.title||'').toLowerCase().indexOf(q) !== -1) return true;
+    if ((it.review||'').toLowerCase().indexOf(q) !== -1) return true;
+    const cs = commentsFor(it.id);
+    return cs.some(function(c){ return (c.text||'').toLowerCase().indexOf(q) !== -1; });
+  }
+
   function renderItems() {
     const wrap = document.getElementById('itemsWrap');
-    if (!_items.length) {
-      wrap.innerHTML = '<div class="empty-note">아직 등록된 버킷리스트가 없어요. 첫 항목을 추가해보세요.</div>';
+    const filtered = _items.filter(matchesSearch);
+
+    if (!filtered.length) {
+      wrap.innerHTML = '<div class="empty-note" style="grid-column:1/-1;">' + (_searchQuery ? '검색 결과가 없어요.' : '아직 등록된 버킷리스트가 없어요. 첫 항목을 추가해보세요.') + '</div>';
       return;
     }
 
-    wrap.innerHTML = _items.map(function(it, idx){
+    wrap.innerHTML = filtered.map(function(it){
       const cs = commentsFor(it.id);
       const commentsHtml = cs.map(function(c){
         return '<div class="comment-row">' +
           '<span class="comment-icon">' + authorIcon(c.author) + '</span>' +
           '<span class="comment-text"><span class="comment-author">' + c.author + '</span>' + c.text + ' <span class="comment-time">' + (c.createdAt||'') + '</span></span>' +
+          '<span class="comment-edit-icons">' +
+            '<span title="수정" onclick="editComment(\'' + c.id + '\',\'' + it.id + '\')">✏️</span>' +
+            '<span title="삭제" onclick="deleteComment(\'' + c.id + '\')">🗑</span>' +
+          '</span>' +
         '</div>';
       }).join('');
 
       const authorOptions = AUTHORS.map(function(a){ return '<option value="'+a.key+'">'+a.label+'</option>'; }).join('');
 
       return '<div class="item-card">' +
-        '<div class="item-title">' + it.title + '</div>' +
+        '<div class="item-head">' +
+          '<div class="item-title">' + it.title + '</div>' +
+          '<div class="item-actions">' +
+            '<button class="icon-btn" title="수정" onclick="openEditModal(\'' + it.id + '\')">✏️</button>' +
+            '<button class="icon-btn danger" title="삭제" onclick="deleteItem(\'' + it.id + '\')">🗑</button>' +
+          '</div>' +
+        '</div>' +
         (it.mediaUrl ? '<div class="item-media">' + renderMedia(it.mediaUrl) + '</div>' : '') +
         (it.review ? '<div class="item-review">' + it.review + '</div>' : '') +
         '<div class="item-date">' + (it.createdAt||'') + '</div>' +
         '<div class="comments">' +
           commentsHtml +
           '<div class="comment-form">' +
-            '<select id="cAuthor_' + idx + '">' + authorOptions + '</select>' +
-            '<input type="text" id="cText_' + idx + '" placeholder="댓글 남기기" onkeydown="if(event.key===\'Enter\') submitComment(\'' + it.id + '\',' + idx + ')">' +
-            '<button onclick="submitComment(\'' + it.id + '\',' + idx + ')">등록</button>' +
+            '<select id="cAuthor_' + it.id + '">' + authorOptions + '</select>' +
+            '<input type="text" id="cText_' + it.id + '" placeholder="댓글 남기기" onkeydown="if(event.key===\'Enter\'){ event.preventDefault(); submitComment(\'' + it.id + '\'); }">' +
+            '<button id="cBtn_' + it.id + '" onclick="submitComment(\'' + it.id + '\')">등록</button>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -290,6 +502,11 @@ html,body{
     }
     renderItems();
   }
+
+  const today = new Date();
+  document.getElementById('todayLine').textContent =
+    today.getFullYear() + '. ' + String(today.getMonth()+1).padStart(2,'0') + '. ' + String(today.getDate()).padStart(2,'0');
+
   init();
 </script>
 

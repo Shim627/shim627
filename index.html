@@ -94,7 +94,7 @@
   }
 
   .intro-block{
-    margin-bottom:-22px; /* 봉투 열렸을 때 윗부분에 살짝 가려지도록 위로 당김 */
+    margin-bottom:0;
   }
 
   /* 편지봉투 + 밀랍 인장 (시그니처 요소) */
@@ -103,6 +103,10 @@
     width:232px;
     height:158px;
     margin:0 auto 8px;
+    transition:margin-top .5s ease;
+  }
+  .stage.unlocked .envelope-wrap{
+    margin-top:-16px;
   }
   .envelope{
     position:absolute; inset:0;

@@ -145,6 +145,14 @@ html,body{
   padding:5px; display:grid; grid-template-columns:repeat(5,1fr); grid-template-rows:repeat(5,1fr); gap:1.5px;
   background:rgba(255,255,255,.5);
   overflow:hidden;
+  position:relative;
+}
+.stamp-seoul-label{
+  position:absolute; top:4px; left:50%; transform:translateX(-50%);
+  font-size:9.5px; font-weight:700; color:var(--plum);
+  background:rgba(255,255,255,.85);
+  padding:1px 6px; border-radius:999px;
+  pointer-events:none; z-index:2;
 }
 .stamp-gu{ border-radius:1.5px; background:rgba(217,160,102,.15); transition:background .3s ease; }
 .stamp-legend{ display:flex; align-items:center; gap:8px; margin-top:14px; font-size:11px; color:var(--ink-soft); }
@@ -222,8 +230,14 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
       <a href="../main/home.html" class="nav-home-item home-link">
         <span>🏠</span><span>우리 홈으로</span>
       </a>
+      <a href="편지함.html" class="nav-home-item">
+        <span>✉️</span><span>편지함</span>
+      </a>
+      <a href="버킷리스트.html" class="nav-home-item">
+        <span>🗺️</span><span>버킷리스트</span>
+      </a>
       <div class="nav-home-item active" data-view="dashboard" onclick="showHome()">
-        <span>🧭</span><span>여행 대시보드</span>
+        <span>✈️</span><span>여행 기록</span>
       </div>
 
       <div class="nav-category">여행 계획서</div>
@@ -359,7 +373,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
               <tr>
                 <th style="width:12%;">구분</th>
                 <th style="width:14%;">지역</th>
-                <th style="width:15%;">등록일</th>
+                <th style="width:15%;">계획일정</th>
                 <th>제목 / 메모</th>
                 <th style="width:56px; text-align:center;">받기</th>
                 <th style="width:70px; text-align:center;">열기</th>
@@ -698,7 +712,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
     document.getElementById('homeView').style.display = 'block';
     document.getElementById('listView').style.display = 'none';
     document.getElementById('subFrame').style.display = 'none';
-    document.getElementById('crumb').textContent = '여행 대시보드';
+    document.getElementById('crumb').textContent = '여행 기록';
     setActiveNav('home');
     if (!_listLoaded) refreshList();
   }
@@ -1010,7 +1024,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
           const isVisited = Object.keys(_stampVisits).some(function(k){ return k.indexOf('서울특별시_' + gu + '_') === 0; });
           return '<div class="stamp-gu" style="background:' + (isVisited ? tileColor(100) : tileColor(0)) + ';" title="' + gu + (isVisited?' 방문함':'') + '"></div>';
         }).join('');
-        return '<div class="stamp-seoul-tile" style="' + style + '" title="서울 ' + pct + '%">' + guCells + '</div>';
+        return '<div class="stamp-seoul-tile" style="' + style + '" title="서울 ' + pct + '%">' + guCells + '<span class="stamp-seoul-label">서울</span></div>';
       }
 
       const shapeCls = SHAPES[idx % SHAPES.length];
