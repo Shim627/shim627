@@ -32,14 +32,14 @@
   .layout{
     display:flex;
     gap:28px;
-    max-width:1040px;
+    max-width:1440px;
     margin:0 auto;
     padding:0 22px;
     align-items:flex-start;
   }
-  @media (max-width: 860px){
+  @media (max-width: 1180px){
     .layout{ flex-direction:column; }
-    .activity-panel{ max-width:640px !important; width:100%; position:static !important; margin-top:24px !important; }
+    .activity-panel{ max-width:720px !important; width:100%; position:static !important; margin-top:24px !important; }
   }
 
   .wrap{
@@ -232,8 +232,8 @@
 
   /* ---------- 최근 게시물 패널 ---------- */
   .activity-panel{
-    flex:1 1 320px;
-    max-width:360px;
+    flex:1 1 640px;
+    max-width:720px;
     margin-top:48px;
     position:sticky;
     top:24px;
@@ -419,6 +419,14 @@
     return m[1] + '.' + m[2] + '.' + m[3] + ' ' + m[4] + ':' + m[5];
   }
 
+  var CATEGORY_ICONS = {
+    '편지함': '✉️',
+    '여행기록': '✈️',
+    '버킷리스트': '🗺️',
+    '일정표': '📅',
+    '사진첩': '📷'
+  };
+
   function renderActivity(items) {
     var listEl = document.getElementById('activityList');
     if (!items || !items.length) {
@@ -429,9 +437,10 @@
       var href = /^https?:\/\//.test(it.link) ? it.link : ('../' + it.link);
       var tagCls = it.isNew ? 'new' : 'edit';
       var tagText = it.isNew ? '신규' : '수정';
+      var icon = CATEGORY_ICONS[it.category] || '';
       return '<a class="activity-row" href="' + href + '">' +
         '<div class="activity-top">' +
-          '<span class="activity-cat">' + it.category + '</span>' +
+          '<span class="activity-cat">' + icon + ' ' + it.category + '</span>' +
           '<span class="activity-tag ' + tagCls + '">' + tagText + '</span>' +
         '</div>' +
         '<div class="activity-title">' + it.title + '</div>' +
