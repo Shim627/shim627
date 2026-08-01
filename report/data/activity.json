@@ -2,6 +2,13 @@
   "ok": true,
   "items": [
     {
+      "time": "2026-08-02 05:20",
+      "isNew": true,
+      "category": "일정표",
+      "title": "성화 동생 방문",
+      "link": "report/일정표.html?open=S1785615612350167"
+    },
+    {
       "time": "2026-08-02 05:17",
       "isNew": true,
       "category": "여행기록",
