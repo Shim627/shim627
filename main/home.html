@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우리 둘의 아지트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --plum:#4a2e44;
+    --plum-deep:#2f1c2b;
+    --blush:#f7d9de;
+    --blush-soft:#fbe9ec;
+    --gold:#d9a066;
+    --lavender:#d9c9e8;
+    --cream:#fff8f3;
+    --ink:#5a4152;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0;
+    font-family:'Gowun Dodum', sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, #f9e3e6 0%, transparent 45%),
+      radial-gradient(circle at 85% 80%, #e6d6ef 0%, transparent 50%),
+      linear-gradient(160deg, #fdf3f0 0%, #f6e6ee 55%, #ece0f2 100%);
+    color:var(--ink);
+    min-height:100vh;
+  }
+
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+    padding:48px 22px 80px;
+  }
+
+  /* ---------- 상단 디데이 ---------- */
+  .dday-card{
+    background:linear-gradient(160deg, #fffaf6, #fbeee6);
+    border-radius:22px;
+    padding:34px 26px;
+    text-align:center;
+    box-shadow:0 18px 40px -18px rgba(74,46,68,.35), inset 0 0 0 1px rgba(217,160,102,.2);
+    position:relative;
+    overflow:hidden;
+  }
+  .dday-card::before{
+    content:"♥";
+    position:absolute;
+    top:-30px; right:-10px;
+    font-size:120px;
+    color:rgba(217,160,102,.08);
+  }
+  .eyebrow{
+    font-family:'Gowun Batang', serif;
+    font-size:12.5px;
+    letter-spacing:.35em;
+    color:var(--gold);
+    margin:0 0 10px;
+  }
+  .dday-number{
+    font-family:'Gowun Batang', serif;
+    font-weight:700;
+    font-size:clamp(40px, 12vw, 56px);
+    color:var(--plum);
+    margin:0;
+    letter-spacing:.02em;
+  }
+  .dday-label{
+    font-size:13.5px;
+    color:#8a7286;
+    margin:8px 0 0;
+  }
+  .today-line{
+    margin-top:18px;
+    font-size:12.5px;
+    color:#b79fc0;
+  }
+
+  /* ---------- 우리의 시작 타임라인 ---------- */
+  .story{
+    margin-top:36px;
+  }
+  .story h2{
+    font-family:'Gowun Batang', serif;
+    font-size:16px;
+    color:var(--plum);
+    margin:0 0 16px;
+    padding-left:4px;
+  }
+  .timeline{
+    position:relative;
+    padding-left:22px;
+  }
+  .timeline::before{
+    content:"";
+    position:absolute;
+    left:6px; top:6px; bottom:6px;
+    width:2px;
+    background:linear-gradient(to bottom, var(--gold), var(--lavender));
+    opacity:.5;
+  }
+  .t-item{
+    position:relative;
+    padding-bottom:20px;
+  }
+  .t-item:last-child{ padding-bottom:0; }
+  .t-item::before{
+    content:"";
+    position:absolute;
+    left:-22px; top:4px;
+    width:10px; height:10px;
+    border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 0 4px #fdf3f0;
+  }
+  .t-date{
+    font-family:'Gowun Batang', serif;
+    font-size:13px;
+    color:var(--gold);
+    margin:0 0 3px;
+  }
+  .t-text{
+    font-size:13.5px;
+    color:var(--ink);
+    margin:0;
+    line-height:1.5;
+  }
+
+  /* ---------- 허브 카드 ---------- */
+  .hub{
+    margin-top:40px;
+  }
+  .hub h2{
+    font-family:'Gowun Batang', serif;
+    font-size:16px;
+    color:var(--plum);
+    margin:0 0 16px;
+    padding-left:4px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .card{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding:20px 16px;
+    border-radius:18px;
+    background:rgba(255,255,255,.55);
+    box-shadow:0 10px 26px -14px rgba(74,46,68,.25), inset 0 0 0 1px rgba(217,160,102,.18);
+    text-decoration:none;
+    color:var(--ink);
+    transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+    position:relative;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 16px 30px -14px rgba(74,46,68,.32), inset 0 0 0 1px rgba(217,160,102,.3);
+    background:rgba(255,255,255,.75);
+  }
+  .card .ic{ font-size:22px; }
+  .card .name{
+    font-family:'Gowun Batang', serif;
+    font-size:14.5px;
+    color:var(--plum);
+  }
+  .card .desc{
+    font-size:11.5px;
+    color:#a58ea3;
+    line-height:1.4;
+  }
+  .card.soon{
+    opacity:.55;
+    cursor:default;
+  }
+  .card.soon:hover{
+    transform:none;
+    box-shadow:0 10px 26px -14px rgba(74,46,68,.25), inset 0 0 0 1px rgba(217,160,102,.18);
+    background:rgba(255,255,255,.55);
+  }
+  .badge{
+    position:absolute;
+    top:14px; right:14px;
+    font-size:9.5px;
+    letter-spacing:.05em;
+    color:#fff8f0;
+    background:var(--gold);
+    padding:2px 8px;
+    border-radius:999px;
+  }
+  .badge.soon-badge{
+    background:#c9b7d0;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:52px;
+    font-size:11px;
+    color:#b79fc0;
+    letter-spacing:.1em;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="dday-card">
+    <p class="eyebrow">S &amp; H</p>
+    <p class="dday-number" id="ddayNumber">D-000</p>
+    <p class="dday-label" id="ddayLabel">우리가 정식으로 만나는 날까지</p>
+    <p class="today-line" id="todayLine"></p>
+  </div>
+
+  <div class="story">
+    <h2>우리의 시작</h2>
+    <div class="timeline">
+      <div class="t-item">
+        <p class="t-date">2026. 06. 27</p>
+        <p class="t-text">내 생일, 이때부터 성화에게 본격적으로 관심이 갔다</p>
+      </div>
+      <div class="t-item">
+        <p class="t-date">2026. 07. 14</p>
+        <p class="t-text">성화의 생일, 조심스럽게 마음을 표현하기 시작</p>
+      </div>
+      <div class="t-item">
+        <p class="t-date">2026. 07. 17</p>
+        <p class="t-text">이 즈음부터 알콩달콩, 썸이 시작되다</p>
+      </div>
+      <div class="t-item">
+        <p class="t-date">2026. 09. 04</p>
+        <p class="t-text">첫 만남 겸 첫 여행, 그리고 진짜 우리가 된 날</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="hub">
+    <h2>우리 둘의 서랍</h2>
+    <div class="grid">
+
+      <a href="letters.html" class="card">
+        <span class="ic">✉️</span>
+        <span class="name">편지함</span>
+        <span class="desc">서로에게 남기는 짧은 마음</span>
+      </a>
+
+      <a href="album.html" class="card">
+        <span class="ic">📷</span>
+        <span class="name">우리 사진첩</span>
+        <span class="desc">함께 남긴 순간들</span>
+      </a>
+
+      <div class="card soon">
+        <span class="badge soon-badge">준비중</span>
+        <span class="ic">🗺️</span>
+        <span class="name">버킷리스트</span>
+        <span class="desc">같이 하고 싶은 것들</span>
+      </div>
+
+      <div class="card soon">
+        <span class="badge soon-badge">준비중</span>
+        <span class="ic">📅</span>
+        <span class="name">다음 데이트</span>
+        <span class="desc">우리의 다음 계획</span>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>only for you, 이성화 🤍</footer>
+</div>
+
+<script>
+  // ------------------------------------------------------------------
+  // 잠금 확인 (index.html 지침에 따름)
+  // 이 페이지는 로그인(index.html)을 통과한 사람만 볼 수 있어야 한다.
+  // sessionStorage 에 shim627_unlocked = '1' 이 없으면 index.html 로 되돌린다.
+  // 브라우저 창을 닫기 전까지는 세션이 유지되므로, 같은 세션 안에서는
+  // 하위 페이지를 오가도 다시 로그인할 필요가 없다.
+  // ------------------------------------------------------------------
+  if (sessionStorage.getItem('shim627_unlocked') !== '1') {
+    location.href = '../index.html';
+  }
+
+  // ---------- 디데이 계산 ----------
+  // 기준일: 2026-09-04 (첫 만남 겸 첫 여행, 정식으로 사귄 날)
+  var ANCHOR = new Date(2026, 8, 4); // month는 0부터 시작하므로 8 = 9월
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  ANCHOR.setHours(0,0,0,0);
+
+  var diffDays = Math.round((ANCHOR - today) / (1000*60*60*24));
+
+  var numberEl = document.getElementById('ddayNumber');
+  var labelEl = document.getElementById('ddayLabel');
+
+  if (diffDays > 0) {
+    numberEl.textContent = 'D-' + diffDays;
+    labelEl.textContent = '우리가 정식으로 만나는 날까지';
+  } else if (diffDays === 0) {
+    numberEl.textContent = 'D-DAY';
+    labelEl.textContent = '바로 오늘, 우리가 시작되는 날';
+  } else {
+    numberEl.textContent = 'D+' + Math.abs(diffDays);
+    labelEl.textContent = '우리가 함께한 지';
+  }
+
+  var todayStr = today.getFullYear() + '. ' +
+    String(today.getMonth()+1).padStart(2,'0') + '. ' +
+    String(today.getDate()).padStart(2,'0');
+  document.getElementById('todayLine').textContent = '오늘, ' + todayStr;
+</script>
+
+</body>
+</html>
