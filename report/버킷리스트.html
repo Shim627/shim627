@@ -125,7 +125,15 @@ html,body{
 .empty-note{ font-size:14px; font-weight:500; color:var(--ink-soft); text-align:center; padding:40px 20px; }
 
 .modal-overlay{ position:fixed; inset:0; background:rgba(47,28,43,.4); display:none; align-items:center; justify-content:center; z-index:50; padding:20px; }
-.modal{ width:460px; max-width:100%; background:var(--cream); border-radius:20px; padding:26px; box-shadow:0 30px 60px -20px rgba(47,28,43,.5); max-height:88vh; overflow-y:auto; }
+.modal{ width:460px; max-width:100%; background:var(--cream); border-radius:20px; padding:26px; box-shadow:0 30px 60px -20px rgba(47,28,43,.5); max-height:88vh; overflow-y:auto; position:relative; }
+.close-x{
+  position:absolute; top:14px; right:14px; z-index:5;
+  width:30px; height:30px; border-radius:50%; border:none;
+  background:rgba(217,160,102,.15); color:var(--plum);
+  font-size:14px; font-weight:700; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.close-x:hover{ background:rgba(217,160,102,.3); }
 .modal-title{ font-family:var(--font-serif); font-size:18px; font-weight:700; color:var(--plum); margin-bottom:16px; }
 .field{ margin-bottom:14px; }
 .field label{ display:block; font-size:13px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; }
@@ -199,8 +207,9 @@ html,body{
 </div>
 
 <!-- 추가 모달 -->
-<div class="modal-overlay" id="addModal" onclick="if(event.target===this) closeAddModal()">
+<div class="modal-overlay" id="addModal">
   <div class="modal">
+    <button class="close-x" onclick="closeAddModal()">✕</button>
     <p class="modal-title">버킷리스트 추가</p>
     <div class="field"><label>제목</label><input type="text" id="itemTitle" placeholder="예: 발리 여행 가기"></div>
     <div class="field"><label>사진 또는 영상 링크</label><input type="text" id="itemMediaUrl" placeholder="이미지 URL 또는 유튜브 링크"></div>
@@ -214,8 +223,9 @@ html,body{
 </div>
 
 <!-- 수정 모달 -->
-<div class="modal-overlay" id="editModal" onclick="if(event.target===this) closeEditModal()">
+<div class="modal-overlay" id="editModal">
   <div class="modal">
+    <button class="close-x" onclick="closeEditModal()">✕</button>
     <p class="modal-title">항목 수정</p>
     <div class="field"><label>제목</label><input type="text" id="editTitle"></div>
     <div class="field"><label>사진 또는 영상 링크</label><input type="text" id="editMediaUrl"></div>
@@ -466,7 +476,7 @@ html,body{
 
       const authorOptions = AUTHORS.map(function(a){ return '<option value="'+a.key+'">'+a.label+'</option>'; }).join('');
 
-      return '<div class="item-card">' +
+      return '<div class="item-card" id="item_' + it.id + '">' +
         '<div class="item-head">' +
           '<div class="item-title">' + it.title + '</div>' +
           '<div class="item-actions">' +
@@ -503,6 +513,14 @@ html,body{
       console.warn('[버킷리스트] 로드 실패:', e.message);
     }
     renderItems();
+
+    const openId = new URLSearchParams(location.search).get('open');
+    if (openId) {
+      setTimeout(function(){
+        const el = document.getElementById('item_' + openId);
+        if (el) { el.scrollIntoView({ behavior:'smooth', block:'center' }); el.style.boxShadow = '0 0 0 3px var(--gold)'; }
+      }, 100);
+    }
   }
 
   const today = new Date();

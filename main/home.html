@@ -29,10 +29,25 @@
     min-height:100vh;
   }
 
+  .layout{
+    display:flex;
+    gap:28px;
+    max-width:1040px;
+    margin:0 auto;
+    padding:0 22px;
+    align-items:flex-start;
+  }
+  @media (max-width: 860px){
+    .layout{ flex-direction:column; }
+    .activity-panel{ max-width:640px !important; width:100%; position:static !important; margin-top:24px !important; }
+  }
+
   .wrap{
     max-width:640px;
-    margin:0 auto;
-    padding:48px 22px 80px;
+    margin:0;
+    padding:48px 0 80px;
+    flex:0 0 auto;
+    width:100%;
   }
 
   /* ---------- 상단 디데이 ---------- */
@@ -214,10 +229,61 @@
     color:#9b7aa8;
     letter-spacing:.1em;
   }
+
+  /* ---------- 최근 게시물 패널 ---------- */
+  .activity-panel{
+    flex:1 1 320px;
+    max-width:360px;
+    margin-top:48px;
+    position:sticky;
+    top:24px;
+    background:rgba(255,255,255,.5);
+    border:1px solid rgba(217,160,102,.22);
+    border-radius:18px;
+    padding:20px 18px;
+    max-height:calc(100vh - 96px);
+    overflow-y:auto;
+  }
+  .activity-panel h2{
+    font-family:'Gowun Batang', serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--plum);
+    margin:0 0 14px;
+    padding-left:2px;
+  }
+  .activity-row{
+    display:block;
+    text-decoration:none;
+    color:var(--ink);
+    padding:11px 10px;
+    border-radius:12px;
+    transition:background .15s ease;
+    margin-bottom:4px;
+  }
+  .activity-row:hover{ background:rgba(255,255,255,.7); }
+  .activity-top{ display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+  .activity-cat{
+    font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:999px;
+    background:rgba(217,160,102,.16); color:var(--plum);
+  }
+  .activity-tag{
+    font-size:10px; font-weight:700; padding:2px 7px; border-radius:999px;
+  }
+  .activity-tag.new{ background:rgba(122,143,94,.18); color:#4f6a3a; }
+  .activity-tag.edit{ background:rgba(199,107,122,.15); color:#a8495a; }
+  .activity-title{
+    font-size:13.5px; font-weight:600; color:var(--ink);
+    line-height:1.4; margin-bottom:3px;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .activity-time{ font-size:10.5px; font-weight:500; color:#8a7286; }
+  .activity-empty{ font-size:12.5px; color:#8a7286; text-align:center; padding:20px 0; }
 </style>
 </head>
 <body>
 
+<div class="layout">
 <div class="wrap">
 
   <div class="dday-card">
@@ -286,12 +352,17 @@
     </div>
   </div>
 
- <footer>
-  only for you, 이성화 🤍<br>
-  only for you, 심우승 🤍<br>
-  <span style="font-size:9px; opacity:.4;">build v2-여행계획서카드</span>
-</footer>
+  <footer>only for you, 이성화 🤍<br><span style="font-size:9px; opacity:.4;">build v3-최근게시물패널</span></footer>
 </div>
+
+<aside class="activity-panel">
+  <h2>📌 최근 게시물</h2>
+  <div id="activityList">
+    <div class="activity-empty">불러오는 중…</div>
+  </div>
+</aside>
+</div>
+
 
 <script>
   // ------------------------------------------------------------------
@@ -332,6 +403,47 @@
     String(today.getMonth()+1).padStart(2,'0') + '. ' +
     String(today.getDate()).padStart(2,'0');
   document.getElementById('todayLine').textContent = '오늘, ' + todayStr;
+
+  // ---------- 최근 게시물 패널 ----------
+  function formatActivityTime(t) {
+    // t: "yyyy-MM-dd HH:mm" (KST) -> "YYYY.MM.DD hh:mm"
+    if (!t) return '';
+    var m = t.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/);
+    if (!m) return t;
+    return m[1] + '.' + m[2] + '.' + m[3] + ' ' + m[4] + ':' + m[5];
+  }
+
+  function renderActivity(items) {
+    var listEl = document.getElementById('activityList');
+    if (!items || !items.length) {
+      listEl.innerHTML = '<div class="activity-empty">아직 등록된 소식이 없어요.</div>';
+      return;
+    }
+    listEl.innerHTML = items.map(function(it){
+      var href = /^https?:\/\//.test(it.link) ? it.link : ('../' + it.link);
+      var tagCls = it.isNew ? 'new' : 'edit';
+      var tagText = it.isNew ? '신규' : '수정';
+      return '<a class="activity-row" href="' + href + '">' +
+        '<div class="activity-top">' +
+          '<span class="activity-cat">' + it.category + '</span>' +
+          '<span class="activity-tag ' + tagCls + '">' + tagText + '</span>' +
+        '</div>' +
+        '<div class="activity-title">' + it.title + '</div>' +
+        '<div class="activity-time">' + formatActivityTime(it.time) + '</div>' +
+      '</a>';
+    }).join('');
+  }
+
+  fetch('../report/data/activity.json?t=' + Date.now())
+    .then(function(res){ return res.json(); })
+    .then(function(data){
+      if (data && data.ok) renderActivity(data.items);
+      else document.getElementById('activityList').innerHTML = '<div class="activity-empty">불러오지 못했어요.</div>';
+    })
+    .catch(function(){
+      document.getElementById('activityList').innerHTML = '<div class="activity-empty">불러오지 못했어요.</div>';
+    });
+
 </script>
 
 </body>

@@ -524,7 +524,18 @@ html,body{
     }
     const t = new Date();
     _curYear = t.getFullYear(); _curMonth = t.getMonth();
+
+    const openId = new URLSearchParams(location.search).get('open');
+    let targetForModal = null;
+    if (openId) {
+      targetForModal = _schedules.find(function(s){ return s.id === openId; });
+      if (targetForModal && targetForModal.date) {
+        const d = new Date(targetForModal.date);
+        _curYear = d.getFullYear(); _curMonth = d.getMonth();
+      }
+    }
     renderCalendar();
+    if (targetForModal) openDetailModal(openId);
   }
 
   const today = new Date();

@@ -555,7 +555,7 @@ html,body{
 
       const authorOptions = AUTHORS.map(function(a){ return '<option value="'+a.key+'">'+a.label+'</option>'; }).join('');
 
-      return '<div class="item-card">' +
+      return '<div class="item-card" id="item_' + it.id + '">' +
         '<div class="item-head">' +
           '<div class="item-title">' + it.title + '</div>' +
           '<div class="item-actions">' +
@@ -592,6 +592,14 @@ html,body{
       console.warn('[사진첩] 로드 실패:', e.message);
     }
     renderItems();
+
+    const openId = new URLSearchParams(location.search).get('open');
+    if (openId) {
+      setTimeout(function(){
+        const el = document.getElementById('item_' + openId);
+        if (el) { el.scrollIntoView({ behavior:'smooth', block:'center' }); el.style.boxShadow = '0 0 0 3px var(--gold)'; }
+      }, 100);
+    }
   }
 
   const today = new Date();

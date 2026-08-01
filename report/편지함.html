@@ -194,8 +194,9 @@ html,body{
 </div>
 
 <!-- 편지 쓰기 모달 -->
-<div class="modal-overlay" id="writeModal" onclick="if(event.target===this) closeWriteModal()">
+<div class="modal-overlay" id="writeModal">
   <div class="modal">
+    <button class="close-x" onclick="closeWriteModal()">✕</button>
     <p class="modal-title">편지 쓰기</p>
     <div class="field">
       <label>편지지 고르기</label>
@@ -429,6 +430,12 @@ html,body{
       console.warn('[편지함] 로드 실패:', e.message);
     }
     renderLetters();
+
+    const openId = new URLSearchParams(location.search).get('open');
+    if (openId) {
+      const idx = _letters.findIndex(function(l){ return l.id === openId; });
+      if (idx !== -1) openReadModal(idx);
+    }
   }
 
   const today = new Date();
