@@ -15,7 +15,7 @@
     --gold:#d9a066;
     --lavender:#d9c9e8;
     --cream:#fff8f3;
-    --ink:#5a4152;
+    --ink:#3d2a37;
   }
   *{box-sizing:border-box;}
   html,body{
@@ -65,7 +65,8 @@
 
   .eyebrow{
     font-family:'Gowun Batang', serif;
-    font-size:13px;
+    font-size:14.5px;
+    font-weight:700;
     letter-spacing:.35em;
     color:var(--gold);
     margin-bottom:10px;
@@ -74,7 +75,7 @@
   h1{
     font-family:'Gowun Batang', serif;
     font-weight:700;
-    font-size:clamp(26px, 6vw, 34px);
+    font-size:clamp(29px, 6.8vw, 38px);
     color:var(--plum);
     margin:0 0 6px;
     line-height:1.35;
@@ -85,17 +86,18 @@
   }
 
   .sub{
-    font-size:14px;
-    color:#8a7286;
+    font-size:15.5px;
+    font-weight:500;
+    color:#6b5568;
     margin:0 0 34px;
-    line-height:1.6;
+    line-height:1.65;
   }
 
   /* 편지봉투 + 밀랍 인장 (시그니처 요소) */
   .envelope-wrap{
     position:relative;
-    width:220px;
-    height:150px;
+    width:232px;
+    height:158px;
     margin:0 auto 8px;
   }
   .envelope{
@@ -154,13 +156,15 @@
     position:absolute;
     top:26px; left:50%;
     transform:translate(-50%,20px);
-    width:170px;
-    padding:14px 16px;
+    width:184px;
+    padding:15px 17px;
     background:var(--cream);
     border-radius:6px;
     font-family:'Gowun Batang', serif;
-    font-size:12.5px;
+    font-size:14px;
+    font-weight:700;
     color:var(--plum);
+    line-height:1.5;
     opacity:0;
     box-shadow:0 10px 24px -10px rgba(74,46,68,.3);
     transition:opacity .5s ease .5s, transform .7s cubic-bezier(.3,1.4,.5,1) .5s;
@@ -190,7 +194,7 @@
     border:1.5px solid rgba(217,160,102,.4);
     background:rgba(255,255,255,.7);
     font-family:'Gowun Dodum', sans-serif;
-    font-size:15px;
+    font-size:17px;
     letter-spacing:4px;
     color:var(--plum);
     outline:none;
@@ -213,7 +217,8 @@
     background:linear-gradient(135deg, var(--gold), #cf8c58);
     color:#fff8f0;
     font-family:'Gowun Batang', serif;
-    font-size:15px;
+    font-size:16px;
+    font-weight:700;
     letter-spacing:.05em;
     cursor:pointer;
     box-shadow:0 10px 20px -8px rgba(185,113,58,.55);
@@ -224,7 +229,8 @@
 
   .message{
     min-height:20px;
-    font-size:13px;
+    font-size:14px;
+    font-weight:600;
     color:#c76b7a;
     transition:opacity .3s;
   }
@@ -242,7 +248,8 @@
   .go{
     margin-top:6px;
     font-family:'Gowun Batang', serif;
-    font-size:14px;
+    font-size:15px;
+    font-weight:700;
     color:var(--plum);
     text-decoration:none;
     border-bottom:1px solid var(--gold);
@@ -260,8 +267,9 @@
     position:fixed;
     bottom:16px; left:0; right:0;
     text-align:center;
-    font-size:11px;
-    color:#b79fc0;
+    font-size:12.5px;
+    font-weight:600;
+    color:#9b7aa8;
     letter-spacing:.1em;
     z-index:1;
   }
