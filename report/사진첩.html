@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사진첩</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --plum:#3d2a37; --blush:#f7d9de; --blush-soft:#fbe9ec;
+  --gold:#d9a066; --gold-dim:rgba(217,160,102,.14);
+  --cream:#fff8f3; --ink:#3d2a37; --ink-soft:#6b5568;
+  --border:rgba(217,160,102,.22); --border2:rgba(217,160,102,.4);
+  --sidebar-w:230px;
+  --font-serif:'Gowun Batang', serif;
+  --font-body:'Gowun Dodum', sans-serif;
+}
+html,body{
+  width:100%; height:100vh; overflow:hidden;
+  font-family:var(--font-body); color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 10%, #f9e3e6 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, #e6d6ef 0%, transparent 50%),
+    linear-gradient(160deg, #fdf3f0 0%, #f6e6ee 55%, #ece0f2 100%);
+}
+#rpWrap{ display:flex; height:100vh; overflow:hidden; }
+#rpSidebar{
+  width:var(--sidebar-w); flex-shrink:0;
+  background:rgba(255,255,255,.55); backdrop-filter:blur(6px);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column; height:100vh; overflow-y:auto;
+}
+.rps-brand{ display:flex; align-items:center; gap:10px; padding:22px 18px 18px; border-bottom:1px solid var(--border); }
+.rps-brand-icon{ font-size:24px; }
+.rps-brand-name{ font-family:var(--font-serif); font-size:15.5px; font-weight:700; color:var(--plum); }
+.rps-brand-sub{ font-size:12px; font-weight:600; color:var(--ink-soft); margin-top:2px; }
+.rps-nav{ padding:14px 0 20px; flex:1; }
+.nav-home-item{ display:flex; align-items:center; gap:10px; padding:11px 16px; margin:0 10px 10px; border-radius:12px; cursor:pointer; transition:all .15s; font-size:14.5px; font-weight:600; color:var(--ink); text-decoration:none; }
+.nav-home-item:hover{ background:rgba(255,255,255,.6); }
+.nav-home-item.active{ background:var(--gold-dim); color:var(--plum); border:1px solid var(--border2); }
+.nav-home-item.home-link{ background:var(--blush-soft); border:1px solid var(--border2); }
+.nav-home-item.home-link:hover{ background:var(--blush); }
+.rps-footer{ padding:14px 18px; border-top:1px solid var(--border); font-size:12px; font-weight:600; color:var(--ink-soft); }
+#rpMain{ flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; min-width:0; }
+#statusBar{ flex-shrink:0; display:flex; align-items:center; justify-content:space-between; padding:0 26px; height:44px; background:rgba(255,255,255,.5); border-bottom:1px solid var(--border); }
+.sb-left{ display:flex; align-items:center; gap:10px; }
+.sb-brand{ font-family:var(--font-serif); font-size:14.5px; font-weight:700; color:var(--plum); }
+.sb-dot{ width:6px; height:6px; border-radius:50%; background:var(--gold); }
+.sb-crumb{ font-size:13px; font-weight:600; color:var(--ink-soft); }
+#contentWrap{ flex:1; display:flex; align-items:center; justify-content:center; }
+.empty-hero{ text-align:center; padding:40px; }
+.empty-hero .eyebrow{ font-family:var(--font-serif); font-size:14px; font-weight:700; color:var(--gold); letter-spacing:.3em; margin-bottom:10px; }
+.empty-hero h1{ font-family:var(--font-serif); font-size:24px; font-weight:700; color:var(--plum); margin-bottom:10px; }
+.empty-hero p{ font-size:14px; font-weight:500; color:var(--ink-soft); line-height:1.8; }
+</style>
+</head>
+<body>
+
+<div id="rpWrap">
+  <aside id="rpSidebar">
+    <div class="rps-brand">
+      <span class="rps-brand-icon">📷</span>
+      <div>
+        <div class="rps-brand-name">ALBUM</div>
+        <div class="rps-brand-sub">우리 사진첩</div>
+      </div>
+    </div>
+    <nav class="rps-nav">
+      <a href="../main/home.html" class="nav-home-item home-link"><span>🏠</span><span>우리 홈으로</span></a>
+      <a href="편지함.html" class="nav-home-item"><span>✉️</span><span>편지함</span></a>
+      <a href="버킷리스트.html" class="nav-home-item"><span>🗺️</span><span>버킷리스트</span></a>
+      <a href="일정표.html" class="nav-home-item"><span>📅</span><span>일정표</span></a>
+      <div class="nav-home-item active"><span>📷</span><span>사진첩</span></div>
+      <a href="report_main.html" class="nav-home-item"><span>✈️</span><span>여행 기록</span></a>
+    </nav>
+    <div class="rps-footer">only for you, 이성화 🤍</div>
+  </aside>
+
+  <div id="rpMain">
+    <div id="statusBar">
+      <div class="sb-left"><span class="sb-dot"></span><span class="sb-brand">ALBUM</span><span class="sb-crumb">사진첩</span></div>
+    </div>
+    <div id="contentWrap">
+      <div class="empty-hero">
+        <p class="eyebrow">WS &amp; SH</p>
+        <h1>우리 사진첩 📷</h1>
+        <p>아직 준비 중이에요. 곧 함께 찍은 사진들을 여기에 모아둘게요.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  if (sessionStorage.getItem('shim627_unlocked') !== '1') {
+    location.href = '../index.html';
+  }
+</script>
+
+</body>
+</html>
