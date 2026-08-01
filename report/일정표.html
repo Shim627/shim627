@@ -197,6 +197,7 @@ html,body{
     <button class="close-x" onclick="closeAddModal()">✕</button>
     <p class="modal-title">일정 추가</p>
     <div class="field"><label>날짜</label><input type="date" id="addDate"></div>
+    <div class="field"><label>종료일 <span style="font-weight:400; color:var(--ink-soft);">(여러 날 걸치면 선택, 하루짜리면 비워둬도 돼요)</span></label><input type="date" id="addEndDate"></div>
     <div class="field"><label>제목</label><input type="text" id="addTitle" placeholder="예: 강릉 여행"></div>
     <div class="field"><label>메모</label><textarea id="addDetail" placeholder="세부 내용 (선택)"></textarea></div>
     <div class="field">
@@ -240,6 +241,7 @@ html,body{
     <div id="detailEdit" style="display:none;">
       <p class="modal-title">일정 수정</p>
       <div class="field"><label>날짜</label><input type="date" id="editDate"></div>
+      <div class="field"><label>종료일</label><input type="date" id="editEndDate"></div>
       <div class="field"><label>제목</label><input type="text" id="editTitle"></div>
       <div class="field"><label>메모</label><textarea id="editDetail"></textarea></div>
       <div class="field"><label>등록자</label><div class="author-picker" id="editAuthorPicker"></div></div>
@@ -289,7 +291,10 @@ html,body{
   function pickEditAuthor(key){ _editSelectedAuthor = key; renderAuthorPicker('editAuthorPicker', _editSelectedAuthor, 'pickEditAuthor'); }
 
   function eventsOn(dateStr) {
-    return _schedules.filter(function(s){ return s.date === dateStr; });
+    return _schedules.filter(function(s){
+      const end = s.endDate || s.date;
+      return dateStr >= s.date && dateStr <= end;
+    });
   }
 
   function renderCalendar() {
@@ -326,7 +331,10 @@ html,body{
       const isToday = c.dateStr === todayStr;
       const shown = evs.slice(0, 5);
       const evHtml = shown.map(function(e){
-        return '<div class="cal-event-pill author-' + (e.author||'공용') + '" onclick="event.stopPropagation(); openDetailModal(\'' + e.id + '\')">' + authorLabel(e.author) + ' ' + (e.title||'') + '</div>';
+        const isStart = c.dateStr === e.date;
+        const isMultiDay = (e.endDate || e.date) !== e.date;
+        const label = isStart ? (authorLabel(e.author) + ' ' + (e.title||'')) : (isMultiDay ? '&nbsp;' : (authorLabel(e.author) + ' ' + (e.title||'')));
+        return '<div class="cal-event-pill author-' + (e.author||'공용') + '" onclick="event.stopPropagation(); openDetailModal(\'' + e.id + '\')" title="' + (e.title||'') + '">' + label + '</div>';
       }).join('');
       const moreHtml = evs.length > 5 ? '<div class="cal-more">+' + (evs.length - 5) + '개 더</div>' : '';
       return '<div class="cal-cell' + (isToday?' today':'') + '" onclick="openDayModal(\'' + c.dateStr + '\')">' +
@@ -378,6 +386,7 @@ html,body{
   // ── 일정 추가 ──
   function openAddModal(presetDate) {
     document.getElementById('addDate').value = presetDate || dstr(_curYear, _curMonth, new Date().getDate());
+    document.getElementById('addEndDate').value = '';
     document.getElementById('addTitle').value = '';
     document.getElementById('addDetail').value = '';
     _addSelectedAuthor = '공용';
@@ -390,11 +399,14 @@ html,body{
   async function submitAdd() {
     if (_addSubmitting) return;
     const date = document.getElementById('addDate').value;
+    let endDate = document.getElementById('addEndDate').value;
     const title = document.getElementById('addTitle').value.trim();
     const detail = document.getElementById('addDetail').value.trim();
     const errEl = document.getElementById('addErr');
     errEl.style.display = 'none';
     if (!date || !title) { errEl.textContent = '날짜와 제목은 필수예요.'; errEl.style.display = 'block'; return; }
+    if (endDate && endDate < date) { errEl.textContent = '종료일이 시작일보다 빠를 수 없어요.'; errEl.style.display = 'block'; return; }
+    if (!endDate) endDate = date;
 
     _addSubmitting = true;
     const btn = document.getElementById('addSubmitBtn');
@@ -402,7 +414,7 @@ html,body{
     try {
       const res = await fetch(GAS_URL, {
         method:'POST',
-        body: JSON.stringify({ action:'addSchedule', item:{ date, title, detail, author:_addSelectedAuthor } })
+        body: JSON.stringify({ action:'addSchedule', item:{ date, endDate, title, detail, author:_addSelectedAuthor } })
       });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '저장 실패');
@@ -424,7 +436,8 @@ html,body{
     const s = _schedules.find(function(x){ return x.id === id; });
     if (!s) return;
     document.getElementById('detailTitle').textContent = s.title || '';
-    document.getElementById('detailMeta').textContent = s.date + ' · ' + (s.author||'공용') + ' 등록';
+    const rangeStr = (s.endDate && s.endDate !== s.date) ? (s.date + ' ~ ' + s.endDate) : s.date;
+    document.getElementById('detailMeta').textContent = rangeStr + ' · ' + (s.author||'공용') + ' 등록';
     document.getElementById('detailBody').textContent = s.detail || '';
     document.getElementById('detailView').style.display = 'block';
     document.getElementById('detailEdit').style.display = 'none';
@@ -436,6 +449,7 @@ html,body{
     const s = _schedules.find(function(x){ return x.id === _activeId; });
     if (!s) return;
     document.getElementById('editDate').value = s.date;
+    document.getElementById('editEndDate').value = (s.endDate && s.endDate !== s.date) ? s.endDate : '';
     document.getElementById('editTitle').value = s.title || '';
     document.getElementById('editDetail').value = s.detail || '';
     _editSelectedAuthor = s.author || '공용';
@@ -452,17 +466,20 @@ html,body{
   async function submitScheduleEdit() {
     if (_editSubmitting) return;
     const date = document.getElementById('editDate').value;
+    let endDate = document.getElementById('editEndDate').value;
     const title = document.getElementById('editTitle').value.trim();
     const detail = document.getElementById('editDetail').value.trim();
     const errEl = document.getElementById('editErr');
     errEl.style.display = 'none';
     if (!date || !title) { errEl.textContent = '날짜와 제목은 필수예요.'; errEl.style.display = 'block'; return; }
+    if (endDate && endDate < date) { errEl.textContent = '종료일이 시작일보다 빠를 수 없어요.'; errEl.style.display = 'block'; return; }
+    if (!endDate) endDate = date;
 
     _editSubmitting = true;
     const btn = document.getElementById('editSubmitBtn');
     btn.disabled = true; btn.textContent = '저장 중…';
     try {
-      const patch = { date, title, detail, author:_editSelectedAuthor };
+      const patch = { date, endDate, title, detail, author:_editSelectedAuthor };
       const res = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updateSchedule', id:_activeId, patch }) });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '수정 실패');
