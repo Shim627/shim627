@@ -515,9 +515,9 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   // GAS 통신
   // ─────────────────────────────────────────────
   async function fetchFileList() {
-    const res = await fetch(GAS_URL + '?action=listReports');
+    const res = await fetch('data/reports.json?t=' + Date.now());
     const data = await res.json();
-    if (!data.ok || !Array.isArray(data.files)) throw new Error(data.error || 'GAS 응답 오류');
+    if (!data.ok || !Array.isArray(data.files)) throw new Error(data.error || '데이터 응답 오류');
     return data.files; // [{ fileKey, name, category, regDate, region, memo, htmlUrl }]
   }
 
@@ -999,9 +999,9 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   let _stampVisits = {};
 
   async function fetchStampVisits() {
-    const res = await fetch(GAS_URL + '?action=listVisits');
+    const res = await fetch('data/visits.json?t=' + Date.now());
     const data = await res.json();
-    if (!data.ok) throw new Error(data.error || 'GAS 응답 오류');
+    if (!data.ok) throw new Error(data.error || '데이터 응답 오류');
     return data.visits || {};
   }
 

@@ -81,7 +81,7 @@ html,body{
 .cal-dow{ text-align:center; font-size:12.5px; font-weight:700; color:var(--ink-soft); padding-bottom:8px; }
 .cal-cell{
   background:rgba(255,255,255,.5); border:1px solid var(--border); border-radius:12px;
-  min-height:110px; padding:8px; cursor:pointer; transition:background .15s ease;
+  min-height:165px; padding:8px; cursor:pointer; transition:background .15s ease;
   display:flex; flex-direction:column; gap:4px;
 }
 .cal-cell:hover{ background:rgba(255,255,255,.75); }
@@ -262,6 +262,10 @@ html,body{
     { key:'성화', label:'성화 💗' },
     { key:'공용', label:'공용 💕' }
   ];
+  function authorLabel(key) {
+    const a = AUTHORS.find(function(x){ return x.key === key; });
+    return a ? a.label : (key || '공용');
+  }
 
   let _schedules = [];
   let _curYear, _curMonth; // 0-indexed month
@@ -319,11 +323,11 @@ html,body{
       }
       const evs = eventsOn(c.dateStr);
       const isToday = c.dateStr === todayStr;
-      const shown = evs.slice(0, 3);
+      const shown = evs.slice(0, 5);
       const evHtml = shown.map(function(e){
-        return '<div class="cal-event-pill author-' + (e.author||'공용') + '" onclick="event.stopPropagation(); openDetailModal(\'' + e.id + '\')">' + (e.title||'') + '</div>';
+        return '<div class="cal-event-pill author-' + (e.author||'공용') + '" onclick="event.stopPropagation(); openDetailModal(\'' + e.id + '\')">' + authorLabel(e.author) + ' ' + (e.title||'') + '</div>';
       }).join('');
-      const moreHtml = evs.length > 3 ? '<div class="cal-more">+' + (evs.length - 3) + '개 더</div>' : '';
+      const moreHtml = evs.length > 5 ? '<div class="cal-more">+' + (evs.length - 5) + '개 더</div>' : '';
       return '<div class="cal-cell' + (isToday?' today':'') + '" onclick="openDayModal(\'' + c.dateStr + '\')">' +
         '<div class="cal-daynum">' + c.day + '</div>' +
         '<div class="cal-events">' + evHtml + moreHtml + '</div>' +
@@ -491,7 +495,7 @@ html,body{
   async function init() {
     document.getElementById('gasBadge').textContent = '불러오는 중…';
     try {
-      const res = await fetch(GAS_URL + '?action=listSchedule');
+      const res = await fetch('data/schedule.json?t=' + Date.now());
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || 'GAS 응답 오류');
       _schedules = data.schedules || [];

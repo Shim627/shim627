@@ -211,7 +211,7 @@ html,body{
   let _activeRegion = null;
 
   async function fetchVisits() {
-    const res = await fetch(GAS_URL + '?action=listVisits');
+    const res = await fetch('data/visits.json?t=' + Date.now());
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || 'GAS 응답 오류');
     return data.visits || {};
