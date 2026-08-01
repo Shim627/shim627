@@ -435,13 +435,17 @@
   }
 
   fetch('../report/data/activity.json?t=' + Date.now())
-    .then(function(res){ return res.json(); })
+    .then(function(res){
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
     .then(function(data){
       if (data && data.ok) renderActivity(data.items);
-      else document.getElementById('activityList').innerHTML = '<div class="activity-empty">불러오지 못했어요.</div>';
+      else document.getElementById('activityList').innerHTML = '<div class="activity-empty">응답은 왔는데 형식이 이상해요: ' + JSON.stringify(data).slice(0,120) + '</div>';
     })
-    .catch(function(){
-      document.getElementById('activityList').innerHTML = '<div class="activity-empty">불러오지 못했어요.</div>';
+    .catch(function(err){
+      console.error('[홈] 최근 게시물 로드 실패:', err);
+      document.getElementById('activityList').innerHTML = '<div class="activity-empty">불러오지 못했어요 (' + err.message + ')</div>';
     });
 
 </script>
