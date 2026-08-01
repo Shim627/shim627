@@ -8,6 +8,14 @@
       "mediaType": "youtube",
       "review": "토요일 야간에 막걸리에 냠냠이~",
       "createdAt": "2026-08-01 19:28"
+    },
+    {
+      "id": "B1785584472325",
+      "title": "춘천 통나무집 닭갈비 본점",
+      "mediaUrl": "https://youtu.be/uV9UVDBwJ1c",
+      "mediaType": "youtube",
+      "review": "춘천 닭갈비 1티어 고정집",
+      "createdAt": "2026-08-01 20:41"
     }
   ],
   "comments": []
