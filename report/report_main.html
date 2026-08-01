@@ -9,26 +9,20 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --plum:#4a2e44;
-  --plum-deep:#2f1c2b;
-  --blush:#f7d9de;
-  --blush-soft:#fbe9ec;
-  --gold:#d9a066;
-  --gold-dim:rgba(217,160,102,.14);
-  --lavender:#d9c9e8;
-  --cream:#fff8f3;
-  --ink:#5a4152;
-  --ink-soft:#8a7286;
-  --border:rgba(217,160,102,.22);
-  --border2:rgba(217,160,102,.4);
+  --plum:#4a2e44; --plum-deep:#2f1c2b;
+  --blush:#f7d9de; --blush-soft:#fbe9ec;
+  --gold:#d9a066; --gold-dim:rgba(217,160,102,.14);
+  --lavender:#d9c9e8; --cream:#fff8f3;
+  --ink:#5a4152; --ink-soft:#8a7286;
+  --border:rgba(217,160,102,.22); --border2:rgba(217,160,102,.4);
   --sidebar-w:230px;
   --font-serif:'Gowun Batang', serif;
   --font-body:'Gowun Dodum', sans-serif;
+  --green:#7a8f5e; --red:#c76b7a;
 }
 html,body{
   width:100%; height:100vh; overflow:hidden;
-  font-family:var(--font-body);
-  color:var(--ink);
+  font-family:var(--font-body); color:var(--ink);
   background:
     radial-gradient(circle at 15% 10%, #f9e3e6 0%, transparent 45%),
     radial-gradient(circle at 85% 85%, #e6d6ef 0%, transparent 50%),
@@ -42,145 +36,111 @@ html,body{
 
 /* ---------- 사이드바 ---------- */
 #rpSidebar{
-  width:var(--sidebar-w);
-  flex-shrink:0;
-  background:rgba(255,255,255,.55);
-  backdrop-filter:blur(6px);
+  width:var(--sidebar-w); flex-shrink:0;
+  background:rgba(255,255,255,.55); backdrop-filter:blur(6px);
   border-right:1px solid var(--border);
-  display:flex; flex-direction:column;
-  height:100vh; overflow-y:auto;
+  display:flex; flex-direction:column; height:100vh; overflow-y:auto;
 }
-.rps-brand{
-  display:flex; align-items:center; gap:10px;
-  padding:22px 18px 18px;
-  border-bottom:1px solid var(--border);
-}
+.rps-brand{ display:flex; align-items:center; gap:10px; padding:22px 18px 18px; border-bottom:1px solid var(--border); }
 .rps-brand-icon{ font-size:22px; }
 .rps-brand-name{ font-family:var(--font-serif); font-size:14px; font-weight:700; color:var(--plum); }
 .rps-brand-sub{ font-size:10.5px; color:var(--ink-soft); margin-top:2px; }
 
 .rps-nav{ padding:14px 0 20px; flex:1; }
-
-.nav-home-item{
-  display:flex; align-items:center; gap:10px;
-  padding:10px 16px; margin:0 10px 10px; border-radius:12px;
-  cursor:pointer; transition:all .15s;
-  font-size:13px; font-weight:500; color:var(--ink);
-}
+.nav-home-item{ display:flex; align-items:center; gap:10px; padding:10px 16px; margin:0 10px 10px; border-radius:12px; cursor:pointer; transition:all .15s; font-size:13px; font-weight:500; color:var(--ink); }
 .nav-home-item:hover{ background:rgba(255,255,255,.6); }
 .nav-home-item.active{ background:var(--gold-dim); color:var(--plum); border:1px solid var(--border2); }
-.nav-home-icon{ font-size:16px; }
 
-.nav-category{
-  font-family:var(--font-serif);
-  font-size:11px; color:var(--gold);
-  padding:16px 18px 6px;
-  display:flex; align-items:center; gap:8px;
-  letter-spacing:.04em;
-}
+.nav-category{ font-family:var(--font-serif); font-size:11px; color:var(--gold); padding:16px 18px 6px; display:flex; align-items:center; gap:8px; letter-spacing:.04em; }
 .nav-category::before{ content:''; width:12px; height:1px; background:var(--border2); }
 
-.nav-item{
-  display:flex; align-items:center; gap:10px;
-  padding:9px 16px 9px 24px;
-  cursor:pointer; transition:all .15s;
-  font-size:12.5px; color:var(--ink);
-  border-left:2px solid transparent;
-  margin-right:10px; border-radius:0 10px 10px 0;
-}
+.nav-item{ display:flex; align-items:center; gap:10px; padding:9px 16px 9px 24px; cursor:pointer; transition:all .15s; font-size:12.5px; color:var(--ink); border-left:2px solid transparent; margin-right:10px; border-radius:0 10px 10px 0; }
 .nav-item:hover{ background:rgba(255,255,255,.55); border-left-color:var(--border2); }
 .nav-item.active{ background:var(--gold-dim); color:var(--plum); border-left-color:var(--gold); font-weight:600; }
-.nav-item-label{ flex:1; }
+.nav-item-count{ margin-left:auto; font-size:10.5px; color:var(--ink-soft); }
 
-.rps-footer{
-  padding:14px 18px; border-top:1px solid var(--border);
-  font-size:10.5px; color:var(--ink-soft);
-}
+.rps-footer{ padding:14px 18px; border-top:1px solid var(--border); font-size:10.5px; color:var(--ink-soft); }
 
 /* ---------- 메인 영역 ---------- */
 #rpMain{ flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; min-width:0; }
 
-#statusBar{
-  flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
-  padding:0 26px; height:44px;
-  background:rgba(255,255,255,.5);
-  border-bottom:1px solid var(--border);
-}
+#statusBar{ flex-shrink:0; display:flex; align-items:center; justify-content:space-between; padding:0 26px; height:44px; background:rgba(255,255,255,.5); border-bottom:1px solid var(--border); }
 .sb-left{ display:flex; align-items:center; gap:10px; }
 .sb-brand{ font-family:var(--font-serif); font-size:13px; color:var(--plum); }
 .sb-dot{ width:6px; height:6px; border-radius:50%; background:var(--gold); animation:pulse-dot 2s infinite; }
 @keyframes pulse-dot{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
 .sb-crumb{ font-size:11.5px; color:var(--ink-soft); }
-.sb-right{ font-size:11.5px; color:var(--ink-soft); }
+.sb-right{ font-size:11.5px; color:var(--ink-soft); display:flex; align-items:center; gap:14px; }
+.sb-badge{ font-size:10px; background:var(--gold-dim); color:var(--plum); padding:3px 9px; border-radius:999px; border:1px solid var(--border2); }
 
 #contentWrap{ flex:1; overflow:hidden; position:relative; display:flex; flex-direction:column; }
 #homeView{ flex:1; overflow-y:auto; }
+#listView{ flex:1; overflow:hidden; display:none; flex-direction:column; padding:24px 32px; }
 #subFrame{ flex:1; border:none; display:none; background:transparent; }
 
 #mainWrap{ padding:36px 40px 60px; max-width:1100px; margin:0 auto; }
 
-/* 웰컴 배너 */
-#welcomeBanner{
-  position:relative;
-  background:linear-gradient(150deg, #fffaf6, #fbeee6 60%, var(--blush-soft));
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:32px 34px;
-  margin-bottom:30px;
-  overflow:hidden;
-}
-#welcomeBanner::before{
-  content:"♥"; position:absolute; top:-30px; right:-6px;
-  font-size:120px; color:rgba(217,160,102,.08);
-}
-.wb-eyebrow{
-  font-family:var(--font-serif); font-size:11.5px; color:var(--gold);
-  letter-spacing:.3em; margin-bottom:10px;
-}
-.wb-title{
-  font-family:var(--font-serif); font-size:24px; font-weight:700;
-  color:var(--plum); margin-bottom:8px; line-height:1.35;
-}
+#welcomeBanner{ position:relative; background:linear-gradient(150deg, #fffaf6, #fbeee6 60%, var(--blush-soft)); border:1px solid var(--border); border-radius:20px; padding:32px 34px; margin-bottom:30px; overflow:hidden; }
+#welcomeBanner::before{ content:"♥"; position:absolute; top:-30px; right:-6px; font-size:120px; color:rgba(217,160,102,.08); }
+.wb-eyebrow{ font-family:var(--font-serif); font-size:11.5px; color:var(--gold); letter-spacing:.3em; margin-bottom:10px; }
+.wb-title{ font-family:var(--font-serif); font-size:24px; font-weight:700; color:var(--plum); margin-bottom:8px; line-height:1.35; }
 .wb-sub{ font-size:12.5px; color:var(--ink-soft); line-height:1.7; }
 
-.sec-title{
-  font-family:var(--font-serif); font-size:13.5px; color:var(--plum);
-  margin:0 0 14px; display:flex; align-items:center; gap:8px;
-}
+.sec-title{ font-family:var(--font-serif); font-size:13.5px; color:var(--plum); margin:0 0 14px; display:flex; align-items:center; gap:8px; }
 .sec-title::before{ content:''; width:3px; height:13px; background:var(--gold); border-radius:2px; }
+.sec-title .cnt{ margin-left:auto; font-size:11px; color:var(--ink-soft); font-weight:400; }
 
-.grid{
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
-  gap:14px; margin-bottom:34px;
-}
-.q-item{
-  display:flex; flex-direction:column; align-items:center; gap:9px;
-  padding:20px 12px 16px;
-  background:rgba(255,255,255,.55);
-  border:1px solid var(--border);
-  border-radius:16px;
-  cursor:pointer; transition:all .2s ease;
-  text-align:center;
-}
-.q-item:hover{
-  transform:translateY(-3px);
-  background:rgba(255,255,255,.8);
-  border-color:var(--border2);
-  box-shadow:0 14px 26px -14px rgba(74,46,68,.3);
-}
+.grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:14px; margin-bottom:34px; }
+.q-item{ display:flex; flex-direction:column; align-items:center; gap:9px; padding:20px 12px 16px; background:rgba(255,255,255,.55); border:1px solid var(--border); border-radius:16px; cursor:pointer; transition:all .2s ease; text-align:center; position:relative; }
+.q-item:hover{ transform:translateY(-3px); background:rgba(255,255,255,.8); border-color:var(--border2); box-shadow:0 14px 26px -14px rgba(74,46,68,.3); }
 .q-icon{ font-size:22px; }
 .q-label{ font-family:var(--font-serif); font-size:12.5px; color:var(--plum); }
 .q-desc{ font-size:10.5px; color:var(--ink-soft); line-height:1.4; }
+.q-count{ position:absolute; top:10px; right:12px; font-size:10px; color:var(--ink-soft); }
 
-.empty-note{
-  font-size:12px; color:var(--ink-soft);
-  background:rgba(255,255,255,.4);
-  border:1px dashed var(--border2);
-  border-radius:14px;
-  padding:22px;
-  text-align:center;
-  line-height:1.7;
-}
+.actions-row{ display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+.btn{ font-family:var(--font-body); font-size:12px; padding:9px 16px; border-radius:999px; border:1px solid var(--border2); background:rgba(255,255,255,.6); color:var(--plum); cursor:pointer; transition:all .15s; }
+.btn:hover{ background:rgba(255,255,255,.9); }
+.btn.primary{ background:linear-gradient(135deg, var(--gold), #cf8c58); color:#fff8f0; border:none; }
+.btn.primary:hover{ transform:translateY(-1px); }
+
+.empty-note{ font-size:12px; color:var(--ink-soft); background:rgba(255,255,255,.4); border:1px dashed var(--border2); border-radius:14px; padding:22px; text-align:center; line-height:1.7; }
+
+/* ---------- 전체 리스트 ---------- */
+.list-header{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px; }
+.list-actions{ display:flex; gap:8px; }
+.cat-tabs{ display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; }
+.cat-tab{ font-size:11.5px; padding:7px 14px; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.4); color:var(--ink-soft); cursor:pointer; transition:all .15s; }
+.cat-tab.active{ background:var(--gold-dim); color:var(--plum); border-color:var(--gold); font-weight:600; }
+
+.table-scroll{ flex:1; overflow-y:auto; border-radius:16px; background:rgba(255,255,255,.4); border:1px solid var(--border); }
+table.rtable{ width:100%; border-collapse:collapse; font-size:12px; }
+table.rtable th{ position:sticky; top:0; background:var(--blush-soft); text-align:left; padding:11px 14px; font-family:var(--font-serif); font-size:11.5px; color:var(--plum); border-bottom:1px solid var(--border); }
+table.rtable td{ padding:11px 14px; border-bottom:1px solid var(--border); color:var(--ink); }
+table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
+.rtag{ font-size:10.5px; padding:2px 9px; border-radius:999px; background:var(--gold-dim); color:var(--plum); }
+.open-btn{ font-size:11px; padding:5px 12px; border-radius:999px; border:1px solid var(--border2); background:var(--cream); color:var(--plum); cursor:pointer; }
+
+/* ---------- 모달 공통 ---------- */
+.modal-overlay{ position:fixed; inset:0; background:rgba(47,28,43,.35); display:none; align-items:center; justify-content:center; z-index:50; backdrop-filter:blur(2px); }
+.modal{ width:420px; max-width:90vw; background:var(--cream); border-radius:20px; padding:26px 26px 22px; box-shadow:0 30px 60px -20px rgba(47,28,43,.5); }
+.modal-title{ font-family:var(--font-serif); font-size:16px; color:var(--plum); margin-bottom:16px; }
+.field{ margin-bottom:14px; }
+.field label{ display:block; font-size:11.5px; color:var(--ink-soft); margin-bottom:6px; }
+.field select, .field input[type="text"]{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border2); background:#fff; font-family:var(--font-body); font-size:13px; color:var(--ink); outline:none; }
+.field select:focus, .field input:focus{ border-color:var(--gold); }
+.hint{ font-size:10.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5; }
+.err-box{ font-size:11.5px; color:var(--red); margin-bottom:10px; display:none; }
+.modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:6px; }
+
+.dropzone{ border:1.5px dashed var(--border2); border-radius:14px; padding:26px; text-align:center; color:var(--ink-soft); font-size:12.5px; margin-bottom:12px; transition:all .15s; }
+.dropzone.dragover{ background:var(--gold-dim); border-color:var(--gold); }
+.bulk-row{ display:flex; align-items:center; gap:8px; padding:6px 0; font-size:12px; border-bottom:1px solid var(--border); }
+.bulk-row select{ font-size:11px; padding:4px 8px; border-radius:8px; border:1px solid var(--border2); }
+.bulk-row .name{ flex:1; }
+.bulk-tag{ font-size:10px; padding:2px 7px; border-radius:999px; }
+.bulk-tag.new{ background:var(--gold-dim); color:var(--plum); }
+.bulk-tag.dup{ background:#eee; color:#999; }
 </style>
 </head>
 <body>
@@ -197,28 +157,35 @@ html,body{
     </div>
 
     <nav class="rps-nav" id="rpsNav">
-      <div class="nav-home-item active" data-view="home" onclick="showHome()">
-        <span class="nav-home-icon">🏠</span><span>홈</span>
+      <div class="nav-home-item active" onclick="showHome()">
+        <span>🏠</span><span>홈</span>
+      </div>
+      <div class="nav-home-item" onclick="showList('all')">
+        <span>🗂️</span><span>전체 리스트</span>
       </div>
 
       <div class="nav-category">여행 계획서</div>
-      <div class="nav-item" data-src="여행계획/index.html" onclick="loadPage(this)">
-        <span class="nav-item-label">전체 일정 보기</span>
+      <div class="nav-item" data-cat="여행계획" onclick="showList('여행계획')">
+        <span class="nav-item-label">전체 일정</span>
+        <span class="nav-item-count" id="cnt-여행계획">0</span>
       </div>
 
       <div class="nav-category">추천 · 코스</div>
-      <div class="nav-item" data-src="추천/코스/index.html" onclick="loadPage(this)">
+      <div class="nav-item" data-cat="코스" onclick="showList('코스')">
         <span class="nav-item-label">추천 코스</span>
+        <span class="nav-item-count" id="cnt-코스">0</span>
       </div>
 
       <div class="nav-category">추천 · 식당</div>
-      <div class="nav-item" data-src="추천/식당/index.html" onclick="loadPage(this)">
+      <div class="nav-item" data-cat="식당" onclick="showList('식당')">
         <span class="nav-item-label">추천 식당</span>
+        <span class="nav-item-count" id="cnt-식당">0</span>
       </div>
 
       <div class="nav-category">추천 · 숙소</div>
-      <div class="nav-item" data-src="추천/숙소/index.html" onclick="loadPage(this)">
+      <div class="nav-item" data-cat="숙소" onclick="showList('숙소')">
         <span class="nav-item-label">추천 숙소</span>
+        <span class="nav-item-count" id="cnt-숙소">0</span>
       </div>
     </nav>
 
@@ -232,56 +199,154 @@ html,body{
         <span class="sb-brand">TRAVEL BOOK</span>
         <span class="sb-crumb" id="crumb">홈</span>
       </div>
-      <div class="sb-right" id="todayLine"></div>
+      <div class="sb-right">
+        <span class="sb-badge" id="gasBadge">GAS 연동 확인 중…</span>
+        <span id="todayLine"></span>
+      </div>
     </div>
 
     <div id="contentWrap">
+
+      <!-- 홈 -->
       <div id="homeView">
         <div id="mainWrap">
-
           <div id="welcomeBanner">
             <p class="wb-eyebrow">S &amp; H</p>
             <p class="wb-title">우리의 첫 여행,<br>9월 4일부터 6일까지</p>
-            <p class="wb-sub">짧지만 알차게, 계획서와 추천 장소들을 여기서 한눈에 모아볼 수 있어요.</p>
+            <p class="wb-sub">여행 계획서와 추천 장소들을 이 안에 하나씩 쌓아갈 거예요. 새로 만든 파일은 "+ 추가"로 등록하면 바로 목록에 나타나요.</p>
           </div>
 
           <p class="sec-title">바로가기</p>
           <div class="grid">
-            <div class="q-item" data-src="여행계획/index.html" onclick="loadPage(this)">
+            <div class="q-item" onclick="showList('여행계획')">
+              <span class="q-count" id="qc-여행계획">0</span>
               <span class="q-icon">🗓️</span>
               <span class="q-label">여행 계획서</span>
               <span class="q-desc">일정 전체 보기</span>
             </div>
-            <div class="q-item" data-src="추천/코스/index.html" onclick="loadPage(this)">
+            <div class="q-item" onclick="showList('코스')">
+              <span class="q-count" id="qc-코스">0</span>
               <span class="q-icon">🧭</span>
               <span class="q-label">추천 코스</span>
               <span class="q-desc">동선별 코스</span>
             </div>
-            <div class="q-item" data-src="추천/식당/index.html" onclick="loadPage(this)">
+            <div class="q-item" onclick="showList('식당')">
+              <span class="q-count" id="qc-식당">0</span>
               <span class="q-icon">🍽️</span>
               <span class="q-label">추천 식당</span>
               <span class="q-desc">먹킷리스트</span>
             </div>
-            <div class="q-item" data-src="추천/숙소/index.html" onclick="loadPage(this)">
+            <div class="q-item" onclick="showList('숙소')">
+              <span class="q-count" id="qc-숙소">0</span>
               <span class="q-icon">🏨</span>
               <span class="q-label">추천 숙소</span>
               <span class="q-desc">머무를 곳</span>
             </div>
           </div>
 
-          <p class="sec-title">안내</p>
-          <div class="empty-note">
-            아직 하위 페이지들은 준비 중이에요.<br>
-            각 폴더(여행계획 / 추천·코스 / 추천·식당 / 추천·숙소)에 index.html을 넣으면<br>
-            이 화면에서 바로 열리도록 연결돼 있어요.
+          <p class="sec-title">새 파일 등록</p>
+          <div class="actions-row">
+            <button class="btn primary" onclick="openAddModal()">➕ 파일 추가</button>
+            <button class="btn" onclick="openBulkModal()">📥 여러 개 한번에</button>
+            <button class="btn" onclick="refreshList()">🔄 새로고침</button>
           </div>
-
+          <div class="empty-note" id="homeEmptyNote">
+            GitHub에 html 파일을 올리신 뒤, 여기서 "+ 파일 추가"로 파일명과 구분만 입력하면 목록과 카드에 자동으로 반영돼요.
+          </div>
         </div>
       </div>
+
+      <!-- 전체 리스트 / 카테고리 리스트 -->
+      <div id="listView">
+        <div class="list-header">
+          <div>
+            <p class="sec-title" style="margin-bottom:4px;">파일 목록 <span class="cnt" id="listCount"></span></p>
+          </div>
+          <div class="list-actions">
+            <button class="btn primary" onclick="openAddModal()">➕ 추가</button>
+            <button class="btn" onclick="openBulkModal()">📥 일괄 등록</button>
+            <button class="btn" onclick="refreshList()">🔄 새로고침</button>
+          </div>
+        </div>
+        <div class="cat-tabs" id="catTabs">
+          <button class="cat-tab active" data-cat="all" onclick="onCatTab('all')">전체</button>
+          <button class="cat-tab" data-cat="여행계획" onclick="onCatTab('여행계획')">여행계획서</button>
+          <button class="cat-tab" data-cat="코스" onclick="onCatTab('코스')">코스</button>
+          <button class="cat-tab" data-cat="식당" onclick="onCatTab('식당')">식당</button>
+          <button class="cat-tab" data-cat="숙소" onclick="onCatTab('숙소')">숙소</button>
+        </div>
+        <div class="table-scroll">
+          <table class="rtable">
+            <thead>
+              <tr>
+                <th style="width:14%;">구분</th>
+                <th style="width:16%;">지역</th>
+                <th style="width:16%;">등록일</th>
+                <th>제목 / 메모</th>
+                <th style="width:80px; text-align:center;">열기</th>
+              </tr>
+            </thead>
+            <tbody id="listBody"></tbody>
+          </table>
+        </div>
+      </div>
+
       <iframe id="subFrame" src=""></iframe>
     </div>
   </div>
+</div>
 
+<!-- 파일 추가 모달 -->
+<div class="modal-overlay" id="addModal" onclick="if(event.target===this) closeAddModal()">
+  <div class="modal">
+    <p class="modal-title">파일 추가</p>
+    <div class="field">
+      <label>구분</label>
+      <select id="addCategory">
+        <option value="여행계획">여행 계획서 (report/여행계획)</option>
+        <option value="코스">추천 · 코스 (report/추천/코스)</option>
+        <option value="식당">추천 · 식당 (report/추천/식당)</option>
+        <option value="숙소">추천 · 숙소 (report/추천/숙소)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>파일명</label>
+      <input type="text" id="addFileName" placeholder="예: 260904_고성-춘천_2박3일 또는 강릉_뮤지엄엑스">
+      <div class="hint">
+        여행계획서: <b>yymmdd_지역A-지역B_기간</b> (예: 260904_고성-춘천_2박3일)<br>
+        코스·식당·숙소: <b>지역_장소명</b> (예: 강릉_뮤지엄엑스)<br>
+        확장자(.html)는 자동으로 붙어요.
+      </div>
+    </div>
+    <div class="err-box" id="addError"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeAddModal()">취소</button>
+      <button class="btn primary" onclick="submitAdd()">추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- 일괄 등록 모달 -->
+<div class="modal-overlay" id="bulkModal" onclick="if(event.target===this) closeBulkModal()">
+  <div class="modal" style="width:480px;">
+    <p class="modal-title">여러 개 한번에 등록</p>
+    <div class="field">
+      <label>기본 구분 (드래그 시 각 항목별로 바꿀 수 있어요)</label>
+      <select id="bulkDefaultCat">
+        <option value="여행계획">여행 계획서</option>
+        <option value="코스">추천 · 코스</option>
+        <option value="식당">추천 · 식당</option>
+        <option value="숙소">추천 · 숙소</option>
+      </select>
+    </div>
+    <div class="dropzone" id="dropzone">📂 html 파일들을 여기로 드래그하세요</div>
+    <div id="bulkListWrap" style="max-height:220px; overflow-y:auto;"></div>
+    <div class="err-box" id="bulkError"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeBulkModal()">닫기</button>
+      <button class="btn primary" id="bulkSubmitBtn" onclick="submitBulk()">선택 항목 등록</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -293,38 +358,294 @@ html,body{
     location.href = '../index.html';
   }
 
-  var homeView = document.getElementById('homeView');
-  var subFrame = document.getElementById('subFrame');
-  var crumb = document.getElementById('crumb');
+  // ─────────────────────────────────────────────
+  // 기본 설정
+  // ─────────────────────────────────────────────
+  // 프로젝트 Gas정보 파일에 저장된 배포 URL을 그대로 사용
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
 
-  function showHome(){
+  // GitHub Pages 배포 주소 (깃허브_도메인 파일 기준)
+  const PAGES_BASE = 'https://shim627.github.io/shim627';
+
+  // 카테고리 → 실제 폴더 경로
+  const CAT_FOLDER = {
+    '여행계획': 'report/여행계획',
+    '코스':     'report/추천/코스',
+    '식당':     'report/추천/식당',
+    '숙소':     'report/추천/숙소'
+  };
+  const CAT_LABEL = { '여행계획':'여행계획서', '코스':'추천 코스', '식당':'추천 식당', '숙소':'추천 숙소' };
+
+  let _allFiles = [];      // GAS에서 받아온 전체 목록
+  let _listLoaded = false;
+  let _curCatFilter = 'all';
+
+  // ─────────────────────────────────────────────
+  // 파일명 파싱
+  //  - 여행계획 : yymmdd_지역A-지역B_기간   ex) 260904_고성-춘천_2박3일
+  //  - 그 외    : 지역_장소명               ex) 강릉_뮤지엄엑스
+  // ─────────────────────────────────────────────
+  function parseFileName(category, rawName) {
+    const name = rawName.replace(/\.html?$/i, '');
+    const today = new Date();
+    const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+
+    if (category === '여행계획') {
+      const m = name.match(/^(\d{6})_(.+?)_(.+)$/);
+      if (m) {
+        const yy = m[1].slice(0,2), mm = m[1].slice(2,4), dd = m[1].slice(4,6);
+        return { regDate: '20'+yy+'-'+mm+'-'+dd, region: m[2], memo: m[3] };
+      }
+      return { regDate: todayStr, region: '-', memo: name };
+    } else {
+      const m = name.match(/^(.+?)_(.+)$/);
+      if (m) {
+        return { regDate: todayStr, region: m[1], memo: m[2] };
+      }
+      return { regDate: todayStr, region: '-', memo: name };
+    }
+  }
+
+  // ─────────────────────────────────────────────
+  // GAS 통신
+  // ─────────────────────────────────────────────
+  async function fetchFileList() {
+    const res = await fetch(GAS_URL + '?action=listReports');
+    const data = await res.json();
+    if (!data.ok || !Array.isArray(data.files)) throw new Error(data.error || 'GAS 응답 오류');
+    return data.files; // [{ fileKey, name, category, regDate, region, memo, htmlUrl }]
+  }
+
+  async function addFileToGas(category, rawName) {
+    const parsed = parseFileName(category, rawName);
+    const fileName = rawName.replace(/\.html?$/i, '') + '.html';
+    const fileKey = CAT_FOLDER[category] + '/' + fileName;
+    const htmlUrl = PAGES_BASE + '/' + fileKey;
+
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'addReport',
+        file: Object.assign({ fileKey, name: fileName, category, htmlUrl }, parsed)
+      })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || '추가 실패');
+    return data.file;
+  }
+
+  async function refreshList() {
+    document.getElementById('gasBadge').textContent = '불러오는 중…';
+    try {
+      _allFiles = await fetchFileList();
+      _listLoaded = true;
+      document.getElementById('gasBadge').textContent = '✅ GAS 연동됨';
+    } catch(e) {
+      document.getElementById('gasBadge').textContent = '⚠️ GAS 응답 실패';
+      console.warn('[report_main] GAS 목록 실패:', e.message);
+    }
+    renderCounts();
+    renderListTable();
+  }
+
+  function renderCounts() {
+    ['여행계획','코스','식당','숙소'].forEach(function(cat){
+      var n = _allFiles.filter(function(f){ return f.category === cat; }).length;
+      var a = document.getElementById('cnt-'+cat); if (a) a.textContent = n;
+      var b = document.getElementById('qc-'+cat);  if (b) b.textContent = n;
+    });
+  }
+
+  function renderListTable() {
+    const body = document.getElementById('listBody');
+    let files = _allFiles.slice();
+    if (_curCatFilter !== 'all') files = files.filter(function(f){ return f.category === _curCatFilter; });
+    files.sort(function(a,b){ return (b.regDate||'').localeCompare(a.regDate||''); });
+
+    document.getElementById('listCount').textContent = files.length + '건';
+
+    if (!files.length) {
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--ink-soft); padding:26px;">등록된 파일이 없어요. "추가" 버튼으로 등록해보세요.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = files.map(function(f){
+      return '<tr onclick="openFile(\'' + f.htmlUrl + '\')">' +
+        '<td><span class="rtag">' + (CAT_LABEL[f.category] || f.category) + '</span></td>' +
+        '<td>' + (f.region || '-') + '</td>' +
+        '<td>' + (f.regDate || '-') + '</td>' +
+        '<td>' + (f.memo || f.name || '-') + '</td>' +
+        '<td style="text-align:center;"><button class="open-btn" onclick="event.stopPropagation(); openFile(\'' + f.htmlUrl + '\')">열기</button></td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  function openFile(url) {
+    const w = 1100, h = 800;
+    const left = (screen.width - w) / 2, top = (screen.height - h) / 2;
+    window.open(url, 'travelPopup_' + Date.now(), 'width='+w+',height='+h+',left='+left+',top='+top+',resizable=yes,scrollbars=yes');
+  }
+
+  function onCatTab(cat) {
+    _curCatFilter = cat;
+    document.querySelectorAll('.cat-tab').forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-cat') === cat); });
+    renderListTable();
+  }
+
+  // ─────────────────────────────────────────────
+  // 화면 전환
+  // ─────────────────────────────────────────────
+  function setActiveNav(cat) {
     document.querySelectorAll('.nav-home-item, .nav-item').forEach(function(el){ el.classList.remove('active'); });
-    document.querySelector('.nav-home-item').classList.add('active');
-    homeView.style.display = 'block';
-    subFrame.style.display = 'none';
-    subFrame.src = '';
-    crumb.textContent = '홈';
+    if (cat === 'home') document.querySelectorAll('.nav-home-item')[0].classList.add('active');
+    else if (cat === 'all') document.querySelectorAll('.nav-home-item')[1].classList.add('active');
+    else { const el = document.querySelector('.nav-item[data-cat="'+cat+'"]'); if (el) el.classList.add('active'); }
   }
 
-  function loadPage(el){
-    var src = el.getAttribute('data-src');
-    document.querySelectorAll('.nav-home-item, .nav-item').forEach(function(n){ n.classList.remove('active'); });
-    var navMatch = document.querySelector('.nav-item[data-src="' + src + '"]');
-    if (navMatch) navMatch.classList.add('active');
-
-    homeView.style.display = 'none';
-    subFrame.style.display = 'block';
-    subFrame.src = src;
-
-    var label = el.querySelector('.nav-item-label, .q-label');
-    crumb.textContent = label ? label.textContent : src;
+  function showHome() {
+    document.getElementById('homeView').style.display = 'block';
+    document.getElementById('listView').style.display = 'none';
+    document.getElementById('subFrame').style.display = 'none';
+    document.getElementById('crumb').textContent = '홈';
+    setActiveNav('home');
+    if (!_listLoaded) refreshList();
   }
 
-  var today = new Date();
-  var todayStr = today.getFullYear() + '. ' +
-    String(today.getMonth()+1).padStart(2,'0') + '. ' +
-    String(today.getDate()).padStart(2,'0');
-  document.getElementById('todayLine').textContent = todayStr;
+  async function showList(cat) {
+    document.getElementById('homeView').style.display = 'none';
+    document.getElementById('subFrame').style.display = 'none';
+    document.getElementById('listView').style.display = 'flex';
+    document.getElementById('crumb').textContent = cat === 'all' ? '전체 리스트' : (CAT_LABEL[cat] || cat);
+    setActiveNav(cat);
+
+    _curCatFilter = cat;
+    document.querySelectorAll('.cat-tab').forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-cat') === cat); });
+
+    if (!_listLoaded) await refreshList();
+    else renderListTable();
+  }
+
+  // ─────────────────────────────────────────────
+  // 파일 추가 모달
+  // ─────────────────────────────────────────────
+  function openAddModal() {
+    document.getElementById('addFileName').value = '';
+    document.getElementById('addError').style.display = 'none';
+    if (_curCatFilter !== 'all' && CAT_FOLDER[_curCatFilter]) document.getElementById('addCategory').value = _curCatFilter;
+    document.getElementById('addModal').style.display = 'flex';
+    setTimeout(function(){ document.getElementById('addFileName').focus(); }, 50);
+  }
+  function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
+
+  async function submitAdd() {
+    const category = document.getElementById('addCategory').value;
+    const name = document.getElementById('addFileName').value.trim();
+    const errEl = document.getElementById('addError');
+    errEl.style.display = 'none';
+    if (!name) { errEl.textContent = '파일명을 입력해주세요.'; errEl.style.display = 'block'; return; }
+
+    try {
+      const file = await addFileToGas(category, name);
+      _allFiles.push(file);
+      _listLoaded = true;
+      renderCounts();
+      renderListTable();
+      closeAddModal();
+    } catch(e) {
+      errEl.textContent = e.message;
+      errEl.style.display = 'block';
+    }
+  }
+
+  // ─────────────────────────────────────────────
+  // 일괄 등록 모달
+  // ─────────────────────────────────────────────
+  let _bulkItems = []; // { name, category, isDup }
+
+  async function openBulkModal() {
+    if (!_listLoaded) { try { await refreshList(); } catch(e){} }
+    _bulkItems = [];
+    renderBulkList();
+    document.getElementById('bulkError').style.display = 'none';
+    document.getElementById('bulkModal').style.display = 'flex';
+  }
+  function closeBulkModal() { document.getElementById('bulkModal').style.display = 'none'; }
+
+  function isDup(name) {
+    const lower = (name.replace(/\.html?$/i,'')).toLowerCase();
+    return _allFiles.some(function(f){ return (f.name||'').replace(/\.html?$/i,'').toLowerCase() === lower; });
+  }
+
+  function handleDropped(fileList) {
+    const defCat = document.getElementById('bulkDefaultCat').value;
+    Array.from(fileList).forEach(function(file){
+      if (!/\.html?$/i.test(file.name)) return;
+      if (_bulkItems.some(function(b){ return b.name.toLowerCase() === file.name.toLowerCase(); })) return;
+      _bulkItems.push({ name: file.name, category: defCat, isDup: isDup(file.name) });
+    });
+    renderBulkList();
+  }
+
+  function renderBulkList() {
+    const wrap = document.getElementById('bulkListWrap');
+    if (!_bulkItems.length) { wrap.innerHTML = ''; return; }
+    wrap.innerHTML = _bulkItems.map(function(b,i){
+      return '<div class="bulk-row">' +
+        '<span class="name">' + b.name + '</span>' +
+        '<select onchange="_bulkItems['+i+'].category=this.value">' +
+          '<option value="여행계획"' + (b.category==='여행계획'?' selected':'') + '>여행계획</option>' +
+          '<option value="코스"' + (b.category==='코스'?' selected':'') + '>코스</option>' +
+          '<option value="식당"' + (b.category==='식당'?' selected':'') + '>식당</option>' +
+          '<option value="숙소"' + (b.category==='숙소'?' selected':'') + '>숙소</option>' +
+        '</select>' +
+        '<span class="bulk-tag ' + (b.isDup?'dup':'new') + '">' + (b.isDup?'이미 등록됨':'등록 필요') + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  async function submitBulk() {
+    const targets = _bulkItems.filter(function(b){ return !b.isDup; });
+    const errEl = document.getElementById('bulkError');
+    errEl.style.display = 'none';
+    if (!targets.length) { errEl.textContent = '등록할 새 파일이 없어요.'; errEl.style.display = 'block'; return; }
+
+    const btn = document.getElementById('bulkSubmitBtn');
+    btn.disabled = true; btn.textContent = '등록 중...';
+    let okCount = 0;
+    for (const t of targets) {
+      try {
+        const file = await addFileToGas(t.category, t.name);
+        _allFiles.push(file);
+        okCount++;
+      } catch(e) { /* 개별 실패는 건너뜀 */ }
+    }
+    btn.disabled = false; btn.textContent = '선택 항목 등록';
+    _listLoaded = true;
+    renderCounts();
+    renderListTable();
+    _bulkItems = [];
+    renderBulkList();
+    errEl.style.display = 'block';
+    errEl.style.color = 'var(--green)';
+    errEl.textContent = okCount + '건 등록 완료';
+  }
+
+  function setupDropzone() {
+    const dz = document.getElementById('dropzone');
+    ['dragenter','dragover'].forEach(function(evt){ dz.addEventListener(evt, function(e){ e.preventDefault(); dz.classList.add('dragover'); }); });
+    ['dragleave','drop'].forEach(function(evt){ dz.addEventListener(evt, function(e){ e.preventDefault(); dz.classList.remove('dragover'); }); });
+    dz.addEventListener('drop', function(e){ if (e.dataTransfer && e.dataTransfer.files) handleDropped(e.dataTransfer.files); });
+  }
+  setupDropzone();
+
+  // ─────────────────────────────────────────────
+  // 초기 실행
+  // ─────────────────────────────────────────────
+  const today = new Date();
+  document.getElementById('todayLine').textContent =
+    today.getFullYear() + '. ' + String(today.getMonth()+1).padStart(2,'0') + '. ' + String(today.getDate()).padStart(2,'0');
+
+  refreshList();
 </script>
 
 </body>
