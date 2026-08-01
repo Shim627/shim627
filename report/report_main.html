@@ -339,7 +339,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
         <option value="숙소">추천 · 숙소</option>
       </select>
     </div>
-    <div class="dropzone" id="dropzone">📂 html 파일들을 여기로 드래그하세요</div>
+    <div class="dropzone" id="dropzone">📂 파일 또는 폴더를 통째로 여기로 드래그하세요<br><span style="font-size:10.5px;">하위 폴더까지 다 훑어서, 폴더/파일명으로 구분을 자동 추천해요</span></div>
     <div id="bulkListWrap" style="max-height:220px; overflow-y:auto;"></div>
     <div class="err-box" id="bulkError"></div>
     <div class="modal-actions">
@@ -558,9 +558,9 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   }
 
   // ─────────────────────────────────────────────
-  // 일괄 등록 모달
+  // 일괄 등록 모달 (개별 파일 또는 폴더째 드래그)
   // ─────────────────────────────────────────────
-  let _bulkItems = []; // { name, category, isDup }
+  let _bulkItems = []; // { name, path, category, isDup, guessed }
 
   async function openBulkModal() {
     if (!_listLoaded) { try { await refreshList(); } catch(e){} }
@@ -576,65 +576,155 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
     return _allFiles.some(function(f){ return (f.name||'').replace(/\.html?$/i,'').toLowerCase() === lower; });
   }
 
-  function handleDropped(fileList) {
+  // 폴더 경로(fullPath)나 파일명에 카테고리 키워드가 들어있으면 자동 매칭
+  // ex) "/추천/코스/강릉_뮤지엄엑스.html" → '코스', "/여행계획/260904_..." → '여행계획'
+  const CAT_KEYWORDS = ['여행계획', '코스', '식당', '숙소'];
+  function guessCategory(path) {
+    for (const kw of CAT_KEYWORDS) {
+      if (path.indexOf(kw) !== -1) return kw;
+    }
+    return null; // 못 찾으면 미분류
+  }
+
+  function addBulkCandidate(name, path, defCat) {
+    if (!/\.html?$/i.test(name)) return;
+    if (_bulkItems.some(function(b){ return b.name.toLowerCase() === name.toLowerCase(); })) return; // 이번 배치 내 중복
+    const guessed = guessCategory(path);
+    _bulkItems.push({
+      name: name,
+      path: path,
+      category: guessed || defCat,
+      guessed: !!guessed,
+      isDup: isDup(name)
+    });
+  }
+
+  // ── 개별 파일 드롭 처리 (fallback, 폴더 API 미지원 브라우저용) ──
+  function handleDroppedFiles(fileList) {
     const defCat = document.getElementById('bulkDefaultCat').value;
     Array.from(fileList).forEach(function(file){
-      if (!/\.html?$/i.test(file.name)) return;
-      if (_bulkItems.some(function(b){ return b.name.toLowerCase() === file.name.toLowerCase(); })) return;
-      _bulkItems.push({ name: file.name, category: defCat, isDup: isDup(file.name) });
+      // webkitRelativePath 가 있으면 폴더째 드래그된 경우라 경로 정보로 카테고리 추정 가능
+      const path = file.webkitRelativePath || file.name;
+      addBulkCandidate(file.name, path, defCat);
     });
     renderBulkList();
+  }
+
+  // ── 폴더 재귀 탐색 (Chrome/Edge 등 webkitGetAsEntry 지원 브라우저) ──
+  function readEntriesAsync(dirReader) {
+    return new Promise(function(resolve, reject){
+      dirReader.readEntries(resolve, reject);
+    });
+  }
+
+  async function walkEntry(entry, defCat) {
+    if (entry.isFile) {
+      await new Promise(function(resolve){
+        entry.file(function(file){
+          addBulkCandidate(file.name, entry.fullPath, defCat);
+          resolve();
+        });
+      });
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      let entries;
+      do {
+        entries = await readEntriesAsync(reader);
+        for (const child of entries) {
+          await walkEntry(child, defCat);
+        }
+      } while (entries.length > 0);
+    }
+  }
+
+  async function handleDropItems(items) {
+    const defCat = document.getElementById('bulkDefaultCat').value;
+    const entries = [];
+    for (const item of items) {
+      const entry = item.webkitGetAsEntry && item.webkitGetAsEntry();
+      if (entry) entries.push(entry);
+    }
+    if (!entries.length) return false; // 폴더 API 미지원 → fallback 필요
+
+    for (const entry of entries) {
+      await walkEntry(entry, defCat);
+    }
+    renderBulkList();
+    return true;
   }
 
   function renderBulkList() {
     const wrap = document.getElementById('bulkListWrap');
     if (!_bulkItems.length) { wrap.innerHTML = ''; return; }
     wrap.innerHTML = _bulkItems.map(function(b,i){
+      const catOptions = ['여행계획','코스','식당','숙소'].map(function(c){
+        return '<option value="'+c+'"'+(b.category===c?' selected':'')+'>'+c+'</option>';
+      }).join('');
+      const guessTag = b.category ? (b.guessed ? '<span class="bulk-tag new" style="background:var(--lavender); color:var(--plum);">자동인식</span>' : '') : '<span class="bulk-tag dup" style="background:#f4d9a0; color:#7a5a20;">미분류</span>';
       return '<div class="bulk-row">' +
-        '<span class="name">' + b.name + '</span>' +
+        '<span class="name" title="'+b.path+'">' + b.name + '</span>' +
         '<select onchange="_bulkItems['+i+'].category=this.value">' +
-          '<option value="여행계획"' + (b.category==='여행계획'?' selected':'') + '>여행계획</option>' +
-          '<option value="코스"' + (b.category==='코스'?' selected':'') + '>코스</option>' +
-          '<option value="식당"' + (b.category==='식당'?' selected':'') + '>식당</option>' +
-          '<option value="숙소"' + (b.category==='숙소'?' selected':'') + '>숙소</option>' +
+          '<option value="">선택 안함</option>' + catOptions +
         '</select>' +
+        guessTag +
         '<span class="bulk-tag ' + (b.isDup?'dup':'new') + '">' + (b.isDup?'이미 등록됨':'등록 필요') + '</span>' +
       '</div>';
     }).join('');
   }
 
   async function submitBulk() {
-    const targets = _bulkItems.filter(function(b){ return !b.isDup; });
+    const targets = _bulkItems.filter(function(b){ return !b.isDup && b.category; });
+    const skippedNoCat = _bulkItems.filter(function(b){ return !b.isDup && !b.category; }).length;
     const errEl = document.getElementById('bulkError');
     errEl.style.display = 'none';
-    if (!targets.length) { errEl.textContent = '등록할 새 파일이 없어요.'; errEl.style.display = 'block'; return; }
+    if (!targets.length) {
+      errEl.textContent = skippedNoCat ? '구분을 정하지 않은 파일이 있어요. 각 파일의 구분을 선택해주세요.' : '등록할 새 파일이 없어요.';
+      errEl.style.display = 'block';
+      return;
+    }
 
     const btn = document.getElementById('bulkSubmitBtn');
     btn.disabled = true; btn.textContent = '등록 중...';
-    let okCount = 0;
+    let okCount = 0, failCount = 0;
     for (const t of targets) {
       try {
         const file = await addFileToGas(t.category, t.name);
         _allFiles.push(file);
         okCount++;
-      } catch(e) { /* 개별 실패는 건너뜀 */ }
+      } catch(e) { failCount++; }
     }
     btn.disabled = false; btn.textContent = '선택 항목 등록';
     _listLoaded = true;
     renderCounts();
     renderListTable();
-    _bulkItems = [];
+
+    // 성공한 것들만 목록에서 제거, 실패/미분류는 남겨서 재시도 가능하게
+    const doneNames = new Set(targets.slice(0, okCount).map(function(t){ return t.name.toLowerCase(); }));
+    _bulkItems = _bulkItems.filter(function(b){ return !doneNames.has(b.name.toLowerCase()); });
     renderBulkList();
+
     errEl.style.display = 'block';
     errEl.style.color = 'var(--green)';
-    errEl.textContent = okCount + '건 등록 완료';
+    errEl.textContent = okCount + '건 등록 완료' + (failCount ? (' · 실패 ' + failCount + '건') : '') + (skippedNoCat ? (' · 미분류 ' + skippedNoCat + '건은 구분 지정 후 다시 등록해주세요') : '');
   }
 
   function setupDropzone() {
     const dz = document.getElementById('dropzone');
     ['dragenter','dragover'].forEach(function(evt){ dz.addEventListener(evt, function(e){ e.preventDefault(); dz.classList.add('dragover'); }); });
     ['dragleave','drop'].forEach(function(evt){ dz.addEventListener(evt, function(e){ e.preventDefault(); dz.classList.remove('dragover'); }); });
-    dz.addEventListener('drop', function(e){ if (e.dataTransfer && e.dataTransfer.files) handleDropped(e.dataTransfer.files); });
+    dz.addEventListener('drop', async function(e){
+      e.preventDefault();
+      dz.classList.remove('dragover');
+      if (!e.dataTransfer) return;
+
+      // 1) 폴더 API 지원 브라우저: items로 폴더까지 재귀 탐색
+      if (e.dataTransfer.items && e.dataTransfer.items.length) {
+        const handled = await handleDropItems(e.dataTransfer.items);
+        if (handled) return;
+      }
+      // 2) fallback: 개별 파일 목록만 처리
+      if (e.dataTransfer.files) handleDroppedFiles(e.dataTransfer.files);
+    });
   }
   setupDropzone();
 
