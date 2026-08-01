@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우리의 도장깨기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --plum:#3d2a37; --plum-deep:#2f1c2b;
+  --blush:#f7d9de; --blush-soft:#fbe9ec;
+  --gold:#d9a066; --gold-dim:rgba(217,160,102,.14);
+  --lavender:#d9c9e8; --cream:#fff8f3;
+  --ink:#3d2a37; --ink-soft:#6b5568;
+  --border:rgba(217,160,102,.22); --border2:rgba(217,160,102,.4);
+  --green:#7a8f5e; --red:#c76b7a;
+  --font-serif:'Gowun Batang', serif;
+  --font-body:'Gowun Dodum', sans-serif;
+}
+html,body{
+  margin:0; padding:0; min-height:100vh;
+  font-family:var(--font-body); color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 10%, #f9e3e6 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, #e6d6ef 0%, transparent 50%),
+    linear-gradient(160deg, #fdf3f0 0%, #f6e6ee 55%, #ece0f2 100%);
+}
+::-webkit-scrollbar{ width:6px; }
+::-webkit-scrollbar-thumb{ background:var(--border2); border-radius:3px; }
+
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 26px; background:rgba(255,255,255,.5); border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:5; backdrop-filter:blur(6px);
+}
+.topbar a{ font-family:var(--font-serif); font-size:14px; font-weight:700; color:var(--plum); text-decoration:none; }
+.topbar .gas-badge{ font-size:11.5px; font-weight:700; background:var(--gold-dim); color:var(--plum); padding:4px 10px; border-radius:999px; border:1px solid var(--border2); }
+
+.wrap{ max-width:920px; margin:0 auto; padding:32px 22px 70px; }
+
+.hero{
+  position:relative; background:linear-gradient(150deg, #fffaf6, #fbeee6 60%, var(--blush-soft));
+  border:1px solid var(--border); border-radius:20px; padding:30px 30px; margin-bottom:26px; overflow:hidden;
+}
+.hero::before{ content:"🗺️"; position:absolute; top:-14px; right:6px; font-size:90px; opacity:.12; }
+.hero .eyebrow{ font-family:var(--font-serif); font-size:13px; font-weight:700; color:var(--gold); letter-spacing:.3em; margin-bottom:8px; }
+.hero h1{ font-family:var(--font-serif); font-size:24px; font-weight:700; color:var(--plum); margin-bottom:10px; line-height:1.35; }
+.hero .desc{ font-size:14px; font-weight:500; color:var(--ink-soft); line-height:1.7; margin-bottom:16px; }
+
+.overall{ display:flex; align-items:center; gap:16px; }
+.overall .num{ font-family:var(--font-serif); font-size:32px; font-weight:700; color:var(--plum); }
+.overall .num span{ font-size:16px; color:var(--ink-soft); font-weight:600; }
+.overall .bar-wrap{ flex:1; }
+.overall .bar-track{ height:10px; border-radius:999px; background:rgba(217,160,102,.15); overflow:hidden; }
+.overall .bar-fill{ height:100%; border-radius:999px; background:linear-gradient(90deg, var(--gold), #cf8c58); transition:width .4s ease; }
+.overall .bar-label{ font-size:11.5px; color:var(--ink-soft); margin-top:5px; }
+
+.province{
+  background:rgba(255,255,255,.5); border:1px solid var(--border); border-radius:16px; margin-bottom:12px; overflow:hidden;
+}
+.province-head{
+  display:flex; align-items:center; gap:14px; padding:16px 18px; cursor:pointer; user-select:none;
+}
+.province-head:hover{ background:rgba(255,255,255,.4); }
+.province-name{ font-family:var(--font-serif); font-size:15.5px; font-weight:700; color:var(--plum); min-width:110px; }
+.province-bar-track{ flex:1; height:8px; border-radius:999px; background:rgba(217,160,102,.15); overflow:hidden; }
+.province-bar-fill{ height:100%; border-radius:999px; background:linear-gradient(90deg, var(--gold), #cf8c58); transition:width .4s ease; }
+.province-pct{ font-size:13px; font-weight:700; color:var(--gold); min-width:70px; text-align:right; }
+.province-arrow{ font-size:12px; color:var(--ink-soft); transition:transform .2s ease; }
+.province.open .province-arrow{ transform:rotate(90deg); }
+
+.province-body{ display:none; padding:4px 18px 18px; flex-wrap:wrap; gap:8px; }
+.province.open .province-body{ display:flex; }
+
+.chip{
+  font-size:13px; font-weight:600; padding:8px 14px; border-radius:999px;
+  border:1px solid var(--border2); background:rgba(255,255,255,.7); color:var(--ink);
+  cursor:pointer; transition:all .15s ease; position:relative;
+}
+.chip:hover{ background:var(--cream); transform:translateY(-1px); }
+.chip.visited{ background:linear-gradient(135deg, var(--gold), #cf8c58); color:#fff8f0; border-color:transparent; }
+.chip.visited::after{ content:"✓"; margin-left:5px; }
+
+.modal-overlay{ position:fixed; inset:0; background:rgba(47,28,43,.35); display:none; align-items:center; justify-content:center; z-index:50; backdrop-filter:blur(2px); }
+.modal{ width:340px; max-width:90vw; background:var(--cream); border-radius:20px; padding:24px 24px 20px; box-shadow:0 30px 60px -20px rgba(47,28,43,.5); }
+.modal-title{ font-family:var(--font-serif); font-size:16px; font-weight:700; color:var(--plum); margin-bottom:14px; }
+.modal .field{ margin-bottom:14px; }
+.modal .field label{ display:block; font-size:12.5px; font-weight:600; color:var(--ink-soft); margin-bottom:6px; }
+.modal input[type="date"]{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border2); background:#fff; font-family:var(--font-body); font-size:14px; color:var(--ink); outline:none; }
+.modal-actions{ display:flex; justify-content:space-between; gap:8px; margin-top:6px; }
+.modal-actions .left{ display:flex; gap:8px; }
+.mbtn{ font-family:var(--font-body); font-size:13px; font-weight:600; padding:9px 16px; border-radius:999px; border:1px solid var(--border2); background:rgba(255,255,255,.6); color:var(--plum); cursor:pointer; }
+.mbtn.primary{ background:linear-gradient(135deg, var(--gold), #cf8c58); color:#fff8f0; border:none; }
+.mbtn.danger{ background:transparent; color:var(--red); border:1px solid rgba(199,107,122,.4); }
+.modal-err{ font-size:12px; color:var(--red); margin-bottom:10px; display:none; }
+
+.empty-note{ font-size:13px; color:var(--ink-soft); text-align:center; padding:20px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../main/home.html">🏠 우리 홈으로</a>
+  <span style="display:flex; gap:10px; align-items:center;">
+    <span class="gas-badge" id="gasBadge">GAS 연동 확인 중…</span>
+    <a href="report_main.html">✈️ 여행 기록</a>
+  </span>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <p class="eyebrow">WS &amp; SH</p>
+    <h1>우리의 도장깨기 지도</h1>
+    <p class="desc">전국 시/군/구를 하나씩 밟아가는 기록이에요. 지역을 눌러서 방문한 날짜를 남겨보세요.</p>
+    <div class="overall">
+      <div class="num" id="overallNum">0<span>/0</span></div>
+      <div class="bar-wrap">
+        <div class="bar-track"><div class="bar-fill" id="overallBar" style="width:0%"></div></div>
+        <div class="bar-label" id="overallLabel">전체 진행률 0%</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="provinceList"></div>
+</div>
+
+<!-- 방문 기록 모달 -->
+<div class="modal-overlay" id="visitModal" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <p class="modal-title" id="modalTitle">지역명</p>
+    <div class="field">
+      <label>방문한 날짜</label>
+      <input type="date" id="visitDate">
+    </div>
+    <div class="modal-err" id="modalErr"></div>
+    <div class="modal-actions">
+      <div class="left">
+        <button class="mbtn" onclick="closeModal()">취소</button>
+        <button class="mbtn danger" id="removeBtn" style="display:none;" onclick="removeVisit()">방문 취소</button>
+      </div>
+      <button class="mbtn primary" onclick="saveVisit()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ------------------------------------------------------------------
+  // 잠금 확인 (index.html 지침에 따름) - report 폴더는 root와 같은 레벨
+  // ------------------------------------------------------------------
+  if (sessionStorage.getItem('shim627_unlocked') !== '1') {
+    location.href = '../index.html';
+  }
+
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
+
+  // ── 전국 시/군/구 데이터 (서울은 25개 자치구, 그 외는 시/군 단위) ──
+  const REGIONS = [
+    // 서울특별시 (25개 자치구)
+    ...['종로구','중구','용산구','성동구','광진구','동대문구','중랑구','성북구','강북구','도봉구','노원구','은평구','서대문구','마포구','양천구','강서구','구로구','금천구','영등포구','동작구','관악구','서초구','강남구','송파구','강동구']
+      .map(n => ({ province:'서울특별시', name:n })),
+    // 부산광역시
+    ...['중구','서구','동구','영도구','부산진구','동래구','남구','북구','해운대구','사하구','금정구','강서구','연제구','수영구','사상구','기장군']
+      .map(n => ({ province:'부산광역시', name:n })),
+    // 대구광역시
+    ...['중구','동구','서구','남구','북구','수성구','달서구','달성군','군위군']
+      .map(n => ({ province:'대구광역시', name:n })),
+    // 인천광역시
+    ...['중구','동구','미추홀구','연수구','남동구','부평구','계양구','서구','강화군','옹진군']
+      .map(n => ({ province:'인천광역시', name:n })),
+    // 광주광역시
+    ...['동구','서구','남구','북구','광산구'].map(n => ({ province:'광주광역시', name:n })),
+    // 대전광역시
+    ...['동구','중구','서구','유성구','대덕구'].map(n => ({ province:'대전광역시', name:n })),
+    // 울산광역시
+    ...['중구','남구','동구','북구','울주군'].map(n => ({ province:'울산광역시', name:n })),
+    // 세종특별자치시
+    { province:'세종특별자치시', name:'세종시' },
+    // 경기도
+    ...['수원시','성남시','고양시','용인시','부천시','안산시','안양시','남양주시','화성시','평택시','의정부시','시흥시','파주시','김포시','광명시','광주시','군포시','이천시','오산시','하남시','양주시','구리시','안성시','포천시','의왕시','여주시','동두천시','과천시','양평군','가평군','연천군']
+      .map(n => ({ province:'경기도', name:n })),
+    // 강원특별자치도
+    ...['춘천시','원주시','강릉시','동해시','태백시','속초시','삼척시','홍천군','횡성군','영월군','평창군','정선군','철원군','화천군','양구군','인제군','고성군','양양군']
+      .map(n => ({ province:'강원특별자치도', name:n })),
+    // 충청북도
+    ...['청주시','충주시','제천시','보은군','옥천군','영동군','증평군','진천군','괴산군','음성군','단양군']
+      .map(n => ({ province:'충청북도', name:n })),
+    // 충청남도
+    ...['천안시','공주시','보령시','아산시','서산시','논산시','계룡시','당진시','금산군','부여군','서천군','청양군','홍성군','예산군','태안군']
+      .map(n => ({ province:'충청남도', name:n })),
+    // 전북특별자치도
+    ...['전주시','군산시','익산시','정읍시','남원시','김제시','완주군','진안군','무주군','장수군','임실군','순창군','고창군','부안군']
+      .map(n => ({ province:'전북특별자치도', name:n })),
+    // 전라남도
+    ...['목포시','여수시','순천시','나주시','광양시','담양군','곡성군','구례군','고흥군','보성군','화순군','장흥군','강진군','해남군','영암군','무안군','함평군','영광군','장성군','완도군','진도군','신안군']
+      .map(n => ({ province:'전라남도', name:n })),
+    // 경상북도
+    ...['포항시','경주시','김천시','안동시','구미시','영주시','영천시','상주시','문경시','경산시','의성군','청송군','영양군','영덕군','청도군','고령군','성주군','칠곡군','예천군','봉화군','울진군','울릉군']
+      .map(n => ({ province:'경상북도', name:n })),
+    // 경상남도
+    ...['창원시','진주시','통영시','사천시','김해시','밀양시','거제시','양산시','의령군','함안군','창녕군','고성군','남해군','하동군','산청군','함양군','거창군','합천군']
+      .map(n => ({ province:'경상남도', name:n })),
+    // 제주특별자치도
+    ...['제주시','서귀포시'].map(n => ({ province:'제주특별자치도', name:n })),
+  ].map((r, i) => ({ ...r, id: r.province + '_' + r.name + '_' + i }));
+
+  const PROVINCE_ORDER = ['서울특별시','부산광역시','대구광역시','인천광역시','광주광역시','대전광역시','울산광역시','세종특별자치시','경기도','강원특별자치도','충청북도','충청남도','전북특별자치도','전라남도','경상북도','경상남도','제주특별자치도'];
+
+  let _visits = {}; // { regionId: 'YYYY-MM-DD' }
+  let _activeRegion = null;
+
+  async function fetchVisits() {
+    const res = await fetch(GAS_URL + '?action=listVisits');
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'GAS 응답 오류');
+    return data.visits || {};
+  }
+
+  async function saveVisitToGas(regionId, date) {
+    const res = await fetch(GAS_URL, {
+      method:'POST',
+      body: JSON.stringify({ action:'setVisit', regionId, date })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || '저장 실패');
+  }
+
+  async function deleteVisitFromGas(regionId) {
+    const res = await fetch(GAS_URL, {
+      method:'POST',
+      body: JSON.stringify({ action:'deleteVisit', regionId })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || '삭제 실패');
+  }
+
+  function render() {
+    const wrap = document.getElementById('provinceList');
+    const totalAll = REGIONS.length;
+    const visitedAll = REGIONS.filter(r => _visits[r.id]).length;
+
+    document.getElementById('overallNum').innerHTML = visitedAll + '<span>/' + totalAll + '</span>';
+    const pctAll = totalAll ? Math.round(visitedAll/totalAll*100) : 0;
+    document.getElementById('overallBar').style.width = pctAll + '%';
+    document.getElementById('overallLabel').textContent = '전체 진행률 ' + pctAll + '%';
+
+    wrap.innerHTML = PROVINCE_ORDER.map(function(prov){
+      const regions = REGIONS.filter(r => r.province === prov);
+      const visited = regions.filter(r => _visits[r.id]).length;
+      const pct = regions.length ? Math.round(visited/regions.length*100) : 0;
+      const chips = regions.map(function(r){
+        const isVisited = !!_visits[r.id];
+        return '<button class="chip' + (isVisited?' visited':'') + '" onclick="openModal(\'' + r.id + '\', \'' + r.province + ' ' + r.name + '\')">' + r.name + '</button>';
+      }).join('');
+
+      return '<div class="province" data-prov="' + prov + '">' +
+        '<div class="province-head" onclick="toggleProvince(this)">' +
+          '<span class="province-name">' + prov + '</span>' +
+          '<div class="province-bar-track"><div class="province-bar-fill" style="width:' + pct + '%"></div></div>' +
+          '<span class="province-pct">' + visited + '/' + regions.length + ' (' + pct + '%)</span>' +
+          '<span class="province-arrow">▶</span>' +
+        '</div>' +
+        '<div class="province-body">' + chips + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function toggleProvince(headEl) {
+    headEl.parentElement.classList.toggle('open');
+  }
+
+  function openModal(regionId, label) {
+    _activeRegion = regionId;
+    document.getElementById('modalTitle').textContent = label;
+    document.getElementById('visitDate').value = _visits[regionId] || '';
+    document.getElementById('removeBtn').style.display = _visits[regionId] ? 'inline-block' : 'none';
+    document.getElementById('modalErr').style.display = 'none';
+    document.getElementById('visitModal').style.display = 'flex';
+  }
+  function closeModal() { document.getElementById('visitModal').style.display = 'none'; _activeRegion = null; }
+
+  async function saveVisit() {
+    const date = document.getElementById('visitDate').value;
+    const errEl = document.getElementById('modalErr');
+    if (!date) { errEl.textContent = '날짜를 선택해주세요.'; errEl.style.display = 'block'; return; }
+    try {
+      await saveVisitToGas(_activeRegion, date);
+      _visits[_activeRegion] = date;
+      render();
+      // 열려있던 province는 다시 펼쳐줌
+      closeModal();
+    } catch(e) {
+      errEl.textContent = e.message;
+      errEl.style.display = 'block';
+    }
+  }
+
+  async function removeVisit() {
+    try {
+      await deleteVisitFromGas(_activeRegion);
+      delete _visits[_activeRegion];
+      render();
+      closeModal();
+    } catch(e) {
+      document.getElementById('modalErr').textContent = e.message;
+      document.getElementById('modalErr').style.display = 'block';
+    }
+  }
+
+  async function init() {
+    document.getElementById('gasBadge').textContent = '불러오는 중…';
+    try {
+      _visits = await fetchVisits();
+      document.getElementById('gasBadge').textContent = '✅ GAS 연동됨';
+    } catch(e) {
+      document.getElementById('gasBadge').textContent = '⚠️ GAS 응답 실패';
+      console.warn('[도장깨기] 목록 실패:', e.message);
+    }
+    render();
+  }
+  init();
+</script>
+
+</body>
+</html>

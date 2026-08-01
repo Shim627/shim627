@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>편지함</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --plum:#3d2a37; --blush:#f7d9de; --blush-soft:#fbe9ec;
+  --gold:#d9a066; --gold-dim:rgba(217,160,102,.14);
+  --lavender:#d9c9e8; --cream:#fff8f3;
+  --ink:#3d2a37; --ink-soft:#6b5568;
+  --border:rgba(217,160,102,.22); --border2:rgba(217,160,102,.4);
+  --red:#c76b7a; --green:#7a8f5e;
+  --font-serif:'Gowun Batang', serif;
+  --font-body:'Gowun Dodum', sans-serif;
+}
+html,body{
+  margin:0; padding:0; min-height:100vh;
+  font-family:var(--font-body); color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 10%, #f9e3e6 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, #e6d6ef 0%, transparent 50%),
+    linear-gradient(160deg, #fdf3f0 0%, #f6e6ee 55%, #ece0f2 100%);
+}
+::-webkit-scrollbar{ width:6px; }
+::-webkit-scrollbar-thumb{ background:var(--border2); border-radius:3px; }
+
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 26px; background:rgba(255,255,255,.5); border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:20; backdrop-filter:blur(6px);
+}
+.topbar a{ font-family:var(--font-serif); font-size:14px; font-weight:700; color:var(--plum); text-decoration:none; }
+.gas-badge{ font-size:11.5px; font-weight:700; background:var(--gold-dim); color:var(--plum); padding:4px 10px; border-radius:999px; border:1px solid var(--border2); }
+
+.wrap{ max-width:760px; margin:0 auto; padding:32px 22px 80px; }
+
+.hero{ text-align:center; margin-bottom:26px; }
+.hero .eyebrow{ font-family:var(--font-serif); font-size:13px; font-weight:700; color:var(--gold); letter-spacing:.3em; margin-bottom:8px; }
+.hero h1{ font-family:var(--font-serif); font-size:24px; font-weight:700; color:var(--plum); margin-bottom:8px; }
+.hero .desc{ font-size:14px; font-weight:500; color:var(--ink-soft); line-height:1.7; }
+
+.write-btn-wrap{ text-align:center; margin-bottom:30px; }
+.write-btn{
+  font-family:var(--font-serif); font-size:15px; font-weight:700; color:#fff8f0;
+  background:linear-gradient(135deg, var(--gold), #cf8c58);
+  padding:12px 30px; border-radius:999px; border:none; cursor:pointer;
+  box-shadow:0 10px 22px -8px rgba(185,113,58,.55);
+}
+.write-btn:hover{ transform:translateY(-2px); }
+
+.letters-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:16px; }
+
+.letter-card{
+  border-radius:16px; padding:20px 20px 16px; cursor:pointer;
+  box-shadow:0 12px 26px -14px rgba(74,46,68,.3);
+  transition:transform .2s ease, box-shadow .2s ease;
+  position:relative; overflow:hidden; min-height:150px;
+  display:flex; flex-direction:column;
+}
+.letter-card:hover{ transform:translateY(-3px); box-shadow:0 16px 30px -14px rgba(74,46,68,.4); }
+.letter-title{ font-family:var(--font-serif); font-size:15px; font-weight:700; margin-bottom:8px; line-height:1.4; }
+.letter-preview{ font-size:12.5px; line-height:1.6; flex:1; overflow:hidden; opacity:.85; }
+.letter-date{ font-size:10.5px; margin-top:12px; opacity:.6; }
+
+/* 편지지 테마 */
+.theme-cream{ background:linear-gradient(160deg, #fffaf6, #fbeee6); color:#5a4152; }
+.theme-blush{ background:linear-gradient(160deg, #fdeef1, #f7d9de); color:#7a3d4a; }
+.theme-lavender{ background:linear-gradient(160deg, #f3ecfa, #d9c9e8); color:#4a3d5a; }
+.theme-gold{ background:linear-gradient(160deg, #fdf3e2, #f0d9ae); color:#6b4a20; }
+.theme-mint{ background:linear-gradient(160deg, #eef8f2, #cfe9d8); color:#2f5a42; }
+
+.empty-note{ font-size:13.5px; color:var(--ink-soft); text-align:center; padding:40px 20px; }
+
+/* 모달: 편지 작성 */
+.modal-overlay{ position:fixed; inset:0; background:rgba(47,28,43,.4); display:none; align-items:center; justify-content:center; z-index:50; padding:20px; }
+.modal{ width:460px; max-width:100%; background:var(--cream); border-radius:20px; padding:26px; box-shadow:0 30px 60px -20px rgba(47,28,43,.5); max-height:88vh; overflow-y:auto; }
+.modal-title{ font-family:var(--font-serif); font-size:17px; font-weight:700; color:var(--plum); margin-bottom:16px; }
+.field{ margin-bottom:14px; }
+.field label{ display:block; font-size:12.5px; font-weight:600; color:var(--ink-soft); margin-bottom:6px; }
+.field input[type="text"], .field textarea{
+  width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border2);
+  background:#fff; font-family:var(--font-body); font-size:14px; color:var(--ink); outline:none; resize:vertical;
+}
+.field textarea{ min-height:140px; line-height:1.7; }
+.theme-picker{ display:flex; gap:8px; flex-wrap:wrap; }
+.theme-dot{ width:34px; height:34px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:all .15s; }
+.theme-dot.selected{ border-color:var(--plum); transform:scale(1.1); }
+.err-box{ font-size:12px; color:var(--red); margin-bottom:10px; display:none; }
+.modal-actions{ display:flex; justify-content:flex-end; gap:8px; }
+.mbtn{ font-family:var(--font-body); font-size:13px; font-weight:600; padding:9px 18px; border-radius:999px; border:1px solid var(--border2); background:rgba(255,255,255,.6); color:var(--plum); cursor:pointer; }
+.mbtn.primary{ background:linear-gradient(135deg, var(--gold), #cf8c58); color:#fff8f0; border:none; }
+
+/* 모달: 편지 읽기 */
+.read-modal .modal{ width:480px; }
+.read-content{ font-family:var(--font-serif); font-size:15px; line-height:2; white-space:pre-wrap; padding:20px; border-radius:14px; margin-bottom:14px; }
+.read-date{ font-size:11.5px; color:var(--ink-soft); text-align:right; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../main/home.html">🏠 우리 홈으로</a>
+  <span class="gas-badge" id="gasBadge">GAS 연동 확인 중…</span>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <p class="eyebrow">WS &amp; SH</p>
+    <h1>편지함</h1>
+    <p class="desc">누가 썼는지는 안 적어도 돼. 그냥 그날 마음을 남겨두는 곳이야.<br>나중에 다시 열어보면, "이때 내가 이랬었나" 하고 웃을 수 있게.</p>
+  </div>
+
+  <div class="write-btn-wrap">
+    <button class="write-btn" onclick="openWriteModal()">✉️ 편지 쓰기</button>
+  </div>
+
+  <div class="letters-grid" id="lettersGrid"></div>
+</div>
+
+<!-- 편지 쓰기 모달 -->
+<div class="modal-overlay" id="writeModal" onclick="if(event.target===this) closeWriteModal()">
+  <div class="modal">
+    <p class="modal-title">편지 쓰기</p>
+    <div class="field">
+      <label>편지지 고르기</label>
+      <div class="theme-picker" id="themePicker"></div>
+    </div>
+    <div class="field">
+      <label>제목</label>
+      <input type="text" id="letterTitle" placeholder="예: 오늘 문득">
+    </div>
+    <div class="field">
+      <label>내용</label>
+      <textarea id="letterContent" placeholder="하고 싶은 말을 편하게 적어봐"></textarea>
+    </div>
+    <div class="err-box" id="writeErr"></div>
+    <div class="modal-actions">
+      <button class="mbtn" onclick="closeWriteModal()">취소</button>
+      <button class="mbtn primary" onclick="submitLetter()">보관하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 편지 읽기 모달 -->
+<div class="modal-overlay read-modal" id="readModal" onclick="if(event.target===this) closeReadModal()">
+  <div class="modal">
+    <p class="modal-title" id="readTitle"></p>
+    <div class="read-content" id="readContent"></div>
+    <div class="read-date" id="readDate"></div>
+  </div>
+</div>
+
+<script>
+  if (sessionStorage.getItem('shim627_unlocked') !== '1') {
+    location.href = '../index.html';
+  }
+
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
+
+  const THEMES = [
+    { key:'cream',    label:'크림',   dot:'#f3e3d3' },
+    { key:'blush',    label:'블러쉬', dot:'#f2c7cf' },
+    { key:'lavender', label:'라벤더', dot:'#d3c2e8' },
+    { key:'gold',     label:'골드',   dot:'#e8c583' },
+    { key:'mint',     label:'민트',   dot:'#b8e0c6' }
+  ];
+  let _selectedTheme = 'cream';
+  let _letters = [];
+
+  function renderThemePicker() {
+    document.getElementById('themePicker').innerHTML = THEMES.map(function(t){
+      return '<div class="theme-dot' + (t.key===_selectedTheme?' selected':'') + '" style="background:' + t.dot + ';" title="' + t.label + '" onclick="selectTheme(\'' + t.key + '\')"></div>';
+    }).join('');
+  }
+  function selectTheme(key) { _selectedTheme = key; renderThemePicker(); }
+
+  function openWriteModal() {
+    document.getElementById('letterTitle').value = '';
+    document.getElementById('letterContent').value = '';
+    document.getElementById('writeErr').style.display = 'none';
+    _selectedTheme = 'cream';
+    renderThemePicker();
+    document.getElementById('writeModal').style.display = 'flex';
+  }
+  function closeWriteModal() { document.getElementById('writeModal').style.display = 'none'; }
+
+  async function submitLetter() {
+    const title = document.getElementById('letterTitle').value.trim();
+    const content = document.getElementById('letterContent').value.trim();
+    const errEl = document.getElementById('writeErr');
+    errEl.style.display = 'none';
+    if (!content) { errEl.textContent = '내용을 적어주세요.'; errEl.style.display = 'block'; return; }
+
+    try {
+      const res = await fetch(GAS_URL, {
+        method:'POST',
+        body: JSON.stringify({ action:'addLetter', letter:{ title: title || '제목 없음', content: content, theme: _selectedTheme } })
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || '저장 실패');
+      _letters.unshift(data.letter);
+      renderLetters();
+      closeWriteModal();
+    } catch(e) {
+      errEl.textContent = e.message;
+      errEl.style.display = 'block';
+    }
+  }
+
+  function openReadModal(idx) {
+    const l = _letters[idx];
+    document.getElementById('readTitle').textContent = l.title || '제목 없음';
+    const contentEl = document.getElementById('readContent');
+    contentEl.textContent = l.content;
+    contentEl.className = 'read-content theme-' + (l.theme || 'cream');
+    document.getElementById('readDate').textContent = l.createdAt || '';
+    document.getElementById('readModal').style.display = 'flex';
+  }
+  function closeReadModal() { document.getElementById('readModal').style.display = 'none'; }
+
+  function renderLetters() {
+    const grid = document.getElementById('lettersGrid');
+    if (!_letters.length) {
+      grid.innerHTML = '<div class="empty-note" style="grid-column:1/-1;">아직 남긴 편지가 없어요. 첫 편지를 써볼까요?</div>';
+      return;
+    }
+    grid.innerHTML = _letters.map(function(l, i){
+      const preview = (l.content || '').slice(0, 80);
+      return '<div class="letter-card theme-' + (l.theme||'cream') + '" onclick="openReadModal(' + i + ')">' +
+        '<div class="letter-title">' + (l.title || '제목 없음') + '</div>' +
+        '<div class="letter-preview">' + preview + (l.content && l.content.length > 80 ? '…' : '') + '</div>' +
+        '<div class="letter-date">' + (l.createdAt || '') + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  async function init() {
+    document.getElementById('gasBadge').textContent = '불러오는 중…';
+    try {
+      const res = await fetch(GAS_URL + '?action=listLetters');
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'GAS 응답 오류');
+      _letters = (data.letters || []).reverse(); // 최신순
+      document.getElementById('gasBadge').textContent = '✅ GAS 연동됨';
+    } catch(e) {
+      document.getElementById('gasBadge').textContent = '⚠️ GAS 응답 실패';
+      console.warn('[편지함] 로드 실패:', e.message);
+    }
+    renderLetters();
+  }
+  init();
+</script>
+
+</body>
+</html>

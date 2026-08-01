@@ -108,6 +108,56 @@ html,body{
 
 .empty-note{ font-size:13.5px; font-weight:500; color:var(--ink-soft); background:rgba(255,255,255,.4); border:1px dashed var(--border2); border-radius:14px; padding:22px; text-align:center; line-height:1.7; }
 
+/* ---------- 우리의 발자취 (개략 지도) ---------- */
+.stamp-panel{ display:flex; gap:26px; align-items:flex-start; flex-wrap:wrap; }
+.stamp-map-wrap{
+  flex:1 1 340px; min-width:300px;
+  background:linear-gradient(160deg, #fffaf6, #fbeee6);
+  border:1px solid var(--border); border-radius:20px; padding:18px;
+}
+.stamp-grid{
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  grid-auto-rows:58px;
+  gap:3px;
+  max-width:360px;
+}
+.stamp-tile{
+  display:flex; align-items:center; justify-content:center;
+  font-size:11.5px; font-weight:700; color:var(--plum);
+  background:rgba(255,255,255,.5);
+  border:1px solid rgba(255,255,255,.7);
+  text-align:center; line-height:1.25; padding:2px;
+  transition:background .3s ease, transform .15s ease;
+  cursor:default;
+}
+.stamp-tile:hover{ transform:scale(1.04); z-index:2; }
+.stamp-tile.empty{ visibility:hidden; }
+/* 조각조각 이어붙인 듯한 유기적 모서리 - 타일마다 다른 라운드값으로 지도 느낌 */
+.stamp-tile.shape-a{ border-radius:60% 40% 55% 45% / 45% 55% 40% 60%; }
+.stamp-tile.shape-b{ border-radius:40% 60% 45% 55% / 60% 45% 55% 40%; }
+.stamp-tile.shape-c{ border-radius:55% 45% 60% 40% / 40% 60% 45% 55%; }
+.stamp-tile.shape-d{ border-radius:45% 55% 40% 60% / 55% 40% 60% 45%; }
+.stamp-seoul-tile{
+  grid-column:span 1; grid-row:span 1;
+  border-radius:50% 45% 55% 48% / 48% 55% 45% 50%;
+  border:1px solid rgba(255,255,255,.7);
+  padding:5px; display:grid; grid-template-columns:repeat(5,1fr); grid-template-rows:repeat(5,1fr); gap:1.5px;
+  background:rgba(255,255,255,.5);
+  overflow:hidden;
+}
+.stamp-gu{ border-radius:1.5px; background:rgba(217,160,102,.15); transition:background .3s ease; }
+.stamp-legend{ display:flex; align-items:center; gap:8px; margin-top:14px; font-size:11px; color:var(--ink-soft); }
+.legend-bar{ flex:1; max-width:120px; height:8px; border-radius:999px; background:linear-gradient(90deg, rgba(217,160,102,.12), var(--gold)); }
+
+.stamp-side{ flex:1 1 220px; min-width:200px; }
+.stamp-side-list{ display:flex; flex-direction:column; gap:6px; max-height:340px; overflow-y:auto; padding-right:4px; }
+.stamp-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; }
+.stamp-row .name{ width:78px; flex-shrink:0; font-weight:600; color:var(--ink); }
+.stamp-row .track{ flex:1; height:7px; border-radius:999px; background:rgba(217,160,102,.12); overflow:hidden; }
+.stamp-row .fill{ height:100%; border-radius:999px; background:linear-gradient(90deg, var(--gold), #cf8c58); }
+.stamp-row .pct{ width:38px; text-align:right; font-weight:700; color:var(--gold); flex-shrink:0; }
+
 /* ---------- 전체 리스트 ---------- */
 .list-header{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px; }
 .list-actions{ display:flex; gap:8px; }
@@ -122,6 +172,16 @@ table.rtable td{ padding:11px 14px; border-bottom:1px solid var(--border); color
 table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
 .rtag{ font-size:12px; font-weight:700; padding:3px 10px; border-radius:999px; background:var(--gold-dim); color:var(--plum); }
 .open-btn{ font-size:12.5px; font-weight:600; padding:6px 13px; border-radius:999px; border:1px solid var(--border2); background:var(--cream); color:var(--plum); cursor:pointer; }
+.dl-btn{ font-size:14px; padding:6px 10px; border-radius:999px; border:1px solid var(--border2); background:rgba(255,255,255,.6); color:var(--plum); cursor:pointer; }
+.dl-btn:hover{ background:var(--cream); }
+
+.ed-cell{ display:inline-flex; align-items:center; gap:6px; }
+.ed-icon{ font-size:11px; cursor:pointer; opacity:.5; transition:opacity .15s; }
+.ed-icon:hover{ opacity:1; }
+.ed-cell input, .ed-cell select{
+  font-family:var(--font-body); font-size:13px; color:var(--ink);
+  padding:4px 8px; border-radius:8px; border:1px solid var(--border2); background:#fff; outline:none;
+}
 
 /* ---------- 모달 공통 ---------- */
 .modal-overlay{ position:fixed; inset:0; background:rgba(47,28,43,.35); display:none; align-items:center; justify-content:center; z-index:50; backdrop-filter:blur(2px); }
@@ -255,6 +315,22 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
           <div class="empty-note" id="homeEmptyNote">
             GitHub에 html 파일을 올리신 뒤, 여기서 "+ 파일 추가"로 파일명과 구분만 입력하면 목록과 카드에 자동으로 반영돼요.
           </div>
+
+          <p class="sec-title" style="margin-top:34px;">우리의 발자취</p>
+          <div class="stamp-panel">
+            <div class="stamp-map-wrap">
+              <div class="stamp-grid" id="stampGrid"></div>
+              <div class="stamp-legend">
+                <span>적게 방문</span>
+                <div class="legend-bar"></div>
+                <span>많이 방문</span>
+              </div>
+            </div>
+            <div class="stamp-side">
+              <div class="stamp-side-list" id="stampSideList"></div>
+              <button class="btn primary" style="width:100%; margin-top:10px;" onclick="openStampPopup()">🗺️ 도장깨기 페이지 열기</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -281,11 +357,12 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
           <table class="rtable">
             <thead>
               <tr>
-                <th style="width:14%;">구분</th>
-                <th style="width:16%;">지역</th>
-                <th style="width:16%;">등록일</th>
+                <th style="width:12%;">구분</th>
+                <th style="width:14%;">지역</th>
+                <th style="width:15%;">등록일</th>
                 <th>제목 / 메모</th>
-                <th style="width:80px; text-align:center;">열기</th>
+                <th style="width:56px; text-align:center;">받기</th>
+                <th style="width:70px; text-align:center;">열기</th>
               </tr>
             </thead>
             <tbody id="listBody"></tbody>
@@ -464,6 +541,90 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
     });
   }
 
+  // 등록일 표시용 포맷 정리 (ISO 문자열/Date 등 어떤 형태로 와도 yyyy.MM.dd 로 통일, KST 기준)
+  function formatRegDate(v) {
+    if (!v) return '-';
+    // 이미 'yyyy-MM-dd' 형태면 그대로 점 표기만 변경
+    const simple = String(v).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (simple) return simple[1] + '.' + simple[2] + '.' + simple[3];
+
+    const d = new Date(v);
+    if (isNaN(d.getTime())) return String(v);
+    // KST(UTC+9) 기준으로 보정
+    const kst = new Date(d.getTime() + 9*60*60*1000);
+    return kst.getUTCFullYear() + '.' + String(kst.getUTCMonth()+1).padStart(2,'0') + '.' + String(kst.getUTCDate()).padStart(2,'0');
+  }
+
+  function escAttr(s) { return String(s == null ? '' : s).replace(/'/g, "&#39;").replace(/"/g, '&quot;'); }
+
+  // 편집 가능한 셀 (연필 아이콘 클릭 시 인풋으로 전환)
+  function editableCell(fileKey, field, value, cellIdSeed) {
+    const safeVal = (value == null ? '' : value).toString();
+    const cellId = 'ec_' + field + '_' + cellIdSeed;
+    return '<span class="ed-cell" id="' + cellId + '" onclick="event.stopPropagation()">' +
+      '<span class="ed-text">' + (safeVal || '-') + '</span>' +
+      '<span class="ed-icon" title="수정" onclick="event.stopPropagation(); startEditCell(\'' + cellId + '\',\'' + escAttr(fileKey) + '\',\'' + field + '\',\'' + escAttr(safeVal) + '\')">✏️</span>' +
+    '</span>';
+  }
+
+  function startEditCell(cellId, fileKey, field, currentVal) {
+    const el = document.getElementById(cellId);
+    if (!el || el.querySelector('input, select')) return;
+
+    if (field === 'category') {
+      const f = _allFiles.find(function(x){ return x.fileKey === fileKey; });
+      const curKey = f ? f.category : '';
+      const opts = ['여행계획','코스','식당','숙소'].map(function(c){
+        return '<option value="'+c+'"'+(c===curKey?' selected':'')+'>'+CAT_LABEL[c]+'</option>';
+      }).join('');
+      el.innerHTML = '<select onclick="event.stopPropagation()">' + opts + '</select>';
+      const sel = el.querySelector('select');
+      sel.focus();
+      const commit = async function(){
+        const newVal = sel.value;
+        try {
+          await updateReportField(fileKey, 'category', newVal);
+          const ff = _allFiles.find(function(x){ return x.fileKey === fileKey; });
+          if (ff) ff.category = newVal;
+        } catch(e) { alert('저장 실패: ' + e.message); }
+        renderCounts();
+        renderListTable();
+      };
+      sel.addEventListener('change', commit);
+      sel.addEventListener('blur', function(){ renderListTable(); });
+      return;
+    }
+
+    const inputType = field === 'regDate' ? 'date' : 'text';
+    const inputVal = field === 'regDate' ? (currentVal.match(/^\d{4}-\d{2}-\d{2}$/) ? currentVal : '') : currentVal;
+    el.innerHTML = '<input type="' + inputType + '" value="' + escAttr(inputVal) + '" onclick="event.stopPropagation()">';
+    const input = el.querySelector('input');
+    input.focus();
+    const commit = async function(){
+      const newVal = input.value;
+      try {
+        await updateReportField(fileKey, field, newVal);
+        const f = _allFiles.find(function(x){ return x.fileKey === fileKey; });
+        if (f) f[field] = newVal;
+      } catch(e) {
+        alert('저장 실패: ' + e.message);
+      }
+      renderCounts();
+      renderListTable();
+    };
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', function(e){ if (e.key === 'Enter') input.blur(); });
+  }
+
+  async function updateReportField(fileKey, field, value) {
+    const res = await fetch(GAS_URL, {
+      method:'POST',
+      body: JSON.stringify({ action:'updateReport', fileKey: fileKey, patch: { [field]: value } })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || '수정 실패');
+  }
+
   function renderListTable() {
     const body = document.getElementById('listBody');
     let files = _allFiles.slice();
@@ -473,16 +634,18 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
     document.getElementById('listCount').textContent = files.length + '건';
 
     if (!files.length) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--ink-soft); padding:26px;">등록된 파일이 없어요. "추가" 버튼으로 등록해보세요.</td></tr>';
+      body.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--ink-soft); padding:26px;">등록된 파일이 없어요. "추가" 버튼으로 등록해보세요.</td></tr>';
       return;
     }
 
-    body.innerHTML = files.map(function(f){
+    body.innerHTML = files.map(function(f, i){
+      const seed = 'r' + i;
       return '<tr onclick="openFile(\'' + f.htmlUrl + '\')">' +
-        '<td><span class="rtag">' + (CAT_LABEL[f.category] || f.category) + '</span></td>' +
-        '<td>' + (f.region || '-') + '</td>' +
-        '<td>' + (f.regDate || '-') + '</td>' +
-        '<td>' + (f.memo || f.name || '-') + '</td>' +
+        '<td>' + editableCell(f.fileKey, 'category', CAT_LABEL[f.category] || f.category, seed) + '</td>' +
+        '<td>' + editableCell(f.fileKey, 'region', f.region, seed) + '</td>' +
+        '<td>' + editableCell(f.fileKey, 'regDate', formatRegDate(f.regDate), seed) + '</td>' +
+        '<td>' + editableCell(f.fileKey, 'memo', f.memo || f.name, seed) + '</td>' +
+        '<td style="text-align:center;"><button class="dl-btn" title="다운로드 (잠금 해제된 버전)" onclick="event.stopPropagation(); downloadFile(\'' + f.htmlUrl + '\',\'' + escAttr(f.name) + '\')">⬇️</button></td>' +
         '<td style="text-align:center;"><button class="open-btn" onclick="event.stopPropagation(); openFile(\'' + f.htmlUrl + '\')">열기</button></td>' +
       '</tr>';
     }).join('');
@@ -492,6 +655,28 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
     const w = 1100, h = 800;
     const left = (screen.width - w) / 2, top = (screen.height - h) / 2;
     window.open(url, 'travelPopup_' + Date.now(), 'width='+w+',height='+h+',left='+left+',top='+top+',resizable=yes,scrollbars=yes');
+  }
+
+  // 다운로드: 실제 파일을 가져와서 잠금 체크 스크립트를 제거한 뒤 다운로드
+  async function downloadFile(url, fileName) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('파일을 불러오지 못했어요 (' + res.status + ')');
+      let html = await res.text();
+      // shim627_unlocked 잠금 체크 블록 제거 (있으면)
+      html = html.replace(/if\s*\(\s*sessionStorage\.getItem\(\s*['"]shim627_unlocked['"]\s*\)\s*!==\s*['"]1['"]\s*\)\s*\{[^}]*\}/g, '/* 잠금 해제된 다운로드본 */');
+      const blob = new Blob([html], { type:'text/html' });
+      const objUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objUrl;
+      a.download = fileName || 'download.html';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(objUrl);
+    } catch(e) {
+      alert('다운로드 실패: ' + e.message);
+    }
   }
 
   function onCatTab(cat) {
@@ -754,6 +939,119 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   setupDropzone();
 
   // ─────────────────────────────────────────────
+  // 우리의 발자취 (타일형 개념도) - 도장깨기 데이터를 GAS에서 불러와 시각화
+  // ─────────────────────────────────────────────
+  const PROVINCE_TOTALS = {
+    '서울특별시':25, '부산광역시':16, '대구광역시':9, '인천광역시':10,
+    '광주광역시':5, '대전광역시':5, '울산광역시':5, '세종특별자치시':1,
+    '경기도':31, '강원특별자치도':18, '충청북도':11, '충청남도':15,
+    '전북특별자치도':14, '전라남도':22, '경상북도':22, '경상남도':18, '제주특별자치도':2
+  };
+  const PROVINCE_SHORT = {
+    '서울특별시':'서울', '부산광역시':'부산', '대구광역시':'대구', '인천광역시':'인천',
+    '광주광역시':'광주', '대전광역시':'대전', '울산광역시':'울산', '세종특별자치시':'세종',
+    '경기도':'경기', '강원특별자치도':'강원', '충청북도':'충북', '충청남도':'충남',
+    '전북특별자치도':'전북', '전라남도':'전남', '경상북도':'경북', '경상남도':'경남', '제주특별자치도':'제주'
+  };
+  const SEOUL_GU = ['종로구','중구','용산구','성동구','광진구','동대문구','중랑구','성북구','강북구','도봉구','노원구','은평구','서대문구','마포구','양천구','강서구','구로구','금천구','영등포구','동작구','관악구','서초구','강남구','송파구','강동구'];
+
+  // 타일 배치 (5열 기준 개략 배치 - 실제 지리 정밀도는 신경쓰지 않음)
+  const STAMP_LAYOUT = [
+    { name:'강원특별자치도', row:1, col:3 },
+    { name:'인천광역시',     row:2, col:1 },
+    { name:'서울특별시',     row:2, col:2, seoul:true },
+    { name:'경기도',         row:2, col:3 },
+    { name:'충청남도',       row:3, col:1 },
+    { name:'세종특별자치시', row:3, col:2 },
+    { name:'충청북도',       row:3, col:3 },
+    { name:'경상북도',       row:3, col:4 },
+    { name:'전북특별자치도', row:4, col:1 },
+    { name:'대전광역시',     row:4, col:2 },
+    { name:'대구광역시',     row:4, col:3 },
+    { name:'경상남도',       row:4, col:4 },
+    { name:'울산광역시',     row:4, col:5 },
+    { name:'광주광역시',     row:5, col:1 },
+    { name:'전라남도',       row:5, col:2 },
+    { name:'부산광역시',     row:5, col:5 },
+    { name:'제주특별자치도', row:6, col:2 },
+  ];
+
+  let _stampVisits = {};
+
+  async function fetchStampVisits() {
+    const res = await fetch(GAS_URL + '?action=listVisits');
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'GAS 응답 오류');
+    return data.visits || {};
+  }
+
+  function provinceVisitedCount(province) {
+    return Object.keys(_stampVisits).filter(function(k){ return k.indexOf(province + '_') === 0; }).length;
+  }
+
+  function tileColor(pct) {
+    const alpha = 0.14 + 0.66 * (pct / 100);
+    return 'rgba(217,160,102,' + alpha.toFixed(2) + ')';
+  }
+
+  function renderStampMap() {
+    const grid = document.getElementById('stampGrid');
+    const sideList = document.getElementById('stampSideList');
+    const SHAPES = ['shape-a','shape-b','shape-c','shape-d'];
+
+    grid.innerHTML = STAMP_LAYOUT.map(function(t, idx){
+      const total = PROVINCE_TOTALS[t.name] || 0;
+      const visited = provinceVisitedCount(t.name);
+      const pct = total ? Math.round(visited/total*100) : 0;
+      const style = 'grid-row:' + t.row + '; grid-column:' + t.col + ';';
+
+      if (t.seoul) {
+        const guCells = SEOUL_GU.map(function(gu){
+          const isVisited = Object.keys(_stampVisits).some(function(k){ return k.indexOf('서울특별시_' + gu + '_') === 0; });
+          return '<div class="stamp-gu" style="background:' + (isVisited ? tileColor(100) : tileColor(0)) + ';" title="' + gu + (isVisited?' 방문함':'') + '"></div>';
+        }).join('');
+        return '<div class="stamp-seoul-tile" style="' + style + '" title="서울 ' + pct + '%">' + guCells + '</div>';
+      }
+
+      const shapeCls = SHAPES[idx % SHAPES.length];
+      return '<div class="stamp-tile ' + shapeCls + '" style="' + style + ' background:' + tileColor(pct) + ';" title="' + t.name + ' ' + pct + '%">' + PROVINCE_SHORT[t.name] + '</div>';
+    }).join('');
+
+    sideList.innerHTML = STAMP_LAYOUT.map(function(t){
+      const total = PROVINCE_TOTALS[t.name] || 0;
+      const visited = provinceVisitedCount(t.name);
+      const pct = total ? Math.round(visited/total*100) : 0;
+      return '<div class="stamp-row">' +
+        '<span class="name">' + PROVINCE_SHORT[t.name] + '</span>' +
+        '<div class="track"><div class="fill" style="width:' + pct + '%"></div></div>' +
+        '<span class="pct">' + pct + '%</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  async function initStampMap() {
+    try {
+      _stampVisits = await fetchStampVisits();
+    } catch(e) {
+      console.warn('[report_main] 도장깨기 데이터 로드 실패:', e.message);
+    }
+    renderStampMap();
+  }
+
+  function openStampPopup() {
+    const w = 760, h = 820;
+    const left = (screen.width - w) / 2, top = (screen.height - h) / 2;
+    const popup = window.open('도장깨기.html', 'stampPopup', 'width='+w+',height='+h+',left='+left+',top='+top+',resizable=yes,scrollbars=yes');
+    // 팝업 닫히면 발자취 지도 새로고침 (방문 기록이 늘었을 수 있으므로)
+    const timer = setInterval(function(){
+      if (popup && popup.closed) {
+        clearInterval(timer);
+        initStampMap();
+      }
+    }, 800);
+  }
+
+  // ─────────────────────────────────────────────
   // 초기 실행
   // ─────────────────────────────────────────────
   const today = new Date();
@@ -761,6 +1059,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
     today.getFullYear() + '. ' + String(today.getMonth()+1).padStart(2,'0') + '. ' + String(today.getDate()).padStart(2,'0');
 
   refreshList();
+  initStampMap();
 </script>
 
 </body>
