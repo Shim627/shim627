@@ -283,6 +283,26 @@
     50%{ box-shadow:0 10px 26px -6px rgba(185,113,58,.8); }
   }
 
+  .guest-btn{
+    position:fixed;
+    bottom:52px; left:50%; transform:translateX(-50%);
+    z-index:2;
+    font-family:'Gowun Dodum', sans-serif;
+    font-size:14px; font-weight:700;
+    color:var(--plum);
+    background:rgba(255,255,255,.65);
+    border:1.5px solid rgba(217,160,102,.4);
+    padding:11px 26px;
+    border-radius:999px;
+    cursor:pointer;
+    box-shadow:0 8px 18px -8px rgba(74,46,68,.25);
+    transition:all .2s ease;
+  }
+  .guest-btn:hover{
+    background:#fff;
+    transform:translateX(-50%) translateY(-2px);
+  }
+
   footer{
     position:fixed;
     bottom:16px; left:0; right:0;
@@ -328,11 +348,9 @@
   </form>
 </div>
 
-<footer>
-  only for you, 이성화 🤍<br>
-  only for you, 심우승 🤍<br>
-  <span style="font-size:9px; opacity:.4;">build v2-여행계획서카드</span>
-</footer>
+<button class="guest-btn" onclick="guestEnter()">👋 게스트로 입장하기</button>
+
+<footer>only for you, 이성화 🤍</footer>
 
 <script>
 (function(){
@@ -359,8 +377,22 @@
 
   var PASSWORD = "260904";
   var STORAGE_KEY = "shim627_unlocked";
-  // 로그인 성공 후 이동할 다음 페이지 경로. 지침/구조에 맞게 여기만 수정하면 됨.
+  var ROLE_KEY = "shim627_role";
   var NEXT_PAGE = "main/home.html";
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
+
+  function logVisit(role) {
+    try {
+      fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'logVisit', role: role }) });
+    } catch(e) {}
+  }
+
+  window.guestEnter = function() {
+    sessionStorage.setItem(STORAGE_KEY, '1');
+    sessionStorage.setItem(ROLE_KEY, 'guest');
+    logVisit('guest');
+    window.location.href = NEXT_PAGE;
+  };
 
   var form = document.getElementById('loginForm');
   var input = document.getElementById('pwInput');
@@ -386,6 +418,8 @@
 
     if (val === PASSWORD) {
       sessionStorage.setItem(STORAGE_KEY, '1');
+      sessionStorage.setItem(ROLE_KEY, 'owner');
+      logVisit('owner');
       stage.classList.add('unlocked');
       msg.textContent = "편지가 열렸어 ♥";
       msg.classList.add('success');

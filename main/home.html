@@ -60,6 +60,14 @@
     position:relative;
     overflow:hidden;
   }
+  .visitor-badge{
+    position:absolute; top:16px; right:18px; z-index:2;
+    font-size:10.5px; font-weight:700; color:var(--plum);
+    background:rgba(255,255,255,.6);
+    border:1px solid rgba(217,160,102,.3);
+    padding:5px 11px; border-radius:999px;
+    line-height:1.5; text-align:right;
+  }
   .dday-card::before{
     content:"♥";
     position:absolute;
@@ -278,6 +286,7 @@
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
   }
   .activity-time{ font-size:10.5px; font-weight:500; color:#8a7286; }
+  .activity-title.activity-blind{ filter:blur(3px); opacity:.55; user-select:none; letter-spacing:2px; }
   .activity-empty{ font-size:12.5px; color:#8a7286; text-align:center; padding:20px 0; }
 </style>
 </head>
@@ -287,6 +296,7 @@
 <div class="wrap">
 
   <div class="dday-card">
+    <div class="visitor-badge" id="visitorBadge">방문자 확인 중…</div>
     <p class="eyebrow">WS &amp; SH</p>
     <p class="dday-number" id="ddayNumber">D-000</p>
     <p class="dday-label" id="ddayLabel">우리가 정식으로 만나는 날까지</p>
@@ -381,9 +391,10 @@
   if (sessionStorage.getItem('shim627_unlocked') !== '1') {
     location.href = '../index.html';
   }
+  var IS_GUEST = sessionStorage.getItem('shim627_role') === 'guest';
 
   // ---------- 디데이 계산 ----------
-  // 기준일: 2026-09-04 (첫 만남 겸 첫 여행, 정식으로 사귄 날)
+  // 기준일: 2026-09-04 (첫 만남 겸 �첫 여행, 정식으로 사귄 날)
   var ANCHOR = new Date(2026, 8, 4); // month는 0부터 시작하므로 8 = 9월
   var today = new Date();
   today.setHours(0,0,0,0);
@@ -402,7 +413,7 @@
     labelEl.textContent = '바로 오늘, 우리가 시작되는 날';
   } else {
     numberEl.textContent = 'D+' + Math.abs(diffDays);
-    labelEl.textContent = '우리가 함께한 지';
+    labelEl.textContent = '이제 우리는, 진짜 "우리"가 되었어요';
   }
 
   var todayStr = today.getFullYear() + '. ' +
@@ -438,15 +449,33 @@
       var tagCls = it.isNew ? 'new' : 'edit';
       var tagText = it.isNew ? '신규' : '수정';
       var icon = CATEGORY_ICONS[it.category] || '';
+      var titleHtml = IS_GUEST
+        ? '<div class="activity-title activity-blind">●●●●●●●●</div>'
+        : '<div class="activity-title">' + it.title + '</div>';
       return '<a class="activity-row" href="' + href + '">' +
         '<div class="activity-top">' +
           '<span class="activity-cat">' + icon + ' ' + it.category + '</span>' +
           '<span class="activity-tag ' + tagCls + '">' + tagText + '</span>' +
         '</div>' +
-        '<div class="activity-title">' + it.title + '</div>' +
+        titleHtml +
         '<div class="activity-time">' + formatActivityTime(it.time) + '</div>' +
       '</a>';
     }).join('');
+  }
+
+  // ---------- 오늘 방문자 배지 ----------
+  function loadVisitorBadge() {
+    fetch(GAS_URL + '?action=getTodayVisitorCounts')
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        if (!data || !data.ok) throw new Error();
+        var c = data.counts || { owner:0, guest:0 };
+        document.getElementById('visitorBadge').innerHTML =
+          'Today 방문자<br>성화&amp;우승 ' + c.owner + ' · 게스트 ' + c.guest;
+      })
+      .catch(function(){
+        document.getElementById('visitorBadge').textContent = '방문자 정보 불러오기 실패';
+      });
   }
 
   // ---------- 원터치 동기화 ----------
@@ -502,6 +531,7 @@
       });
   }
   loadActivity();
+  loadVisitorBadge();
 
 </script>
 

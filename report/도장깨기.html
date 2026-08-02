@@ -97,6 +97,7 @@ html,body{
 .modal-err{ font-size:12px; color:var(--red); margin-bottom:10px; display:none; }
 
 .empty-note{ font-size:13px; color:var(--ink-soft); text-align:center; padding:20px; }
+.guest-mode #visitModal .mbtn.primary, .guest-mode #removeBtn{ display:none !important; }
 </style>
 </head>
 <body>
@@ -152,6 +153,8 @@ html,body{
   if (sessionStorage.getItem('shim627_unlocked') !== '1') {
     location.href = '../index.html';
   }
+  const IS_GUEST = sessionStorage.getItem('shim627_role') === 'guest';
+  if (IS_GUEST) document.body.classList.add('guest-mode');
 
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
 

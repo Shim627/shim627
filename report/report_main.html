@@ -211,6 +211,10 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
 .bulk-tag{ font-size:11.5px; font-weight:700; padding:3px 8px; border-radius:999px; }
 .bulk-tag.new{ background:var(--gold-dim); color:var(--plum); }
 .bulk-tag.dup{ background:#eee; color:#999; }
+/* 게스트 모드 - 쓰기 관련 UI 숨김 (열람은 그대로 허용) */
+.guest-mode #addSubmitBtn, .guest-mode #bulkSubmitBtn,
+.guest-mode .ed-icon, .guest-mode .actions-row button:not(:last-child) { display:none !important; }
+.guest-mode .actions-row::after{ content:"👀 게스트는 조회만 가능해요"; font-size:12px; color:var(--ink-soft); }
 </style>
 </head>
 <body>
@@ -462,6 +466,8 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   if (sessionStorage.getItem('shim627_unlocked') !== '1') {
     location.href = '../index.html';
   }
+  var IS_GUEST = sessionStorage.getItem('shim627_role') === 'guest';
+  if (IS_GUEST) document.body.classList.add('guest-mode');
 
   // ─────────────────────────────────────────────
   // 기본 설정
