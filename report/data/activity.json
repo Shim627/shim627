@@ -2,6 +2,13 @@
   "ok": true,
   "items": [
     {
+      "time": "2026-08-02 10:22",
+      "isNew": true,
+      "category": "편지함",
+      "title": "어허",
+      "link": "report/편지함.html?open=L1785633767123"
+    },
+    {
       "time": "2026-08-02 05:20",
       "isNew": false,
       "category": "일정표",
