@@ -192,7 +192,7 @@ html,body{
 </div>
 
 <!-- 일정 추가 모달 -->
-<div class="modal-overlay" id="addModal" onclick="if(event.target===this) closeAddModal()">
+<div class="modal-overlay" id="addModal">
   <div class="modal">
     <button class="close-x" onclick="closeAddModal()">✕</button>
     <p class="modal-title">일정 추가</p>
@@ -213,7 +213,7 @@ html,body{
 </div>
 
 <!-- 날짜별 일정 목록 모달 -->
-<div class="modal-overlay" id="dayModal" onclick="if(event.target===this) closeDayModal()">
+<div class="modal-overlay" id="dayModal">
   <div class="modal">
     <button class="close-x" onclick="closeDayModal()">✕</button>
     <p class="modal-title" id="dayModalTitle"></p>
@@ -226,7 +226,7 @@ html,body{
 </div>
 
 <!-- 일정 상세/수정 모달 -->
-<div class="modal-overlay" id="detailModal" onclick="if(event.target===this) closeDetailModal()">
+<div class="modal-overlay" id="detailModal">
   <div class="modal">
     <button class="close-x" onclick="closeDetailModal()">✕</button>
     <div id="detailView">
