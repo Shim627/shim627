@@ -27,6 +27,15 @@
       "review": "친구랑 함께, 우정테스트 게임",
       "createdAt": "2026-08-02 12:48",
       "updatedAt": "2026-08-02 12:48"
+    },
+    {
+      "id": "B1785643381489",
+      "title": "휴먼 폴 플랫",
+      "mediaUrl": "https://youtu.be/qyQfI7R-MPg",
+      "mediaType": "youtube",
+      "review": "친구랑 함께, 대환장 파티",
+      "createdAt": "2026-08-02 13:03",
+      "updatedAt": "2026-08-02 13:03"
     }
   ],
   "comments": []
