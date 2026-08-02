@@ -581,7 +581,7 @@ html,body{
   async function init() {
     document.getElementById('gasBadge').textContent = '불러오는 중…';
     try {
-      const res = await fetch('data/album.json?t=' + Date.now());
+      const res = await fetch(GAS_URL + '?action=listAlbum');
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '데이터 응답 오류');
       _items = (data.items || []).reverse();

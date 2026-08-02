@@ -379,7 +379,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
               <tr>
                 <th style="width:12%;">구분</th>
                 <th style="width:14%;">지역</th>
-                <th style="width:15%;">등록일</th>
+                <th style="width:15%;">계획일정</th>
                 <th>제목 / 메모</th>
                 <th style="width:56px; text-align:center;">받기</th>
                 <th style="width:70px; text-align:center;">열기</th>
@@ -515,7 +515,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   // GAS 통신
   // ─────────────────────────────────────────────
   async function fetchFileList() {
-    const res = await fetch('data/reports.json?t=' + Date.now());
+    const res = await fetch(GAS_URL + '?action=listReports');
     const data = await res.json();
     if (!data.ok || !Array.isArray(data.files)) throw new Error(data.error || '데이터 응답 오류');
     return data.files; // [{ fileKey, name, category, regDate, region, memo, htmlUrl }]
@@ -999,7 +999,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   let _stampVisits = {};
 
   async function fetchStampVisits() {
-    const res = await fetch('data/visits.json?t=' + Date.now());
+    const res = await fetch(GAS_URL + '?action=listVisits');
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || '데이터 응답 오류');
     return data.visits || {};

@@ -420,7 +420,7 @@ html,body{
   async function init() {
     document.getElementById('gasBadge').textContent = '불러오는 중…';
     try {
-      const res = await fetch('data/letters.json?t=' + Date.now());
+      const res = await fetch(GAS_URL + '?action=listLetters');
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || 'GAS 응답 오류');
       _letters = (data.letters || []).reverse();
