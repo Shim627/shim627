@@ -399,6 +399,10 @@ html,body{
   const LS_KEY = 'shim627_cache_bucket';
   function lsLoad() { try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch(e) { return null; } }
   function lsSave() { try { localStorage.setItem(LS_KEY, JSON.stringify({ items:_items, comments:_comments, savedAt: Date.now() })); } catch(e) {} }
+
+  // completed 값이 문자열 'true'/'false'로 오든, 구글 시트 자동변환으로 boolean true/false로 오든
+  // 항상 안전하게 판별 (방어적 처리 - 근본 원인은 GAS 쪽에서 문자열로 고정해뒀지만 이중 안전장치)
+  function isCompleted(it) { return it && (it.completed === true || it.completed === 'true'); }
   const AUTHORS = [
     { key:'우승', label:'우승 💙', icon:'💙' },
     { key:'성화', label:'성화 💗', icon:'💗' }
@@ -597,7 +601,7 @@ html,body{
   async function toggleCompleted(id) {
     const it = _items.find(function(x){ return x.id === id; });
     if (!it) return;
-    const next = it.completed === 'true' ? 'false' : 'true';
+    const next = isCompleted(it) ? 'false' : 'true';
     it.completed = next; // 낙관적 갱신
     lsSave();
     renderItems();
@@ -607,7 +611,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '저장 실패');
     } catch(e) {
-      it.completed = next === 'true' ? 'false' : 'true'; // 실패 시 롤백
+      it.completed = isCompleted({completed:next}) ? 'false' : 'true'; // 실패 시 롤백
       lsSave();
       renderItems();
       renderStats();
@@ -795,7 +799,7 @@ html,body{
         return '<span class="tag-pill">' + t + '<span class="tag-pill-x" title="태그 삭제" onclick="event.stopPropagation(); removeTag(\'' + it.id + '\',\'' + t.replace(/'/g,"\\'") + '\')">✕</span></span>';
       }).join('');
 
-      const isDone = it.completed === 'true';
+      const isDone = isCompleted(it);
       return '<div class="item-card' + (isDone?' completed':'') + '" id="item_' + it.id + '">' +
         '<div class="item-head">' +
           '<div class="item-title">' + it.title + '</div>' +
@@ -839,8 +843,8 @@ html,body{
     // ── 온라인/오프라인 달성률 도넛 ──
     const onlineItems = _items.filter(function(it){ return tagsArray(it).indexOf('온라인') !== -1; });
     const offlineItems = _items.filter(function(it){ return tagsArray(it).indexOf('오프라인') !== -1; });
-    const onlineDone = onlineItems.filter(function(it){ return it.completed === 'true'; }).length;
-    const offlineDone = offlineItems.filter(function(it){ return it.completed === 'true'; }).length;
+    const onlineDone = onlineItems.filter(isCompleted).length;
+    const offlineDone = offlineItems.filter(isCompleted).length;
     const onlinePct = onlineItems.length ? Math.round(onlineDone / onlineItems.length * 100) : 0;
     const offlinePct = offlineItems.length ? Math.round(offlineDone / offlineItems.length * 100) : 0;
 
