@@ -137,18 +137,20 @@ html,body{
 .stat-card{
   background:rgba(255,255,255,.55); border:1px solid var(--border); border-radius:16px;
   padding:18px; box-shadow:0 10px 22px -14px rgba(74,46,68,.25);
+  display:flex; flex-direction:column;
 }
 .stat-title{ font-family:var(--font-serif); font-size:14px; font-weight:700; color:var(--plum); margin-bottom:12px; }
-.donut-wrap{ display:flex; align-items:center; gap:16px; }
-.donut-pct{ font-family:var(--font-serif); font-size:22px; font-weight:700; color:var(--plum); }
-.donut-label{ font-size:11.5px; color:var(--ink-soft); font-weight:600; }
-.bar-chart{ display:flex; align-items:flex-end; gap:8px; height:140px; padding-top:10px; }
+.donut-wrap{ flex:1; display:flex; align-items:center; justify-content:center; min-height:0; }
+.donut-wrap svg{ width:100%; height:100%; max-width:220px; max-height:220px; }
+.donut-pct-svg{ font-family:'Gowun Batang', serif; font-weight:700; fill:var(--plum); }
+.donut-label-svg{ font-weight:600; fill:var(--ink-soft); }
+.bar-chart{ display:flex; align-items:flex-end; gap:8px; flex:1; min-height:220px; padding-top:10px; }
 .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
 .bar-stack{ width:100%; max-width:26px; display:flex; flex-direction:column-reverse; border-radius:4px; overflow:hidden; }
 .bar-seg-online{ background:var(--blue, #6f9fd8); }
 .bar-seg-offline{ background:var(--gold); }
 .bar-month-label{ font-size:9.5px; color:var(--ink-soft); margin-top:6px; font-weight:600; }
-.bar-legend{ display:flex; gap:14px; margin-top:10px; font-size:11px; color:var(--ink-soft); justify-content:center; }
+.bar-legend{ display:flex; gap:14px; margin-top:28px; font-size:11px; color:var(--ink-soft); justify-content:center; }
 .bar-legend span{ display:inline-flex; align-items:center; gap:5px; }
 .bar-legend i{ width:9px; height:9px; border-radius:2px; display:inline-block; }
 
@@ -156,7 +158,14 @@ html,body{
 .tag-pill{
   font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:999px;
   background:rgba(217,160,102,.15); color:var(--plum);
+  display:inline-flex; align-items:center; gap:4px;
 }
+.tag-pill-x{
+  display:inline-block; width:0; overflow:hidden;
+  font-size:9px; font-weight:700; cursor:pointer; opacity:0;
+  transition:width .15s ease, opacity .15s ease; color:var(--red);
+}
+.tag-pill:hover .tag-pill-x{ width:10px; opacity:1; }
 .tag-add-btn{
   font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:999px;
   border:1px dashed var(--border2); background:transparent; color:var(--ink-soft); cursor:pointer;
@@ -689,13 +698,10 @@ html,body{
     }).join('');
   }
 
-  async function quickAddTag(id) {
+  async function saveTagsFor(id, tagsArr) {
     const it = _items.find(function(x){ return x.id === id; });
     if (!it) return;
-    const cur = tagsArray(it);
-    const input = prompt('태그를 쉼표로 구분해서 입력해줘 (예: 온라인, 맛집)', cur.join(', '));
-    if (input === null) return;
-    const newTags = input.trim();
+    const newTags = tagsArr.join(', ');
     try {
       const res = await fetchWithTimeout(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updateBucket', id: id, patch:{ tags: newTags } }) });
       const data = await res.json();
@@ -707,6 +713,26 @@ html,body{
     } catch(e) {
       alert('태그 저장 실패: ' + e.message);
     }
+  }
+
+  async function quickAddTag(id) {
+    const it = _items.find(function(x){ return x.id === id; });
+    if (!it) return;
+    const cur = tagsArray(it);
+    const input = prompt('추가할 태그 이름을 입력해줘 (기존 태그는 그대로 유지돼요)', '');
+    if (input === null) return;
+    const newTag = input.trim();
+    if (!newTag) return;
+    if (cur.indexOf(newTag) !== -1) { alert('이미 있는 태그예요.'); return; }
+    const next = cur.concat([newTag]);
+    await saveTagsFor(id, next);
+  }
+
+  async function removeTag(id, tagToRemove) {
+    const it = _items.find(function(x){ return x.id === id; });
+    if (!it) return;
+    const next = tagsArray(it).filter(function(t){ return t !== tagToRemove; });
+    await saveTagsFor(id, next);
   }
 
   function renderItems() {
@@ -732,7 +758,9 @@ html,body{
       }).join('');
 
       const authorOptions = AUTHORS.map(function(a){ return '<option value="'+a.key+'">'+a.label+'</option>'; }).join('');
-      const tagPills = tagsArray(it).map(function(t){ return '<span class="tag-pill">' + t + '</span>'; }).join('');
+      const tagPills = tagsArray(it).map(function(t){
+        return '<span class="tag-pill">' + t + '<span class="tag-pill-x" title="태그 삭제" onclick="event.stopPropagation(); removeTag(\'' + it.id + '\',\'' + t.replace(/'/g,"\\'") + '\')">✕</span></span>';
+      }).join('');
 
       const isDone = it.completed === 'true';
       return '<div class="item-card' + (isDone?' completed':'') + '" id="item_' + it.id + '">' +
@@ -760,14 +788,17 @@ html,body{
     }).join('');
   }
 
-  function donutSVG(pct, color) {
-    const r = 30, c = 2 * Math.PI * r;
+  function donutSVG(pct, color, doneCount, totalCount) {
+    const size = 200, cx = size/2, cy = size/2, r = 78, strokeW = 18;
+    const c = 2 * Math.PI * r;
     const offset = c * (1 - pct / 100);
-    return '<svg width="76" height="76" viewBox="0 0 76 76">' +
-      '<circle cx="38" cy="38" r="' + r + '" fill="none" stroke="rgba(217,160,102,.15)" stroke-width="9"/>' +
-      '<circle cx="38" cy="38" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="9" ' +
+    return '<svg viewBox="0 0 ' + size + ' ' + size + '">' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="rgba(217,160,102,.15)" stroke-width="' + strokeW + '"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" ' +
         'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '" ' +
-        'stroke-linecap="round" transform="rotate(-90 38 38)"/>' +
+        'stroke-linecap="round" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>' +
+      '<text x="' + cx + '" y="' + (cy - 6) + '" text-anchor="middle" dominant-baseline="middle" class="donut-pct-svg" font-size="34">' + pct + '%</text>' +
+      '<text x="' + cx + '" y="' + (cy + 26) + '" text-anchor="middle" dominant-baseline="middle" class="donut-label-svg" font-size="15">' + doneCount + ' / ' + totalCount + ' 완료</text>' +
     '</svg>';
   }
 
@@ -780,13 +811,8 @@ html,body{
     const onlinePct = onlineItems.length ? Math.round(onlineDone / onlineItems.length * 100) : 0;
     const offlinePct = offlineItems.length ? Math.round(offlineDone / offlineItems.length * 100) : 0;
 
-    document.getElementById('onlineDonut').innerHTML =
-      donutSVG(onlinePct, 'var(--blue)') +
-      '<div><div class="donut-pct">' + onlinePct + '%</div><div class="donut-label">' + onlineDone + ' / ' + onlineItems.length + ' 완료</div></div>';
-
-    document.getElementById('offlineDonut').innerHTML =
-      donutSVG(offlinePct, 'var(--gold)') +
-      '<div><div class="donut-pct">' + offlinePct + '%</div><div class="donut-label">' + offlineDone + ' / ' + offlineItems.length + ' 완료</div></div>';
+    document.getElementById('onlineDonut').innerHTML = donutSVG(onlinePct, 'var(--blue)', onlineDone, onlineItems.length);
+    document.getElementById('offlineDonut').innerHTML = donutSVG(offlinePct, 'var(--gold)', offlineDone, offlineItems.length);
 
     // ── 월별 등록 현황 (온라인/오프라인 분리 스택 막대) ──
     const monthMap = {}; // 'YYYY-MM' -> {online, offline}
