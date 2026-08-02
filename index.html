@@ -350,7 +350,7 @@
 
 <button class="guest-btn" onclick="guestEnter()">👋 게스트로 입장하기</button>
 
-<footer>only for you, 이성화 🤍</footer>
+<footer>only for you, 이성화 🤍<br>only for you, 심우승 🤍</footer>
 
 <script>
 (function(){
@@ -381,17 +381,27 @@
   var NEXT_PAGE = "main/home.html";
   var GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
 
+  function fetchPublicIP() {
+    return fetch('https://api.ipify.org?format=json')
+      .then(function(r){ return r.json(); })
+      .then(function(d){ return d.ip || ''; })
+      .catch(function(){ return ''; });
+  }
+
   function logVisit(role) {
-    try {
-      fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'logVisit', role: role }) });
-    } catch(e) {}
+    return fetchPublicIP().then(function(ip){
+      return fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'logVisit', role: role, ip: ip }) }).catch(function(){});
+    });
   }
 
   window.guestEnter = function() {
     sessionStorage.setItem(STORAGE_KEY, '1');
     sessionStorage.setItem(ROLE_KEY, 'guest');
-    logVisit('guest');
-    window.location.href = NEXT_PAGE;
+    logVisit('guest').then(function(){
+      window.location.href = NEXT_PAGE;
+    }).catch(function(){
+      window.location.href = NEXT_PAGE;
+    });
   };
 
   var form = document.getElementById('loginForm');
