@@ -73,7 +73,44 @@ html,body{
 .hero h1{ font-family:var(--font-serif); font-size:26px; font-weight:700; color:var(--plum); margin-bottom:10px; }
 .hero .desc{ font-size:15px; font-weight:600; color:var(--ink-soft); line-height:1.8; }
 
-.write-btn-wrap{ text-align:center; margin-bottom:30px; }
+.write-btn-wrap{ text-align:center; margin-bottom:22px; }
+
+.mail-filter-bar{ display:flex; gap:8px; justify-content:center; margin-top:14px; flex-wrap:wrap; }
+.mail-filter-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12.5px; font-weight:700; padding:7px 14px; border-radius:999px;
+  border:1px solid var(--border2); background:rgba(255,255,255,.5); color:var(--ink-soft); cursor:pointer;
+  transition:all .15s;
+}
+.mail-filter-chip svg{ width:14px; height:14px; }
+.mail-filter-chip.active{ background:var(--gold-dim); color:var(--plum); border-color:var(--gold); }
+
+.stamp-picker{ display:flex; gap:12px; }
+.stamp-choice{
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:14px 10px; border-radius:14px; border:2px solid var(--border2);
+  background:rgba(255,255,255,.5); cursor:pointer; transition:all .15s;
+}
+.stamp-choice svg{ width:38px; height:38px; }
+.stamp-choice span{ font-size:12px; font-weight:700; color:var(--ink); }
+.stamp-choice.selected{ border-color:var(--gold); background:var(--gold-dim); }
+
+.deliver-field{ margin-top:12px; }
+.deliver-field input[type="datetime-local"]{
+  width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border2);
+  background:#fff; font-family:var(--font-body); font-size:13.5px; color:var(--ink); outline:none;
+}
+
+.stamp-badge-corner{ position:absolute; top:14px; right:14px; width:26px; height:26px; opacity:.9; }
+.stamp-badge-corner svg{ width:100%; height:100%; }
+
+.letter-card.locked{ opacity:.9; }
+.letter-preview.mosaic{ filter:blur(5px); user-select:none; opacity:.75; }
+.locked-note{ font-size:12px; font-weight:600; color:var(--ink-soft); background:rgba(255,255,255,.4); border-radius:10px; padding:10px 12px; margin-top:6px; line-height:1.7; }
+
+.read-stamp-badge{ position:absolute; top:18px; right:52px; width:34px; height:34px; }
+.read-stamp-badge svg{ width:100%; height:100%; }
+.read-time-block{ font-size:12px; font-weight:600; color:var(--ink-soft); line-height:1.9; text-align:right; margin-top:6px; }
 .write-btn{
   font-family:var(--font-serif); font-size:16px; font-weight:700; color:#fff8f0;
   background:linear-gradient(135deg, var(--gold), #cf8c58);
@@ -94,7 +131,7 @@ html,body{
 .letter-card:hover{ transform:translateY(-3px); box-shadow:0 16px 30px -14px rgba(74,46,68,.4); }
 .letter-title{ font-family:var(--font-serif); font-size:19px; font-weight:700; margin-bottom:12px; line-height:1.4; }
 .letter-preview{ font-size:15px; font-weight:500; line-height:1.8; flex:1; overflow:hidden; opacity:.9; white-space:pre-wrap; }
-.letter-date{ font-size:11.5px; font-weight:600; margin-top:12px; opacity:.65; }
+.letter-date{ font-size:11.5px; font-weight:600; margin-top:12px; opacity:.65; line-height:1.6; }
 
 .theme-cream{ background:linear-gradient(160deg, #fffaf6, #fbeee6); color:#4a3830; }
 .theme-blush{ background:linear-gradient(160deg, #fdeef1, #f7d9de); color:#5c2e39; }
@@ -185,6 +222,7 @@ html,body{
 
         <div class="write-btn-wrap">
           <button class="write-btn" onclick="openWriteModal()">✉️ 편지 쓰기</button>
+          <div class="mail-filter-bar" id="mailFilterBar"></div>
         </div>
 
         <div class="letters-grid" id="lettersGrid"></div>
@@ -201,6 +239,14 @@ html,body{
     <div class="field">
       <label>편지지 고르기</label>
       <div class="theme-picker" id="themePicker"></div>
+    </div>
+    <div class="field">
+      <label>우표 고르기</label>
+      <div class="stamp-picker" id="stampPicker"></div>
+      <div class="deliver-field" id="deliverField" style="display:none;">
+        <label>배달 희망 일시</label>
+        <input type="datetime-local" id="deliverAtInput">
+      </div>
     </div>
     <div class="field">
       <label>제목</label>
@@ -223,9 +269,10 @@ html,body{
   <div class="modal" style="position:relative;">
     <button class="close-x" onclick="closeReadModal()" title="닫기">✕</button>
     <div id="readView">
+      <div class="read-stamp-badge" id="readStampBadge"></div>
       <p class="modal-title" id="readTitle"></p>
       <div class="read-content" id="readContent"></div>
-      <div class="read-date" id="readDate"></div>
+      <div class="read-time-block" id="readTimeBlock"></div>
       <div class="read-actions">
         <button class="mbtn danger" onclick="deleteCurrentLetter()">🗑 삭제</button>
         <button class="mbtn" onclick="enterEditMode()">✏️ 수정</button>
@@ -236,6 +283,14 @@ html,body{
       <div class="field">
         <label>편지지 고르기</label>
         <div class="theme-picker" id="editThemePicker"></div>
+      </div>
+      <div class="field">
+        <label>우표 고르기</label>
+        <div class="stamp-picker" id="editStampPicker"></div>
+        <div class="deliver-field" id="editDeliverField" style="display:none;">
+          <label>배달 희망 일시</label>
+          <input type="datetime-local" id="editDeliverAtInput">
+        </div>
       </div>
       <div class="field">
         <label>제목</label>
@@ -268,11 +323,22 @@ html,body{
     { key:'gold',     label:'골드',   dot:'#e8c583' },
     { key:'mint',     label:'민트',   dot:'#b8e0c6' }
   ];
+
+  // 배경 없는 아이콘만 (우표 컨셉 재사용)
+  const STAMP_ICONS = {
+    express: '<svg viewBox="0 0 100 100"><path d="M55 8 L18 58 L44 58 L34 92 L82 40 L54 40 Z" fill="#c76b7a"/></svg>',
+    slow: '<svg viewBox="0 0 100 100"><path d="M25 10 L75 10 L58 50 L75 90 L25 90 L42 50 Z" fill="none" stroke="#8f6fae" stroke-width="7" stroke-linejoin="round"/><path d="M31 16 L69 16 L52 50 L48 50 Z" fill="#b07fc9" opacity="0.55"/><path d="M40 84 L60 84 L52 54 L48 54 Z" fill="#8f6fae" opacity="0.55"/></svg>'
+  };
+  const STAMP_LABELS = { express:'특급우편', slow:'느린우편' };
+
   let _selectedTheme = 'cream';
   let _editTheme = 'cream';
+  let _selectedStamp = 'express';
+  let _editStamp = 'express';
   let _letters = [];
   let _activeIdx = null;
   let _isSubmitting = false;
+  let _mailFilter = 'all'; // all | express | slow
 
   function renderThemePicker(containerId, current, onClick) {
     document.getElementById(containerId).innerHTML = THEMES.map(function(t){
@@ -282,12 +348,52 @@ html,body{
   function selectTheme(key) { _selectedTheme = key; renderThemePicker('themePicker', _selectedTheme, 'selectTheme'); }
   function selectEditTheme(key) { _editTheme = key; renderThemePicker('editThemePicker', _editTheme, 'selectEditTheme'); }
 
+  function renderStampPicker(containerId, current, onClick) {
+    document.getElementById(containerId).innerHTML = ['express','slow'].map(function(key){
+      return '<div class="stamp-choice' + (key===current?' selected':'') + '" onclick="' + onClick + '(\'' + key + '\')">' + STAMP_ICONS[key] + '<span>' + STAMP_LABELS[key] + '</span></div>';
+    }).join('');
+  }
+  function selectStamp(key) {
+    _selectedStamp = key;
+    renderStampPicker('stampPicker', _selectedStamp, 'selectStamp');
+    document.getElementById('deliverField').style.display = key === 'slow' ? 'block' : 'none';
+  }
+  function selectEditStamp(key) {
+    _editStamp = key;
+    renderStampPicker('editStampPicker', _editStamp, 'selectEditStamp');
+    document.getElementById('editDeliverField').style.display = key === 'slow' ? 'block' : 'none';
+  }
+
+  function renderMailFilterBar() {
+    const opts = [
+      { key:'all', label:'전체우편', icon:'' },
+      { key:'express', label:'특급우편', icon:STAMP_ICONS.express },
+      { key:'slow', label:'느린우편', icon:STAMP_ICONS.slow },
+      { key:'intransit', label:'배달중', icon:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="34" fill="none" stroke="#8f6fae" stroke-width="7"/><path d="M50 30 L50 52 L66 62" fill="none" stroke="#8f6fae" stroke-width="7" stroke-linecap="round"/></svg>' }
+    ];
+    document.getElementById('mailFilterBar').innerHTML = opts.map(function(o){
+      return '<span class="mail-filter-chip' + (o.key===_mailFilter?' active':'') + '" onclick="selectMailFilter(\'' + o.key + '\')">' + o.icon + '<span>' + o.label + '</span></span>';
+    }).join('');
+  }
+  function selectMailFilter(key) { _mailFilter = key; renderMailFilterBar(); renderLetters(); }
+
+  function toLocalInputValue(dt) {
+    // Date -> 'YYYY-MM-DDTHH:mm' (datetime-local 입력용)
+    const p = function(n){ return String(n).padStart(2,'0'); };
+    return dt.getFullYear() + '-' + p(dt.getMonth()+1) + '-' + p(dt.getDate()) + 'T' + p(dt.getHours()) + ':' + p(dt.getMinutes());
+  }
+
   function openWriteModal() {
     document.getElementById('letterTitle').value = '';
     document.getElementById('letterContent').value = '';
     document.getElementById('writeErr').style.display = 'none';
     _selectedTheme = 'cream';
     renderThemePicker('themePicker', _selectedTheme, 'selectTheme');
+    _selectedStamp = 'express';
+    renderStampPicker('stampPicker', _selectedStamp, 'selectStamp');
+    document.getElementById('deliverField').style.display = 'none';
+    const soon = new Date(Date.now() + 24*60*60*1000);
+    document.getElementById('deliverAtInput').value = toLocalInputValue(soon);
     document.getElementById('writeModal').style.display = 'flex';
   }
   function closeWriteModal() { document.getElementById('writeModal').style.display = 'none'; }
@@ -300,13 +406,20 @@ html,body{
     errEl.style.display = 'none';
     if (!content) { errEl.textContent = '내용을 적어주세요.'; errEl.style.display = 'block'; return; }
 
+    let deliverAt = '';
+    if (_selectedStamp === 'slow') {
+      const raw = document.getElementById('deliverAtInput').value;
+      if (!raw) { errEl.textContent = '배달 희망 일시를 선택해주세요.'; errEl.style.display = 'block'; return; }
+      deliverAt = raw.replace('T', ' ');
+    }
+
     _isSubmitting = true;
     const btn = document.getElementById('writeSubmitBtn');
     btn.disabled = true; btn.textContent = '게시 중입니다…';
     try {
       const res = await fetch(GAS_URL, {
         method:'POST',
-        body: JSON.stringify({ action:'addLetter', letter:{ title: title || '제목 없음', content: content, theme: _selectedTheme } })
+        body: JSON.stringify({ action:'addLetter', letter:{ title: title || '제목 없음', content: content, theme: _selectedTheme, stampType: _selectedStamp, deliverAt: deliverAt } })
       });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '저장 실패');
@@ -322,14 +435,36 @@ html,body{
     }
   }
 
+  function isLocked(l) {
+    if (l.stampType !== 'slow' || !l.deliverAt) return false;
+    const target = new Date(String(l.deliverAt).replace(' ', 'T'));
+    if (isNaN(target.getTime())) return false;
+    return target.getTime() > Date.now();
+  }
+
   function openReadModal(idx) {
     _activeIdx = idx;
     const l = _letters[idx];
-    document.getElementById('readTitle').textContent = l.title || '제목 없음';
+    const locked = isLocked(l);
+
+    document.getElementById('readStampBadge').innerHTML = STAMP_ICONS[l.stampType === 'slow' ? 'slow' : 'express'];
+    document.getElementById('readTitle').textContent = locked ? '🔒 배달 중인 편지' : (l.title || '제목 없음');
+
     const contentEl = document.getElementById('readContent');
-    contentEl.textContent = l.content;
+    if (locked) {
+      contentEl.textContent = '아직 도착 전이에요. 편지지가 도착하면 그때 열어볼 수 있어요.';
+    } else {
+      contentEl.textContent = String(l.content || '');
+    }
     contentEl.className = 'read-content theme-' + (l.theme || 'cream');
-    document.getElementById('readDate').textContent = l.createdAt || '';
+
+    const timeBlockEl = document.getElementById('readTimeBlock');
+    if (l.stampType === 'slow') {
+      timeBlockEl.innerHTML = '발송시간 : ' + (l.createdAt||'') + '<br>도착시간 : ' + (l.deliverAt||'') + (locked ? ' (아직 도착 전)' : '');
+    } else {
+      timeBlockEl.innerHTML = '발송시간 : ' + (l.createdAt||'') + '<br>도착시간 : ' + (l.deliverAt || l.createdAt || '');
+    }
+
     document.getElementById('readView').style.display = 'block';
     document.getElementById('readEdit').style.display = 'none';
     document.getElementById('readModal').style.display = 'flex';
@@ -339,10 +474,17 @@ html,body{
   function enterEditMode() {
     const l = _letters[_activeIdx];
     _editTheme = l.theme || 'cream';
+    _editStamp = l.stampType === 'slow' ? 'slow' : 'express';
     document.getElementById('editTitle').value = l.title || '';
-    document.getElementById('editContent').value = l.content || '';
+    document.getElementById('editContent').value = String(l.content || '');
     document.getElementById('editErr').style.display = 'none';
     renderThemePicker('editThemePicker', _editTheme, 'selectEditTheme');
+    renderStampPicker('editStampPicker', _editStamp, 'selectEditStamp');
+    document.getElementById('editDeliverField').style.display = _editStamp === 'slow' ? 'block' : 'none';
+    if (l.deliverAt) {
+      const d = new Date(String(l.deliverAt).replace(' ', 'T'));
+      if (!isNaN(d.getTime())) document.getElementById('editDeliverAtInput').value = toLocalInputValue(d);
+    }
     document.getElementById('readView').style.display = 'none';
     document.getElementById('readEdit').style.display = 'block';
   }
@@ -360,17 +502,27 @@ html,body{
     errEl.style.display = 'none';
     if (!content) { errEl.textContent = '내용을 적어주세요.'; errEl.style.display = 'block'; return; }
 
+    let deliverAt = l.deliverAt || '';
+    if (_editStamp === 'slow') {
+      const raw = document.getElementById('editDeliverAtInput').value;
+      if (!raw) { errEl.textContent = '배달 희망 일시를 선택해주세요.'; errEl.style.display = 'block'; return; }
+      deliverAt = raw.replace('T', ' ');
+    } else {
+      deliverAt = l.createdAt || '';
+    }
+
     _isSubmitting = true;
     const btn = document.getElementById('editSubmitBtn');
     btn.disabled = true; btn.textContent = '저장 중…';
     try {
+      const patch = { title: title || '제목 없음', content: content, theme: _editTheme, stampType: _editStamp, deliverAt: deliverAt };
       const res = await fetch(GAS_URL, {
         method:'POST',
-        body: JSON.stringify({ action:'updateLetter', id:l.id, patch:{ title: title || '제목 없음', content: content, theme: _editTheme } })
+        body: JSON.stringify({ action:'updateLetter', id:l.id, patch: patch })
       });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '수정 실패');
-      l.title = title || '제목 없음'; l.content = content; l.theme = _editTheme;
+      Object.assign(l, patch);
       renderLetters();
       closeReadModal();
     } catch(e) {
@@ -403,16 +555,52 @@ html,body{
 
   function renderLetters() {
     const grid = document.getElementById('lettersGrid');
-    if (!_letters.length) {
-      grid.innerHTML = '<div class="empty-note" style="grid-column:1/-1;">아직 남긴 편지가 없어요. 첫 편지를 써볼까요?</div>';
+    const filtered = _letters.filter(function(l){
+      const stampKey = l.stampType === 'slow' ? 'slow' : 'express';
+      const locked = isLocked(l);
+      if (_mailFilter === 'all') return true;
+      if (_mailFilter === 'express') return stampKey === 'express';
+      if (_mailFilter === 'slow') return stampKey === 'slow' && !locked;      // 배달 완료된 느린우편만
+      if (_mailFilter === 'intransit') return stampKey === 'slow' && locked; // 배달 중인 것만
+      return true;
+    });
+
+    if (!filtered.length) {
+      const emptyMsgMap = {
+        all: '아직 남긴 편지가 없어요. 첫 편지를 써볼까요?',
+        express: '특급우편이 아직 없어요.',
+        slow: '배달 완료된 느린우편이 아직 없어요.',
+        intransit: '지금 배달 중인 편지가 없어요.'
+      };
+      grid.innerHTML = '<div class="empty-note" style="grid-column:1/-1;">' + (emptyMsgMap[_mailFilter] || '해당하는 편지가 없어요.') + '</div>';
       return;
     }
-    grid.innerHTML = _letters.map(function(l, i){
-      const preview = (l.content || '').slice(0, 180);
+
+    grid.innerHTML = filtered.map(function(l){
+      const i = _letters.indexOf(l);
+      const locked = isLocked(l);
+      const stampKey = l.stampType === 'slow' ? 'slow' : 'express';
+      const badge = '<div class="stamp-badge-corner">' + STAMP_ICONS[stampKey] + '</div>';
+
+      if (locked) {
+        const preview = String(l.content || '').slice(0, 180);
+        return '<div class="letter-card theme-' + (l.theme||'cream') + ' locked" onclick="openReadModal(' + i + ')">' +
+          badge +
+          '<div class="letter-title">' + (l.title || '제목 없음') + '</div>' +
+          '<div class="letter-preview mosaic">' + preview + '</div>' +
+          '<div class="locked-note">발송일시 : ' + (l.createdAt||'') + '<br>배달예정일시 : ' + (l.deliverAt||'') + '</div>' +
+        '</div>';
+      }
+
+      const preview = String(l.content || '').slice(0, 180);
+      const dateBlock = stampKey === 'slow'
+        ? '<div class="letter-date">발송일시 : ' + (l.createdAt || '') + '<br>도착일시 : ' + (l.deliverAt || '') + '</div>'
+        : '<div class="letter-date">' + (l.createdAt || '') + '</div>';
       return '<div class="letter-card theme-' + (l.theme||'cream') + '" onclick="openReadModal(' + i + ')">' +
+        badge +
         '<div class="letter-title">' + (l.title || '제목 없음') + '</div>' +
-        '<div class="letter-preview">' + preview + (l.content && l.content.length > 180 ? '…' : '') + '</div>' +
-        '<div class="letter-date">' + (l.createdAt || '') + '</div>' +
+        '<div class="letter-preview">' + preview + (String(l.content||'').length > 180 ? '…' : '') + '</div>' +
+        dateBlock +
       '</div>';
     }).join('');
   }
@@ -429,6 +617,7 @@ html,body{
       document.getElementById('gasBadge').textContent = '⚠️ GAS 응답 실패';
       console.warn('[편지함] 로드 실패:', e.message);
     }
+    renderMailFilterBar();
     renderLetters();
 
     const openId = new URLSearchParams(location.search).get('open');
