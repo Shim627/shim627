@@ -18,6 +18,15 @@
       "review": "춘천 닭갈비 1티어 고정집",
       "createdAt": "2026-08-01 20:41",
       "updatedAt": "2026-08-01 20:41"
+    },
+    {
+      "id": "B1785642516427",
+      "title": "슈퍼 버니맨",
+      "mediaUrl": "https://youtu.be/oj4aWi3OL3s",
+      "mediaType": "youtube",
+      "review": "친구랑 함께, 우정테스트 게임",
+      "createdAt": "2026-08-02 12:48",
+      "updatedAt": "2026-08-02 12:48"
     }
   ],
   "comments": []
