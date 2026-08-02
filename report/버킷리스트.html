@@ -118,13 +118,19 @@ html,body{
 .icon-btn.done-btn.active{ background:rgba(122,143,94,.25); color:#4f6a3a; border-color:rgba(122,143,94,.4); }
 
 /* ---------- 통계 패널 ---------- */
-.bl-layout{ display:flex; gap:26px; align-items:flex-start; }
-.bl-main{ flex:1 1 auto; min-width:0; }
-.bl-stats{ flex:0 0 340px; display:flex; flex-direction:column; gap:16px; position:sticky; top:20px; }
-@media (max-width: 1180px){
-  .bl-layout{ flex-direction:column; }
-  .bl-stats{ flex:0 0 auto; width:100%; position:static; flex-direction:row; flex-wrap:wrap; }
-  .stat-card{ flex:1 1 260px; }
+.bl-top-row{ display:grid; grid-template-columns:repeat(4, 1fr); gap:20px; align-items:stretch; margin-bottom:26px; }
+.bl-header-card{
+  background:rgba(255,255,255,.5); border:1px solid var(--border); border-radius:18px;
+  padding:22px 20px; display:flex; flex-direction:column; justify-content:center;
+}
+.bl-header-card .eyebrow{ text-align:left; margin-bottom:6px; }
+.bl-header-card h1{ text-align:left; font-size:21px; margin-bottom:6px; }
+.bl-header-card .desc{ text-align:left; font-size:12.5px; margin-bottom:14px; }
+@media (max-width: 1300px){
+  .bl-top-row{ grid-template-columns:repeat(2, 1fr); }
+}
+@media (max-width: 700px){
+  .bl-top-row{ grid-template-columns:1fr; }
 }
 .stat-card{
   background:rgba(255,255,255,.55); border:1px solid var(--border); border-radius:16px;
@@ -253,13 +259,11 @@ html,body{
 
     <div id="contentWrap">
       <div id="mainWrap">
-        <div class="bl-layout">
-          <div class="bl-main">
-            <div class="hero">
-              <p class="eyebrow">WS &amp; SH</p>
-              <h1>버킷리스트</h1>
-              <p class="desc">같이 하고 싶은 것들을 사진이나 영상으로 남겨두는 곳이에요.</p>
-            </div>
+        <div class="bl-top-row">
+          <div class="bl-header-card">
+            <p class="eyebrow">WS &amp; SH</p>
+            <h1>버킷리스트</h1>
+            <p class="desc">같이 하고 싶은 것들을 사진이나 영상으로 남겨두는 곳이에요.</p>
 
             <div class="toolbar">
               <div class="search-wrap">
@@ -270,31 +274,29 @@ html,body{
             </div>
 
             <div class="tag-filter-bar" id="tagFilterBar"></div>
-
-            <div class="items" id="itemsWrap"></div>
           </div>
 
-          <aside class="bl-stats">
-            <div class="stat-card">
-              <div class="stat-title">📊 월별 등록 현황</div>
-              <div class="bar-chart" id="monthlyBarChart"></div>
-              <div class="bar-legend">
-                <span><i style="background:var(--blue);"></i>온라인</span>
-                <span><i style="background:var(--gold);"></i>오프라인</span>
-              </div>
+          <div class="stat-card">
+            <div class="stat-title">📊 월별 등록 현황</div>
+            <div class="bar-chart" id="monthlyBarChart"></div>
+            <div class="bar-legend">
+              <span><i style="background:var(--blue);"></i>온라인</span>
+              <span><i style="background:var(--gold);"></i>오프라인</span>
             </div>
+          </div>
 
-            <div class="stat-card">
-              <div class="stat-title">💙 온라인 달성률</div>
-              <div class="donut-wrap" id="onlineDonut"></div>
-            </div>
+          <div class="stat-card">
+            <div class="stat-title">💙 온라인 달성률</div>
+            <div class="donut-wrap" id="onlineDonut"></div>
+          </div>
 
-            <div class="stat-card">
-              <div class="stat-title">🧡 오프라인 달성률</div>
-              <div class="donut-wrap" id="offlineDonut"></div>
-            </div>
-          </aside>
+          <div class="stat-card">
+            <div class="stat-title">🧡 오프라인 달성률</div>
+            <div class="donut-wrap" id="offlineDonut"></div>
+          </div>
         </div>
+
+        <div class="items" id="itemsWrap"></div>
       </div>
     </div>
   </div>
