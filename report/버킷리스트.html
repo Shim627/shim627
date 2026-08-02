@@ -15,7 +15,7 @@
   --lavender:#d9c9e8; --cream:#fff8f3;
   --ink:#3d2a37; --ink-soft:#6b5568;
   --border:rgba(217,160,102,.22); --border2:rgba(217,160,102,.4);
-  --red:#c76b7a; --green:#7a8f5e;
+  --red:#c76b7a; --green:#7a8f5e; --blue:#6f9fd8;
   --sidebar-w:230px;
   --font-serif:'Gowun Batang', serif;
   --font-body:'Gowun Dodum', sans-serif;
@@ -97,6 +97,52 @@ html,body{
 }
 .tag-chip:hover{ background:rgba(255,255,255,.8); }
 .tag-chip.active{ background:var(--gold-dim); color:var(--plum); border-color:var(--gold); font-weight:700; }
+
+/* 태그 피커 (모달 내 클릭식 선택기) */
+.tag-picker{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.tag-picker-chip{
+  font-size:12.5px; font-weight:600; padding:7px 14px; border-radius:999px;
+  border:1.5px solid var(--border2); background:rgba(255,255,255,.5); color:var(--ink-soft); cursor:pointer; transition:all .15s;
+}
+.tag-picker-chip.selected{ background:linear-gradient(135deg, var(--gold), #cf8c58); color:#fff8f0; border-color:transparent; font-weight:700; }
+.tag-new-btn{
+  font-size:12.5px; font-weight:700; padding:7px 14px; border-radius:999px;
+  border:1.5px dashed var(--border2); background:transparent; color:var(--gold); cursor:pointer;
+}
+.tag-new-input-wrap{ display:flex; gap:6px; margin-top:8px; width:100%; }
+.tag-new-input-wrap input{ flex:1; padding:8px 12px; border-radius:999px; border:1px solid var(--border2); font-size:12.5px; outline:none; }
+.tag-new-input-wrap button{ font-size:12px; font-weight:700; padding:8px 14px; border-radius:999px; border:none; background:var(--plum); color:#fff; cursor:pointer; }
+
+/* 완료 카드 */
+.item-card.completed{ background:rgba(150,190,150,.22); border-color:rgba(122,143,94,.35); }
+.icon-btn.done-btn.active{ background:rgba(122,143,94,.25); color:#4f6a3a; border-color:rgba(122,143,94,.4); }
+
+/* ---------- 통계 패널 ---------- */
+.bl-layout{ display:flex; gap:26px; align-items:flex-start; }
+.bl-main{ flex:1 1 auto; min-width:0; }
+.bl-stats{ flex:0 0 340px; display:flex; flex-direction:column; gap:16px; position:sticky; top:20px; }
+@media (max-width: 1180px){
+  .bl-layout{ flex-direction:column; }
+  .bl-stats{ flex:0 0 auto; width:100%; position:static; flex-direction:row; flex-wrap:wrap; }
+  .stat-card{ flex:1 1 260px; }
+}
+.stat-card{
+  background:rgba(255,255,255,.55); border:1px solid var(--border); border-radius:16px;
+  padding:18px; box-shadow:0 10px 22px -14px rgba(74,46,68,.25);
+}
+.stat-title{ font-family:var(--font-serif); font-size:14px; font-weight:700; color:var(--plum); margin-bottom:12px; }
+.donut-wrap{ display:flex; align-items:center; gap:16px; }
+.donut-pct{ font-family:var(--font-serif); font-size:22px; font-weight:700; color:var(--plum); }
+.donut-label{ font-size:11.5px; color:var(--ink-soft); font-weight:600; }
+.bar-chart{ display:flex; align-items:flex-end; gap:8px; height:140px; padding-top:10px; }
+.bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+.bar-stack{ width:100%; max-width:26px; display:flex; flex-direction:column-reverse; border-radius:4px; overflow:hidden; }
+.bar-seg-online{ background:var(--blue, #6f9fd8); }
+.bar-seg-offline{ background:var(--gold); }
+.bar-month-label{ font-size:9.5px; color:var(--ink-soft); margin-top:6px; font-weight:600; }
+.bar-legend{ display:flex; gap:14px; margin-top:10px; font-size:11px; color:var(--ink-soft); justify-content:center; }
+.bar-legend span{ display:inline-flex; align-items:center; gap:5px; }
+.bar-legend i{ width:9px; height:9px; border-radius:2px; display:inline-block; }
 
 .item-tags{ display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin-bottom:8px; }
 .tag-pill{
@@ -207,23 +253,48 @@ html,body{
 
     <div id="contentWrap">
       <div id="mainWrap">
-        <div class="hero">
-          <p class="eyebrow">WS &amp; SH</p>
-          <h1>버킷리스트</h1>
-          <p class="desc">같이 하고 싶은 것들을 사진이나 영상으로 남겨두는 곳이에요.</p>
-        </div>
+        <div class="bl-layout">
+          <div class="bl-main">
+            <div class="hero">
+              <p class="eyebrow">WS &amp; SH</p>
+              <h1>버킷리스트</h1>
+              <p class="desc">같이 하고 싶은 것들을 사진이나 영상으로 남겨두는 곳이에요.</p>
+            </div>
 
-        <div class="toolbar">
-          <div class="search-wrap">
-            <span class="icon">🔎</span>
-            <input type="text" id="searchInput" placeholder="제목·리뷰·댓글·태그로 검색" oninput="onSearch()">
+            <div class="toolbar">
+              <div class="search-wrap">
+                <span class="icon">🔎</span>
+                <input type="text" id="searchInput" placeholder="제목·리뷰·댓글·태그로 검색" oninput="onSearch()">
+              </div>
+              <button class="add-btn" onclick="openAddModal()">➕ 항목 추가</button>
+            </div>
+
+            <div class="tag-filter-bar" id="tagFilterBar"></div>
+
+            <div class="items" id="itemsWrap"></div>
           </div>
-          <button class="add-btn" onclick="openAddModal()">➕ 항목 추가</button>
+
+          <aside class="bl-stats">
+            <div class="stat-card">
+              <div class="stat-title">📊 월별 등록 현황</div>
+              <div class="bar-chart" id="monthlyBarChart"></div>
+              <div class="bar-legend">
+                <span><i style="background:var(--blue);"></i>온라인</span>
+                <span><i style="background:var(--gold);"></i>오프라인</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-title">💙 온라인 달성률</div>
+              <div class="donut-wrap" id="onlineDonut"></div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-title">🧡 오프라인 달성률</div>
+              <div class="donut-wrap" id="offlineDonut"></div>
+            </div>
+          </aside>
         </div>
-
-        <div class="tag-filter-bar" id="tagFilterBar"></div>
-
-        <div class="items" id="itemsWrap"></div>
       </div>
     </div>
   </div>
@@ -237,7 +308,10 @@ html,body{
     <div class="field"><label>제목</label><input type="text" id="itemTitle" placeholder="예: 발리 여행 가기"></div>
     <div class="field"><label>사진 또는 영상 링크</label><input type="text" id="itemMediaUrl" placeholder="이미지 URL 또는 유튜브 링크"></div>
     <div class="field"><label>느낌 / 의견</label><textarea id="itemReview" placeholder="왜 하고 싶은지, 어떤 느낌인지 적어봐"></textarea></div>
-    <div class="field"><label>태그 <span style="font-weight:400; color:var(--ink-soft);">(쉼표로 구분, 예: 온라인, 맛집)</span></label><input type="text" id="itemTags" placeholder="온라인, 오프라인 등"></div>
+    <div class="field">
+      <label>태그</label>
+      <div class="tag-picker" id="addTagPicker"></div>
+    </div>
     <div class="err-box" id="addErr"></div>
     <div class="modal-actions">
       <button class="mbtn" onclick="closeAddModal()">취소</button>
@@ -254,7 +328,10 @@ html,body{
     <div class="field"><label>제목</label><input type="text" id="editTitle"></div>
     <div class="field"><label>사진 또는 영상 링크</label><input type="text" id="editMediaUrl"></div>
     <div class="field"><label>느낌 / 의견</label><textarea id="editReview"></textarea></div>
-    <div class="field"><label>태그 <span style="font-weight:400; color:var(--ink-soft);">(쉼표로 구분)</span></label><input type="text" id="editTags"></div>
+    <div class="field">
+      <label>태그</label>
+      <div class="tag-picker" id="editTagPicker"></div>
+    </div>
     <div class="err-box" id="editErr"></div>
     <div class="modal-actions">
       <button class="mbtn" onclick="closeEditModal()">취소</button>
@@ -316,11 +393,64 @@ html,body{
     return '';
   }
 
+  let _addSelectedTags = [];
+  let _editSelectedTags = [];
+
+  function allKnownTags() {
+    const preset = ['온라인', '오프라인'];
+    const dyn = [];
+    _items.forEach(function(it){
+      tagsArray(it).forEach(function(t){ if (preset.indexOf(t) === -1 && dyn.indexOf(t) === -1) dyn.push(t); });
+    });
+    return preset.concat(dyn);
+  }
+
+  function renderTagPicker(containerId, selectedArr, toggleFnName) {
+    const el = document.getElementById(containerId);
+    const known = allKnownTags();
+    const chips = known.map(function(t){
+      const sel = selectedArr.indexOf(t) !== -1;
+      return '<span class="tag-picker-chip' + (sel?' selected':'') + '" onclick="' + toggleFnName + '(\'' + t + '\')">' + t + '</span>';
+    }).join('');
+    el.innerHTML = chips + '<span class="tag-new-btn" onclick="showNewTagInput(\'' + containerId + '\')">＋ 신규</span>' +
+      '<div class="tag-new-input-wrap" id="' + containerId + '_newWrap" style="display:none;">' +
+        '<input type="text" id="' + containerId + '_newInput" placeholder="새 태그 이름">' +
+        '<button onclick="confirmNewTag(\'' + containerId + '\')">추가</button>' +
+      '</div>';
+  }
+
+  function toggleAddTag(tag) {
+    const i = _addSelectedTags.indexOf(tag);
+    if (i === -1) _addSelectedTags.push(tag); else _addSelectedTags.splice(i,1);
+    renderTagPicker('addTagPicker', _addSelectedTags, 'toggleAddTag');
+  }
+  function toggleEditTag(tag) {
+    const i = _editSelectedTags.indexOf(tag);
+    if (i === -1) _editSelectedTags.push(tag); else _editSelectedTags.splice(i,1);
+    renderTagPicker('editTagPicker', _editSelectedTags, 'toggleEditTag');
+  }
+
+  function showNewTagInput(containerId) {
+    document.getElementById(containerId + '_newWrap').style.display = 'flex';
+    document.getElementById(containerId + '_newInput').focus();
+  }
+  function confirmNewTag(containerId) {
+    const input = document.getElementById(containerId + '_newInput');
+    const val = input.value.trim();
+    if (!val) return;
+    const isAdd = containerId === 'addTagPicker';
+    const arr = isAdd ? _addSelectedTags : _editSelectedTags;
+    if (arr.indexOf(val) === -1) arr.push(val);
+    if (isAdd) renderTagPicker('addTagPicker', _addSelectedTags, 'toggleAddTag');
+    else renderTagPicker('editTagPicker', _editSelectedTags, 'toggleEditTag');
+  }
+
   function openAddModal() {
     document.getElementById('itemTitle').value = '';
     document.getElementById('itemMediaUrl').value = '';
     document.getElementById('itemReview').value = '';
-    document.getElementById('itemTags').value = '';
+    _addSelectedTags = [];
+    renderTagPicker('addTagPicker', _addSelectedTags, 'toggleAddTag');
     document.getElementById('addErr').style.display = 'none';
     document.getElementById('addModal').style.display = 'flex';
   }
@@ -331,7 +461,7 @@ html,body{
     const title = document.getElementById('itemTitle').value.trim();
     const mediaUrl = document.getElementById('itemMediaUrl').value.trim();
     const review = document.getElementById('itemReview').value.trim();
-    const tags = document.getElementById('itemTags').value.trim();
+    const tags = _addSelectedTags.join(', ');
     const errEl = document.getElementById('addErr');
     errEl.style.display = 'none';
     if (!title) { errEl.textContent = '제목을 입력해주세요.'; errEl.style.display = 'block'; return; }
@@ -349,6 +479,7 @@ html,body{
       _items.unshift(data.item);
       renderTagFilterBar();
       renderItems();
+      renderStats();
       closeAddModal();
     } catch(e) {
       errEl.textContent = e.message;
@@ -366,7 +497,8 @@ html,body{
     document.getElementById('editTitle').value = it.title || '';
     document.getElementById('editMediaUrl').value = it.mediaUrl || '';
     document.getElementById('editReview').value = it.review || '';
-    document.getElementById('editTags').value = it.tags || '';
+    _editSelectedTags = tagsArray(it);
+    renderTagPicker('editTagPicker', _editSelectedTags, 'toggleEditTag');
     document.getElementById('editErr').style.display = 'none';
     document.getElementById('editModal').style.display = 'flex';
   }
@@ -377,7 +509,7 @@ html,body{
     const title = document.getElementById('editTitle').value.trim();
     const mediaUrl = document.getElementById('editMediaUrl').value.trim();
     const review = document.getElementById('editReview').value.trim();
-    const tags = document.getElementById('editTags').value.trim();
+    const tags = _editSelectedTags.join(', ');
     const errEl = document.getElementById('editErr');
     errEl.style.display = 'none';
     if (!title) { errEl.textContent = '제목을 입력해주세요.'; errEl.style.display = 'block'; return; }
@@ -394,6 +526,7 @@ html,body{
       Object.assign(it, patch);
       renderTagFilterBar();
       renderItems();
+      renderStats();
       closeEditModal();
     } catch(e) {
       errEl.textContent = e.message;
@@ -413,8 +546,28 @@ html,body{
       _items = _items.filter(function(x){ return x.id !== id; });
       _comments = _comments.filter(function(c){ return c.bucketId !== id; });
       renderItems();
+      renderStats();
     } catch(e) {
       alert('삭제 실패: ' + e.message);
+    }
+  }
+
+  async function toggleCompleted(id) {
+    const it = _items.find(function(x){ return x.id === id; });
+    if (!it) return;
+    const next = it.completed === 'true' ? 'false' : 'true';
+    it.completed = next; // 낙관적 갱신
+    renderItems();
+    renderStats();
+    try {
+      const res = await fetchWithTimeout(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updateBucket', id, patch:{ completed: next } }) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || '저장 실패');
+    } catch(e) {
+      it.completed = next === 'true' ? 'false' : 'true'; // 실패 시 롤백
+      renderItems();
+      renderStats();
+      alert('완료 상태 저장 실패: ' + e.message);
     }
   }
 
@@ -544,6 +697,7 @@ html,body{
       it.tags = newTags;
       renderTagFilterBar();
       renderItems();
+      renderStats();
     } catch(e) {
       alert('태그 저장 실패: ' + e.message);
     }
@@ -574,10 +728,12 @@ html,body{
       const authorOptions = AUTHORS.map(function(a){ return '<option value="'+a.key+'">'+a.label+'</option>'; }).join('');
       const tagPills = tagsArray(it).map(function(t){ return '<span class="tag-pill">' + t + '</span>'; }).join('');
 
-      return '<div class="item-card" id="item_' + it.id + '">' +
+      const isDone = it.completed === 'true';
+      return '<div class="item-card' + (isDone?' completed':'') + '" id="item_' + it.id + '">' +
         '<div class="item-head">' +
           '<div class="item-title">' + it.title + '</div>' +
           '<div class="item-actions">' +
+            '<button class="icon-btn done-btn' + (isDone?' active':'') + '" title="완료 처리" onclick="toggleCompleted(\'' + it.id + '\')">' + (isDone ? '✅' : '⬜') + '</button>' +
             '<button class="icon-btn" title="수정" onclick="openEditModal(\'' + it.id + '\')">✏️</button>' +
             '<button class="icon-btn danger" title="삭제" onclick="deleteItem(\'' + it.id + '\')">🗑</button>' +
           '</div>' +
@@ -598,6 +754,70 @@ html,body{
     }).join('');
   }
 
+  function donutSVG(pct, color) {
+    const r = 30, c = 2 * Math.PI * r;
+    const offset = c * (1 - pct / 100);
+    return '<svg width="76" height="76" viewBox="0 0 76 76">' +
+      '<circle cx="38" cy="38" r="' + r + '" fill="none" stroke="rgba(217,160,102,.15)" stroke-width="9"/>' +
+      '<circle cx="38" cy="38" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="9" ' +
+        'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '" ' +
+        'stroke-linecap="round" transform="rotate(-90 38 38)"/>' +
+    '</svg>';
+  }
+
+  function renderStats() {
+    // ── 온라인/오프라인 달성률 도넛 ──
+    const onlineItems = _items.filter(function(it){ return tagsArray(it).indexOf('온라인') !== -1; });
+    const offlineItems = _items.filter(function(it){ return tagsArray(it).indexOf('오프라인') !== -1; });
+    const onlineDone = onlineItems.filter(function(it){ return it.completed === 'true'; }).length;
+    const offlineDone = offlineItems.filter(function(it){ return it.completed === 'true'; }).length;
+    const onlinePct = onlineItems.length ? Math.round(onlineDone / onlineItems.length * 100) : 0;
+    const offlinePct = offlineItems.length ? Math.round(offlineDone / offlineItems.length * 100) : 0;
+
+    document.getElementById('onlineDonut').innerHTML =
+      donutSVG(onlinePct, 'var(--blue)') +
+      '<div><div class="donut-pct">' + onlinePct + '%</div><div class="donut-label">' + onlineDone + ' / ' + onlineItems.length + ' 완료</div></div>';
+
+    document.getElementById('offlineDonut').innerHTML =
+      donutSVG(offlinePct, 'var(--gold)') +
+      '<div><div class="donut-pct">' + offlinePct + '%</div><div class="donut-label">' + offlineDone + ' / ' + offlineItems.length + ' 완료</div></div>';
+
+    // ── 월별 등록 현황 (온라인/오프라인 분리 스택 막대) ──
+    const monthMap = {}; // 'YYYY-MM' -> {online, offline}
+    _items.forEach(function(it){
+      const dateStr = it.createdAt || '';
+      const m = dateStr.match(/^(\d{4})-(\d{2})/);
+      if (!m) return;
+      const key = m[1] + '-' + m[2];
+      if (!monthMap[key]) monthMap[key] = { online:0, offline:0 };
+      const tags = tagsArray(it);
+      if (tags.indexOf('온라인') !== -1) monthMap[key].online++;
+      if (tags.indexOf('오프라인') !== -1) monthMap[key].offline++;
+    });
+    const months = Object.keys(monthMap).sort().slice(-6); // 최근 6개월
+    const maxVal = months.reduce(function(mx, k){ return Math.max(mx, monthMap[k].online + monthMap[k].offline); }, 1);
+
+    const chartEl = document.getElementById('monthlyBarChart');
+    if (!months.length) {
+      chartEl.innerHTML = '<div class="empty-note" style="padding:10px;">아직 데이터가 없어요.</div>';
+    } else {
+      chartEl.innerHTML = months.map(function(key){
+        const v = monthMap[key];
+        const total = v.online + v.offline;
+        const onlineH = total ? (v.online / maxVal * 110) : 0;
+        const offlineH = total ? (v.offline / maxVal * 110) : 0;
+        const label = key.slice(2).replace('-', '.');
+        return '<div class="bar-col">' +
+          '<div class="bar-stack" style="height:' + Math.max(onlineH+offlineH, 2) + 'px;">' +
+            '<div class="bar-seg-offline" style="height:' + offlineH + 'px;"></div>' +
+            '<div class="bar-seg-online" style="height:' + onlineH + 'px;"></div>' +
+          '</div>' +
+          '<div class="bar-month-label">' + label + '</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
+
   async function init() {
     document.getElementById('gasBadge').textContent = '불러오는 중…';
     try {
@@ -613,6 +833,7 @@ html,body{
     }
     renderTagFilterBar();
     renderItems();
+    renderStats();
 
     const openId = new URLSearchParams(location.search).get('open');
     if (openId) {
