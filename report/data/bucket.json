@@ -36,6 +36,15 @@
       "review": "친구랑 함께, 대환장 파티",
       "createdAt": "2026-08-02 13:03",
       "updatedAt": "2026-08-02 13:03"
+    },
+    {
+      "id": "B1785643429178",
+      "title": "오커쿡드2",
+      "mediaUrl": "https://youtu.be/blP0lgiNj2s",
+      "mediaType": "youtube",
+      "review": "친구랑 함께, 협동플레이의 정석",
+      "createdAt": "2026-08-02 13:03",
+      "updatedAt": "2026-08-02 13:03"
     }
   ],
   "comments": []
