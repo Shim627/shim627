@@ -85,25 +85,44 @@ html,body{
   box-shadow:0 10px 22px -8px rgba(185,113,58,.55); white-space:nowrap;
 }
 
-.items{ display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+.items{ display:grid; grid-template-columns:repeat(auto-fill, minmax(255px, 1fr)); gap:21px; }
 @media (max-width: 780px){ .items{ grid-template-columns:1fr; } }
 
-.item-card{
-  background:rgba(255,255,255,.55); border:1px solid var(--border); border-radius:18px;
-  padding:18px; box-shadow:0 12px 26px -16px rgba(74,46,68,.3); position:relative;
+.tag-filter-bar{ display:flex; gap:7px; align-items:center; justify-content:center; margin-bottom:16px; flex-wrap:wrap; }
+.tag-chip{
+  font-size:12.5px; font-weight:600; padding:6px 14px; border-radius:999px;
+  border:1px solid var(--border2); background:rgba(255,255,255,.5); color:var(--ink-soft); cursor:pointer; transition:all .15s;
 }
-.item-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:10px; }
-.item-title{ font-family:var(--font-serif); font-size:16.5px; font-weight:700; color:var(--plum); line-height:1.4; }
+.tag-chip:hover{ background:rgba(255,255,255,.8); }
+.tag-chip.active{ background:var(--gold-dim); color:var(--plum); border-color:var(--gold); font-weight:700; }
+
+.item-tags{ display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin-bottom:8px; }
+.tag-pill{
+  font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:999px;
+  background:rgba(217,160,102,.15); color:var(--plum);
+}
+.tag-add-btn{
+  font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:999px;
+  border:1px dashed var(--border2); background:transparent; color:var(--ink-soft); cursor:pointer;
+}
+.tag-add-btn:hover{ background:rgba(255,255,255,.6); }
+
+.item-card{
+  background:rgba(255,255,255,.55); border:1px solid var(--border); border-radius:17px;
+  padding:17px; box-shadow:0 12px 26px -16px rgba(74,46,68,.3); position:relative;
+}
+.item-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:9px; }
+.item-title{ font-family:var(--font-serif); font-size:15.5px; font-weight:700; color:var(--plum); line-height:1.4; }
 .item-actions{ display:flex; gap:6px; flex-shrink:0; }
-.icon-btn{ font-size:13px; padding:5px 8px; border-radius:8px; border:1px solid var(--border2); background:rgba(255,255,255,.6); cursor:pointer; }
+.icon-btn{ font-size:12.5px; padding:5px 8px; border-radius:8px; border:1px solid var(--border2); background:rgba(255,255,255,.6); cursor:pointer; }
 .icon-btn:hover{ background:var(--cream); }
 .icon-btn.danger{ color:var(--red); }
 
-.item-media{ width:100%; border-radius:12px; overflow:hidden; background:#000; margin-bottom:12px; }
-.item-media img{ width:100%; display:block; max-height:360px; object-fit:cover; }
-.item-media iframe{ width:100%; height:280px; border:none; display:block; }
-.item-media .link-fallback{ display:block; padding:26px; text-align:center; color:#fff; background:linear-gradient(135deg, var(--plum), var(--gold)); text-decoration:none; font-size:13.5px; font-weight:600; }
-.item-review{ font-size:14px; font-weight:500; line-height:1.75; color:var(--ink); background:rgba(255,255,255,.5); border-radius:10px; padding:12px 14px; margin-bottom:10px; }
+.item-media{ width:100%; border-radius:11px; overflow:hidden; background:#000; margin-bottom:11px; }
+.item-media img{ width:100%; display:block; max-height:342px; object-fit:cover; }
+.item-media iframe{ width:100%; height:266px; border:none; display:block; }
+.item-media .link-fallback{ display:block; padding:25px; text-align:center; color:#fff; background:linear-gradient(135deg, var(--plum), var(--gold)); text-decoration:none; font-size:13px; font-weight:600; }
+.item-review{ font-size:13.5px; font-weight:500; line-height:1.75; color:var(--ink); background:rgba(255,255,255,.5); border-radius:10px; padding:11px 13px; margin-bottom:9px; }
 .item-date{ font-size:11.5px; font-weight:600; color:var(--ink-soft); margin-bottom:14px; }
 
 .comments{ border-top:1px dashed var(--border2); padding-top:12px; }
@@ -195,10 +214,12 @@ html,body{
         <div class="toolbar">
           <div class="search-wrap">
             <span class="icon">🔎</span>
-            <input type="text" id="searchInput" placeholder="제목·리뷰·댓글로 검색" oninput="onSearch()">
+            <input type="text" id="searchInput" placeholder="제목·리뷰·댓글·태그로 검색" oninput="onSearch()">
           </div>
           <button class="add-btn" onclick="openAddModal()">➕ 항목 추가</button>
         </div>
+
+        <div class="tag-filter-bar" id="tagFilterBar"></div>
 
         <div class="items" id="itemsWrap"></div>
       </div>
@@ -214,6 +235,7 @@ html,body{
     <div class="field"><label>제목</label><input type="text" id="itemTitle" placeholder="예: 발리 여행 가기"></div>
     <div class="field"><label>사진 또는 영상 링크</label><input type="text" id="itemMediaUrl" placeholder="이미지 URL 또는 유튜브 링크"></div>
     <div class="field"><label>느낌 / 의견</label><textarea id="itemReview" placeholder="왜 하고 싶은지, 어떤 느낌인지 적어봐"></textarea></div>
+    <div class="field"><label>태그 <span style="font-weight:400; color:var(--ink-soft);">(쉼표로 구분, 예: 온라인, 맛집)</span></label><input type="text" id="itemTags" placeholder="온라인, 오프라인 등"></div>
     <div class="err-box" id="addErr"></div>
     <div class="modal-actions">
       <button class="mbtn" onclick="closeAddModal()">취소</button>
@@ -230,6 +252,7 @@ html,body{
     <div class="field"><label>제목</label><input type="text" id="editTitle"></div>
     <div class="field"><label>사진 또는 영상 링크</label><input type="text" id="editMediaUrl"></div>
     <div class="field"><label>느낌 / 의견</label><textarea id="editReview"></textarea></div>
+    <div class="field"><label>태그 <span style="font-weight:400; color:var(--ink-soft);">(쉼표로 구분)</span></label><input type="text" id="editTags"></div>
     <div class="err-box" id="editErr"></div>
     <div class="modal-actions">
       <button class="mbtn" onclick="closeEditModal()">취소</button>
@@ -244,6 +267,20 @@ html,body{
   }
 
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
+
+  // 응답이 너무 오래 걸리면(15초) 자동으로 실패 처리 - 버튼이 영원히 멈추는 것 방지
+  function fetchWithTimeout(url, options, timeoutMs) {
+    timeoutMs = timeoutMs || 15000;
+    const controller = new AbortController();
+    const timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
+    return fetch(url, Object.assign({}, options, { signal: controller.signal }))
+      .then(function(res){ clearTimeout(timer); return res; })
+      .catch(function(err){
+        clearTimeout(timer);
+        if (err.name === 'AbortError') throw new Error('응답이 너무 늦어요 (' + (timeoutMs/1000) + '초 초과). 네트워크 상태를 확인하고 다시 시도해주세요.');
+        throw err;
+      });
+  }
   const AUTHORS = [
     { key:'우승', label:'우승 💙', icon:'💙' },
     { key:'성화', label:'성화 💗', icon:'💗' }
@@ -281,6 +318,7 @@ html,body{
     document.getElementById('itemTitle').value = '';
     document.getElementById('itemMediaUrl').value = '';
     document.getElementById('itemReview').value = '';
+    document.getElementById('itemTags').value = '';
     document.getElementById('addErr').style.display = 'none';
     document.getElementById('addModal').style.display = 'flex';
   }
@@ -291,6 +329,7 @@ html,body{
     const title = document.getElementById('itemTitle').value.trim();
     const mediaUrl = document.getElementById('itemMediaUrl').value.trim();
     const review = document.getElementById('itemReview').value.trim();
+    const tags = document.getElementById('itemTags').value.trim();
     const errEl = document.getElementById('addErr');
     errEl.style.display = 'none';
     if (!title) { errEl.textContent = '제목을 입력해주세요.'; errEl.style.display = 'block'; return; }
@@ -299,13 +338,14 @@ html,body{
     const btn = document.getElementById('addSubmitBtn');
     btn.disabled = true; btn.textContent = '게시 중입니다…';
     try {
-      const res = await fetch(GAS_URL, {
+      const res = await fetchWithTimeout(GAS_URL, {
         method:'POST',
-        body: JSON.stringify({ action:'addBucket', item:{ title, mediaUrl, mediaType: detectMediaType(mediaUrl), review } })
+        body: JSON.stringify({ action:'addBucket', item:{ title, mediaUrl, mediaType: detectMediaType(mediaUrl), review, tags } })
       });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '저장 실패');
       _items.unshift(data.item);
+      renderTagFilterBar();
       renderItems();
       closeAddModal();
     } catch(e) {
@@ -324,6 +364,7 @@ html,body{
     document.getElementById('editTitle').value = it.title || '';
     document.getElementById('editMediaUrl').value = it.mediaUrl || '';
     document.getElementById('editReview').value = it.review || '';
+    document.getElementById('editTags').value = it.tags || '';
     document.getElementById('editErr').style.display = 'none';
     document.getElementById('editModal').style.display = 'flex';
   }
@@ -334,6 +375,7 @@ html,body{
     const title = document.getElementById('editTitle').value.trim();
     const mediaUrl = document.getElementById('editMediaUrl').value.trim();
     const review = document.getElementById('editReview').value.trim();
+    const tags = document.getElementById('editTags').value.trim();
     const errEl = document.getElementById('editErr');
     errEl.style.display = 'none';
     if (!title) { errEl.textContent = '제목을 입력해주세요.'; errEl.style.display = 'block'; return; }
@@ -342,12 +384,13 @@ html,body{
     const btn = document.getElementById('editSubmitBtn');
     btn.disabled = true; btn.textContent = '저장 중…';
     try {
-      const patch = { title, mediaUrl, mediaType: detectMediaType(mediaUrl), review };
-      const res = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updateBucket', id:_editingId, patch }) });
+      const patch = { title, mediaUrl, mediaType: detectMediaType(mediaUrl), review, tags };
+      const res = await fetchWithTimeout(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updateBucket', id:_editingId, patch }) });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '수정 실패');
       const it = _items.find(function(x){ return x.id === _editingId; });
       Object.assign(it, patch);
+      renderTagFilterBar();
       renderItems();
       closeEditModal();
     } catch(e) {
@@ -362,7 +405,7 @@ html,body{
   async function deleteItem(id) {
     if (!confirm('이 항목을 삭제할까요? 댓글도 함께 삭제돼요.')) return;
     try {
-      const res = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'deleteBucket', id }) });
+      const res = await fetchWithTimeout(GAS_URL, { method:'POST', body: JSON.stringify({ action:'deleteBucket', id }) });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '삭제 실패');
       _items = _items.filter(function(x){ return x.id !== id; });
@@ -388,7 +431,7 @@ html,body{
     _commentSubmitting[bucketId] = true;
     textInput.disabled = true; btn.disabled = true; btn.textContent = '등록 중…';
     try {
-      const res = await fetch(GAS_URL, {
+      const res = await fetchWithTimeout(GAS_URL, {
         method:'POST',
         body: JSON.stringify({ action:'addBucketComment', comment:{ bucketId, author: authorSel.value, text } })
       });
@@ -410,7 +453,7 @@ html,body{
     const newText = prompt('댓글 수정', c.text);
     if (newText === null || !newText.trim()) return;
     try {
-      const res = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updateBucketComment', id:commentId, patch:{ text:newText.trim() } }) });
+      const res = await fetchWithTimeout(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updateBucketComment', id:commentId, patch:{ text:newText.trim() } }) });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '수정 실패');
       c.text = newText.trim();
@@ -423,7 +466,7 @@ html,body{
   async function deleteComment(commentId) {
     if (!confirm('댓글을 삭제할까요?')) return;
     try {
-      const res = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'deleteBucketComment', id:commentId }) });
+      const res = await fetchWithTimeout(GAS_URL, { method:'POST', body: JSON.stringify({ action:'deleteBucketComment', id:commentId }) });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '삭제 실패');
       _comments = _comments.filter(function(c){ return c.id !== commentId; });
@@ -438,6 +481,12 @@ html,body{
     return a ? a.icon : '💬';
   }
 
+  let _activeTagFilter = '전체';
+
+  function tagsArray(it) {
+    return (it.tags || '').split(',').map(function(t){ return t.trim(); }).filter(Boolean);
+  }
+
   function onSearch() {
     _searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
     renderItems();
@@ -448,16 +497,62 @@ html,body{
     const q = _searchQuery;
     if ((it.title||'').toLowerCase().indexOf(q) !== -1) return true;
     if ((it.review||'').toLowerCase().indexOf(q) !== -1) return true;
+    if (tagsArray(it).some(function(t){ return t.toLowerCase().indexOf(q) !== -1; })) return true;
     const cs = commentsFor(it.id);
     return cs.some(function(c){ return (c.text||'').toLowerCase().indexOf(q) !== -1; });
   }
 
+  function matchesTagFilter(it) {
+    if (_activeTagFilter === '전체') return true;
+    return tagsArray(it).indexOf(_activeTagFilter) !== -1;
+  }
+
+  function selectTagFilter(tag) {
+    _activeTagFilter = tag;
+    renderTagFilterBar();
+    renderItems();
+  }
+
+  function renderTagFilterBar() {
+    const bar = document.getElementById('tagFilterBar');
+    const preset = ['전체', '온라인', '오프라인'];
+    const dynamicTags = [];
+    _items.forEach(function(it){
+      tagsArray(it).forEach(function(t){
+        if (preset.indexOf(t) === -1 && dynamicTags.indexOf(t) === -1) dynamicTags.push(t);
+      });
+    });
+    const allTags = preset.concat(dynamicTags);
+    bar.innerHTML = allTags.map(function(t){
+      return '<span class="tag-chip' + (t===_activeTagFilter?' active':'') + '" onclick="selectTagFilter(\'' + t + '\')">' + t + '</span>';
+    }).join('');
+  }
+
+  async function quickAddTag(id) {
+    const it = _items.find(function(x){ return x.id === id; });
+    if (!it) return;
+    const cur = tagsArray(it);
+    const input = prompt('태그를 쉼표로 구분해서 입력해줘 (예: 온라인, 맛집)', cur.join(', '));
+    if (input === null) return;
+    const newTags = input.trim();
+    try {
+      const res = await fetchWithTimeout(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updateBucket', id: id, patch:{ tags: newTags } }) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || '태그 저장 실패');
+      it.tags = newTags;
+      renderTagFilterBar();
+      renderItems();
+    } catch(e) {
+      alert('태그 저장 실패: ' + e.message);
+    }
+  }
+
   function renderItems() {
     const wrap = document.getElementById('itemsWrap');
-    const filtered = _items.filter(matchesSearch);
+    const filtered = _items.filter(matchesSearch).filter(matchesTagFilter);
 
     if (!filtered.length) {
-      wrap.innerHTML = '<div class="empty-note" style="grid-column:1/-1;">' + (_searchQuery ? '검색 결과가 없어요.' : '아직 등록된 버킷리스트가 없어요. 첫 항목을 추가해보세요.') + '</div>';
+      wrap.innerHTML = '<div class="empty-note" style="grid-column:1/-1;">' + (_searchQuery || _activeTagFilter !== '전체' ? '조건에 맞는 항목이 없어요.' : '아직 등록된 버킷리스트가 없어요. 첫 항목을 추가해보세요.') + '</div>';
       return;
     }
 
@@ -475,6 +570,7 @@ html,body{
       }).join('');
 
       const authorOptions = AUTHORS.map(function(a){ return '<option value="'+a.key+'">'+a.label+'</option>'; }).join('');
+      const tagPills = tagsArray(it).map(function(t){ return '<span class="tag-pill">' + t + '</span>'; }).join('');
 
       return '<div class="item-card" id="item_' + it.id + '">' +
         '<div class="item-head">' +
@@ -484,6 +580,7 @@ html,body{
             '<button class="icon-btn danger" title="삭제" onclick="deleteItem(\'' + it.id + '\')">🗑</button>' +
           '</div>' +
         '</div>' +
+        '<div class="item-tags">' + tagPills + '<span class="tag-add-btn" onclick="quickAddTag(\'' + it.id + '\')">🏷️+</span></div>' +
         (it.mediaUrl ? '<div class="item-media">' + renderMedia(it.mediaUrl) + '</div>' : '') +
         (it.review ? '<div class="item-review">' + it.review + '</div>' : '') +
         '<div class="item-date">' + (it.createdAt||'') + '</div>' +
@@ -512,6 +609,7 @@ html,body{
       document.getElementById('gasBadge').textContent = '⚠️ GAS 응답 실패';
       console.warn('[버킷리스트] 로드 실패:', e.message);
     }
+    renderTagFilterBar();
     renderItems();
 
     const openId = new URLSearchParams(location.search).get('open');
