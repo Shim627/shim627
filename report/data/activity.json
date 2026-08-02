@@ -2,25 +2,39 @@
   "ok": true,
   "items": [
     {
-      "time": "2026-08-02 13:03",
-      "isNew": true,
+      "time": "2026-08-02 14:53",
+      "isNew": false,
+      "category": "버킷리스트",
+      "title": "춘천 후평시장",
+      "link": "report/버킷리스트.html?open=B1785580118786"
+    },
+    {
+      "time": "2026-08-02 14:52",
+      "isNew": false,
+      "category": "버킷리스트",
+      "title": "춘천 통나무집 닭갈비 본점",
+      "link": "report/버킷리스트.html?open=B1785584472325"
+    },
+    {
+      "time": "2026-08-02 14:52",
+      "isNew": false,
+      "category": "버킷리스트",
+      "title": "슈퍼 버니맨",
+      "link": "report/버킷리스트.html?open=B1785642516427"
+    },
+    {
+      "time": "2026-08-02 14:52",
+      "isNew": false,
       "category": "버킷리스트",
       "title": "휴먼 폴 플랫",
       "link": "report/버킷리스트.html?open=B1785643381489"
     },
     {
-      "time": "2026-08-02 13:03",
-      "isNew": true,
+      "time": "2026-08-02 14:52",
+      "isNew": false,
       "category": "버킷리스트",
       "title": "오버쿡드2",
       "link": "report/버킷리스트.html?open=B1785643429178"
-    },
-    {
-      "time": "2026-08-02 12:48",
-      "isNew": true,
-      "category": "버킷리스트",
-      "title": "슈퍼 버니맨",
-      "link": "report/버킷리스트.html?open=B1785642516427"
     },
     {
       "time": "2026-08-02 10:22",
@@ -58,25 +72,11 @@
       "link": "report/편지함.html?open=L1785610856086"
     },
     {
-      "time": "2026-08-01 20:41",
-      "isNew": true,
-      "category": "버킷리스트",
-      "title": "춘천 통나무집 닭갈비 본점",
-      "link": "report/버킷리스트.html?open=B1785584472325"
-    },
-    {
       "time": "2026-08-01 20:17",
       "isNew": true,
       "category": "편지함",
       "title": "감정",
       "link": "report/편지함.html?open=L1785583057156"
-    },
-    {
-      "time": "2026-08-01 19:28",
-      "isNew": true,
-      "category": "버킷리스트",
-      "title": "춘천 후평시장",
-      "link": "report/버킷리스트.html?open=B1785580118786"
     },
     {
       "time": "2026-08-01 19:22",
