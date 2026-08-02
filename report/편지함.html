@@ -321,6 +321,35 @@ html,body{
 
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
 
+  // 응답이 너무 오래 걸리면 자동 실패 처리 (버튼이 영원히 멈추는 것 방지)
+  function fetchWithTimeout(url, options, timeoutMs) {
+    timeoutMs = timeoutMs || 15000;
+    const controller = new AbortController();
+    const timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
+    return fetch(url, Object.assign({}, options, { signal: controller.signal, cache: 'no-store' }))
+      .then(function(res){ clearTimeout(timer); return res; })
+      .catch(function(err){
+        clearTimeout(timer);
+        if (err.name === 'AbortError') throw new Error('응답이 너무 늦어요. 네트워크 상태를 확인하고 다시 시도해주세요.');
+        throw err;
+      });
+  }
+  // GET 요청 전용: 캐시버스팅 + 1회 자동 재시도 (콜드스타트 대비)
+  function gasGet(action, tries) {
+    tries = tries || 2;
+    const url = GAS_URL + '?action=' + action + '&_=' + Date.now();
+    function attempt(n, timeoutMs) {
+      return fetchWithTimeout(url, {}, timeoutMs)
+        .then(function(res){ return res.json(); })
+        .catch(function(err){ if (n > 1) return attempt(n - 1, 15000); throw err; });
+    }
+    return attempt(tries, 7000);
+  }
+  // 로컬 캐시 (stale-while-revalidate)
+  const LS_KEY = 'shim627_cache_letters';
+  function lsLoad() { try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch(e) { return null; } }
+  function lsSave() { try { localStorage.setItem(LS_KEY, JSON.stringify({ letters:_letters, savedAt: Date.now() })); } catch(e) {} }
+
   const THEMES = [
     { key:'cream',    label:'크림',   dot:'#f3e3d3' },
     { key:'blush',    label:'블러쉬', dot:'#f2c7cf' },
@@ -429,6 +458,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '저장 실패');
       _letters.unshift(data.letter);
+      lsSave();
       renderLetters();
       closeWriteModal();
     } catch(e) {
@@ -528,6 +558,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '수정 실패');
       Object.assign(l, patch);
+      lsSave();
       renderLetters();
       closeReadModal();
     } catch(e) {
@@ -549,6 +580,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '삭제 실패');
       _letters.splice(_activeIdx, 1);
+      lsSave();
       renderLetters();
       closeReadModal();
     } catch(e) {
@@ -621,15 +653,23 @@ html,body{
   }
 
   async function init() {
-    document.getElementById('gasBadge').textContent = '불러오는 중…';
+    const cached = lsLoad();
+    if (cached && Array.isArray(cached.letters)) {
+      _letters = cached.letters;
+      document.getElementById('gasBadge').textContent = '📦 캐시에서 표시 중 (갱신 중…)';
+      renderMailFilterBar();
+      renderLetters();
+    } else {
+      document.getElementById('gasBadge').textContent = '불러오는 중…';
+    }
     try {
-      const res = await fetch(GAS_URL + '?action=listLetters');
-      const data = await res.json();
+      const data = await gasGet('listLetters');
       if (!data.ok) throw new Error(data.error || 'GAS 응답 오류');
       _letters = (data.letters || []).reverse();
+      lsSave();
       document.getElementById('gasBadge').textContent = '✅ GAS 연동됨';
     } catch(e) {
-      document.getElementById('gasBadge').textContent = '⚠️ GAS 응답 실패';
+      document.getElementById('gasBadge').textContent = cached ? '⚠️ 갱신 실패 (캐시 표시 중)' : '⚠️ GAS 응답 실패';
       console.warn('[편지함] 로드 실패:', e.message);
     }
     renderMailFilterBar();

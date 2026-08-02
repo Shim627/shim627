@@ -465,8 +465,7 @@
 
   // ---------- 오늘 방문자 배지 ----------
   function loadVisitorBadge() {
-    fetch(GAS_URL + '?action=getTodayVisitorCounts')
-      .then(function(res){ return res.json(); })
+    gasGet('getTodayVisitorCounts')
       .then(function(data){
         if (!data || !data.ok) throw new Error();
         var c = data.counts || { owner:0, guest:0 };
@@ -481,6 +480,29 @@
   // ---------- 원터치 동기화 ----------
   var GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
 
+  function fetchWithTimeout(url, timeoutMs) {
+    timeoutMs = timeoutMs || 7000;
+    var controller = new AbortController();
+    var timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
+    return fetch(url, { signal: controller.signal, cache: 'no-store' })
+      .then(function(res){ clearTimeout(timer); return res; })
+      .catch(function(err){ clearTimeout(timer); throw err; });
+  }
+  // GET 요청 전용: 캐시버스팅 + 1회 자동 재시도 (콜드스타트 대비)
+  function gasGet(action) {
+    var url = GAS_URL + '?action=' + action + '&_=' + Date.now();
+    return fetchWithTimeout(url, 7000).then(function(r){ return r.json(); })
+      .catch(function(){ return fetchWithTimeout(url, 15000).then(function(r){ return r.json(); }); });
+  }
+  function lsLoadKey(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; } }
+  function lsSaveKey(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
+
+  function clearAllLocalCaches() {
+    ['shim627_cache_reports','shim627_cache_visits','shim627_cache_letters','shim627_cache_bucket','shim627_cache_schedule','shim627_cache_album','shim627_cache_activity'].forEach(function(k){
+      try { localStorage.removeItem(k); } catch(e) {}
+    });
+  }
+
   function runSync() {
     var nameEl = document.getElementById('syncCardName');
     var descEl = document.getElementById('syncCardDesc');
@@ -489,10 +511,10 @@
     nameEl.textContent = '동기화 중…';
     descEl.textContent = '잠시만 기다려주세요';
 
-    fetch(GAS_URL + '?action=resyncAll')
-      .then(function(res){ return res.json(); })
+    gasGet('resyncAll')
       .then(function(data){
         if (data && data.ok) {
+          clearAllLocalCaches();
           nameEl.textContent = '✅ 완료!';
           descEl.textContent = '최신 데이터로 갱신됐어요';
           loadActivity();
@@ -516,18 +538,21 @@
   }
 
   function loadActivity() {
-    fetch(GAS_URL + '?action=listRecentActivity')
-      .then(function(res){
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
+    var cached = lsLoadKey('shim627_cache_activity');
+    if (cached && Array.isArray(cached.items)) {
+      renderActivity(cached.items);
+    }
+    gasGet('listRecentActivity')
       .then(function(data){
-        if (data && data.ok) renderActivity(data.items);
-        else document.getElementById('activityList').innerHTML = '<div class="activity-empty">응답은 왔는데 형식이 이상해요: ' + JSON.stringify(data).slice(0,120) + '</div>';
+        if (data && data.ok) {
+          renderActivity(data.items);
+          lsSaveKey('shim627_cache_activity', { items: data.items, savedAt: Date.now() });
+        }
+        else if (!cached) document.getElementById('activityList').innerHTML = '<div class="activity-empty">응답은 왔는데 형식이 이상해요: ' + JSON.stringify(data).slice(0,120) + '</div>';
       })
       .catch(function(err){
         console.error('[홈] 최근 게시물 로드 실패:', err);
-        document.getElementById('activityList').innerHTML = '<div class="activity-empty">불러오지 못했어요 (' + err.message + ')</div>';
+        if (!cached) document.getElementById('activityList').innerHTML = '<div class="activity-empty">불러오지 못했어요 (' + err.message + ')</div>';
       });
   }
   loadActivity();

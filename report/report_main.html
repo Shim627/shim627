@@ -475,6 +475,31 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   // 프로젝트 Gas정보 파일에 저장된 배포 URL을 그대로 사용
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
 
+  function fetchWithTimeout(url, options, timeoutMs) {
+    timeoutMs = timeoutMs || 15000;
+    const controller = new AbortController();
+    const timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
+    return fetch(url, Object.assign({}, options, { signal: controller.signal, cache: 'no-store' }))
+      .then(function(res){ clearTimeout(timer); return res; })
+      .catch(function(err){
+        clearTimeout(timer);
+        if (err.name === 'AbortError') throw new Error('응답이 너무 늦어요. 네트워크 상태를 확인하고 다시 시도해주세요.');
+        throw err;
+      });
+  }
+  function gasGet(action, tries) {
+    tries = tries || 2;
+    const url = GAS_URL + '?action=' + action + '&_=' + Date.now();
+    function attempt(n, timeoutMs) {
+      return fetchWithTimeout(url, {}, timeoutMs)
+        .then(function(res){ return res.json(); })
+        .catch(function(err){ if (n > 1) return attempt(n - 1, 15000); throw err; });
+    }
+    return attempt(tries, 7000);
+  }
+  function lsLoadKey(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; } }
+  function lsSaveKey(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
+
   // GitHub Pages 배포 주소 (깃허브_도메인 파일 기준)
   const PAGES_BASE = 'https://shim627.github.io/shim627';
 
@@ -521,8 +546,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   // GAS 통신
   // ─────────────────────────────────────────────
   async function fetchFileList() {
-    const res = await fetch(GAS_URL + '?action=listReports');
-    const data = await res.json();
+    const data = await gasGet('listReports');
     if (!data.ok || !Array.isArray(data.files)) throw new Error(data.error || '데이터 응답 오류');
     return data.files; // [{ fileKey, name, category, regDate, region, memo, htmlUrl }]
   }
@@ -546,13 +570,23 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   }
 
   async function refreshList() {
-    document.getElementById('gasBadge').textContent = '불러오는 중…';
+    const cached = lsLoadKey('shim627_cache_reports');
+    if (cached && Array.isArray(cached.files)) {
+      _allFiles = cached.files;
+      _listLoaded = true;
+      document.getElementById('gasBadge').textContent = '📦 캐시에서 표시 중 (갱신 중…)';
+      renderCounts();
+      renderListTable();
+    } else {
+      document.getElementById('gasBadge').textContent = '불러오는 중…';
+    }
     try {
       _allFiles = await fetchFileList();
       _listLoaded = true;
+      lsSaveKey('shim627_cache_reports', { files:_allFiles, savedAt: Date.now() });
       document.getElementById('gasBadge').textContent = '✅ GAS 연동됨';
     } catch(e) {
-      document.getElementById('gasBadge').textContent = '⚠️ GAS 응답 실패';
+      document.getElementById('gasBadge').textContent = cached ? '⚠️ 갱신 실패 (캐시 표시 중)' : '⚠️ GAS 응답 실패';
       console.warn('[report_main] GAS 목록 실패:', e.message);
     }
     renderCounts();
@@ -612,6 +646,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
           await updateReportField(fileKey, 'category', newVal);
           const ff = _allFiles.find(function(x){ return x.fileKey === fileKey; });
           if (ff) ff.category = newVal;
+          lsSaveKey('shim627_cache_reports', { files:_allFiles, savedAt: Date.now() });
         } catch(e) { alert('저장 실패: ' + e.message); }
         renderCounts();
         renderListTable();
@@ -632,6 +667,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
         await updateReportField(fileKey, field, newVal);
         const f = _allFiles.find(function(x){ return x.fileKey === fileKey; });
         if (f) f[field] = newVal;
+        lsSaveKey('shim627_cache_reports', { files:_allFiles, savedAt: Date.now() });
       } catch(e) {
         alert('저장 실패: ' + e.message);
       }
@@ -765,6 +801,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
     try {
       const file = await addFileToGas(category, name);
       _allFiles.push(file);
+      lsSaveKey('shim627_cache_reports', { files:_allFiles, savedAt: Date.now() });
       _listLoaded = true;
       renderCounts();
       renderListTable();
@@ -908,6 +945,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
       try {
         const file = await addFileToGas(t.category, t.name);
         _allFiles.push(file);
+      lsSaveKey('shim627_cache_reports', { files:_allFiles, savedAt: Date.now() });
         okCount++;
       } catch(e) { failCount++; }
     }
@@ -1005,8 +1043,7 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   let _stampVisits = {};
 
   async function fetchStampVisits() {
-    const res = await fetch(GAS_URL + '?action=listVisits');
-    const data = await res.json();
+    const data = await gasGet('listVisits');
     if (!data.ok) throw new Error(data.error || '데이터 응답 오류');
     return data.visits || {};
   }
@@ -1063,8 +1100,11 @@ table.rtable tr:hover td{ background:rgba(255,255,255,.5); cursor:pointer; }
   }
 
   async function initStampMap() {
+    const cached = lsLoadKey('shim627_cache_visits');
+    if (cached && cached.visits) { _stampVisits = cached.visits; renderStampMap(); }
     try {
       _stampVisits = await fetchStampVisits();
+      lsSaveKey('shim627_cache_visits', { visits:_stampVisits, savedAt: Date.now() });
     } catch(e) {
       console.warn('[report_main] 도장깨기 데이터 로드 실패:', e.message);
     }

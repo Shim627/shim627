@@ -158,6 +158,32 @@ html,body{
 
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
 
+  function fetchWithTimeout(url, options, timeoutMs) {
+    timeoutMs = timeoutMs || 15000;
+    const controller = new AbortController();
+    const timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
+    return fetch(url, Object.assign({}, options, { signal: controller.signal, cache: 'no-store' }))
+      .then(function(res){ clearTimeout(timer); return res; })
+      .catch(function(err){
+        clearTimeout(timer);
+        if (err.name === 'AbortError') throw new Error('응답이 너무 늦어요. 네트워크 상태를 확인하고 다시 시도해주세요.');
+        throw err;
+      });
+  }
+  function gasGet(action, tries) {
+    tries = tries || 2;
+    const url = GAS_URL + '?action=' + action + '&_=' + Date.now();
+    function attempt(n, timeoutMs) {
+      return fetchWithTimeout(url, {}, timeoutMs)
+        .then(function(res){ return res.json(); })
+        .catch(function(err){ if (n > 1) return attempt(n - 1, 15000); throw err; });
+    }
+    return attempt(tries, 7000);
+  }
+  const LS_KEY = 'shim627_cache_visits';
+  function lsLoad() { try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch(e) { return null; } }
+  function lsSave() { try { localStorage.setItem(LS_KEY, JSON.stringify({ visits:_visits, savedAt: Date.now() })); } catch(e) {} }
+
   // ── 전국 시/군/구 데이터 (서울은 25개 자치구, 그 외는 시/군 단위) ──
   const REGIONS = [
     // 서울특별시 (25개 자치구)
@@ -214,14 +240,13 @@ html,body{
   let _activeRegion = null;
 
   async function fetchVisits() {
-    const res = await fetch(GAS_URL + '?action=listVisits');
-    const data = await res.json();
+    const data = await gasGet('listVisits');
     if (!data.ok) throw new Error(data.error || 'GAS 응답 오류');
     return data.visits || {};
   }
 
   async function saveVisitToGas(regionId, date) {
-    const res = await fetch(GAS_URL, {
+    const res = await fetchWithTimeout(GAS_URL, {
       method:'POST',
       body: JSON.stringify({ action:'setVisit', regionId, date })
     });
@@ -230,7 +255,7 @@ html,body{
   }
 
   async function deleteVisitFromGas(regionId) {
-    const res = await fetch(GAS_URL, {
+    const res = await fetchWithTimeout(GAS_URL, {
       method:'POST',
       body: JSON.stringify({ action:'deleteVisit', regionId })
     });
@@ -290,6 +315,7 @@ html,body{
     try {
       await saveVisitToGas(_activeRegion, date);
       _visits[_activeRegion] = date;
+      lsSave();
       render();
       // 열려있던 province는 다시 펼쳐줌
       closeModal();
@@ -303,6 +329,7 @@ html,body{
     try {
       await deleteVisitFromGas(_activeRegion);
       delete _visits[_activeRegion];
+      lsSave();
       render();
       closeModal();
     } catch(e) {
@@ -312,12 +339,20 @@ html,body{
   }
 
   async function init() {
-    document.getElementById('gasBadge').textContent = '불러오는 중…';
+    const cached = lsLoad();
+    if (cached && cached.visits) {
+      _visits = cached.visits;
+      document.getElementById('gasBadge').textContent = '📦 캐시에서 표시 중 (갱신 중…)';
+      render();
+    } else {
+      document.getElementById('gasBadge').textContent = '불러오는 중…';
+    }
     try {
       _visits = await fetchVisits();
+      lsSave();
       document.getElementById('gasBadge').textContent = '✅ GAS 연동됨';
     } catch(e) {
-      document.getElementById('gasBadge').textContent = '⚠️ GAS 응답 실패';
+      document.getElementById('gasBadge').textContent = cached ? '⚠️ 갱신 실패 (캐시 표시 중)' : '⚠️ GAS 응답 실패';
       console.warn('[도장깨기] 목록 실패:', e.message);
     }
     render();

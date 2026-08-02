@@ -269,6 +269,33 @@ html,body{
   if (IS_GUEST) document.body.classList.add('guest-mode');
 
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbzILmO8_ZO025q6JuZ0ojZ_gF68Kz8bsM3aCCZk2EUQ3XN_sbQsbKvYlDeGMgjIYVRr2w/exec';
+
+  function fetchWithTimeout(url, options, timeoutMs) {
+    timeoutMs = timeoutMs || 15000;
+    const controller = new AbortController();
+    const timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
+    return fetch(url, Object.assign({}, options, { signal: controller.signal, cache: 'no-store' }))
+      .then(function(res){ clearTimeout(timer); return res; })
+      .catch(function(err){
+        clearTimeout(timer);
+        if (err.name === 'AbortError') throw new Error('응답이 너무 늦어요. 네트워크 상태를 확인하고 다시 시도해주세요.');
+        throw err;
+      });
+  }
+  function gasGet(action, tries) {
+    tries = tries || 2;
+    const url = GAS_URL + '?action=' + action + '&_=' + Date.now();
+    function attempt(n, timeoutMs) {
+      return fetchWithTimeout(url, {}, timeoutMs)
+        .then(function(res){ return res.json(); })
+        .catch(function(err){ if (n > 1) return attempt(n - 1, 15000); throw err; });
+    }
+    return attempt(tries, 7000);
+  }
+  const LS_KEY = 'shim627_cache_album';
+  function lsLoad() { try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch(e) { return null; } }
+  function lsSave() { try { localStorage.setItem(LS_KEY, JSON.stringify({ items:_items, comments:_comments, savedAt: Date.now() })); } catch(e) {} }
+
   const AUTHORS = [
     { key:'우승', label:'우승 💙', icon:'💙' },
     { key:'성화', label:'성화 💗', icon:'💗' }
@@ -391,6 +418,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '저장 실패');
       _items.unshift(data.item);
+      lsSave();
       renderItems();
       closeAddModal();
     } catch(e) {
@@ -433,6 +461,7 @@ html,body{
       if (!data.ok) throw new Error(data.error || '수정 실패');
       const it = _items.find(function(x){ return x.id === _editingId; });
       Object.assign(it, patch);
+      lsSave();
       renderItems();
       closeEditModal();
     } catch(e) {
@@ -452,6 +481,7 @@ html,body{
       if (!data.ok) throw new Error(data.error || '삭제 실패');
       _items = _items.filter(function(x){ return x.id !== id; });
       _comments = _comments.filter(function(c){ return c.albumId !== id; });
+      lsSave();
       renderItems();
     } catch(e) {
       alert('삭제 실패: ' + e.message);
@@ -480,6 +510,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '저장 실패');
       _comments.push(data.comment);
+      lsSave();
       renderItems();
     } catch(e) {
       alert('댓글 저장 실패: ' + e.message);
@@ -498,6 +529,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '수정 실패');
       c.text = newText.trim();
+      lsSave();
       renderItems();
     } catch(e) {
       alert('수정 실패: ' + e.message);
@@ -511,6 +543,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '삭제 실패');
       _comments = _comments.filter(function(c){ return c.id !== commentId; });
+      lsSave();
       renderItems();
     } catch(e) {
       alert('삭제 실패: ' + e.message);
@@ -599,16 +632,24 @@ html,body{
   }
 
   async function init() {
-    document.getElementById('gasBadge').textContent = '불러오는 중…';
+    const cached = lsLoad();
+    if (cached && Array.isArray(cached.items)) {
+      _items = cached.items;
+      _comments = cached.comments || [];
+      document.getElementById('gasBadge').textContent = '📦 캐시에서 표시 중 (갱신 중…)';
+      renderItems();
+    } else {
+      document.getElementById('gasBadge').textContent = '불러오는 중…';
+    }
     try {
-      const res = await fetch(GAS_URL + '?action=listAlbum');
-      const data = await res.json();
+      const data = await gasGet('listAlbum');
       if (!data.ok) throw new Error(data.error || '데이터 응답 오류');
       _items = (data.items || []).reverse();
       _comments = data.comments || [];
+      lsSave();
       document.getElementById('gasBadge').textContent = '✅ 연동됨';
     } catch(e) {
-      document.getElementById('gasBadge').textContent = '⚠️ 응답 실패';
+      document.getElementById('gasBadge').textContent = cached ? '⚠️ 갱신 실패 (캐시 표시 중)' : '⚠️ 응답 실패';
       console.warn('[사진첩] 로드 실패:', e.message);
     }
     renderItems();

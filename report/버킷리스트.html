@@ -371,7 +371,7 @@ html,body{
     timeoutMs = timeoutMs || 15000;
     const controller = new AbortController();
     const timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
-    return fetch(url, Object.assign({}, options, { signal: controller.signal }))
+    return fetch(url, Object.assign({}, options, { signal: controller.signal, cache: 'no-store' }))
       .then(function(res){ clearTimeout(timer); return res; })
       .catch(function(err){
         clearTimeout(timer);
@@ -379,6 +379,26 @@ html,body{
         throw err;
       });
   }
+
+  // GET 요청 전용: 캐시버스팅 + 1회 자동 재시도 (첫 시도는 짧게, 콜드스타트 대비 재시도는 넉넉하게)
+  function gasGet(action, tries) {
+    tries = tries || 2;
+    const url = GAS_URL + '?action=' + action + '&_=' + Date.now();
+    function attempt(n, timeoutMs) {
+      return fetchWithTimeout(url, {}, timeoutMs)
+        .then(function(res){ return res.json(); })
+        .catch(function(err){
+          if (n > 1) return attempt(n - 1, 15000);
+          throw err;
+        });
+    }
+    return attempt(tries, 7000);
+  }
+
+  // 로컬 캐시 (stale-while-revalidate) - 새로고침 즉시 이전 화면을 보여주고 백그라운드에서 최신화
+  const LS_KEY = 'shim627_cache_bucket';
+  function lsLoad() { try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch(e) { return null; } }
+  function lsSave() { try { localStorage.setItem(LS_KEY, JSON.stringify({ items:_items, comments:_comments, savedAt: Date.now() })); } catch(e) {} }
   const AUTHORS = [
     { key:'우승', label:'우승 💙', icon:'💙' },
     { key:'성화', label:'성화 💗', icon:'💗' }
@@ -496,6 +516,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '저장 실패');
       _items.unshift(data.item);
+      lsSave();
       renderTagFilterBar();
       renderItems();
       renderStats();
@@ -543,6 +564,7 @@ html,body{
       if (!data.ok) throw new Error(data.error || '수정 실패');
       const it = _items.find(function(x){ return x.id === _editingId; });
       Object.assign(it, patch);
+      lsSave();
       renderTagFilterBar();
       renderItems();
       renderStats();
@@ -564,6 +586,7 @@ html,body{
       if (!data.ok) throw new Error(data.error || '삭제 실패');
       _items = _items.filter(function(x){ return x.id !== id; });
       _comments = _comments.filter(function(c){ return c.bucketId !== id; });
+      lsSave();
       renderItems();
       renderStats();
     } catch(e) {
@@ -576,6 +599,7 @@ html,body{
     if (!it) return;
     const next = it.completed === 'true' ? 'false' : 'true';
     it.completed = next; // 낙관적 갱신
+    lsSave();
     renderItems();
     renderStats();
     try {
@@ -584,6 +608,7 @@ html,body{
       if (!data.ok) throw new Error(data.error || '저장 실패');
     } catch(e) {
       it.completed = next === 'true' ? 'false' : 'true'; // 실패 시 롤백
+      lsSave();
       renderItems();
       renderStats();
       alert('완료 상태 저장 실패: ' + e.message);
@@ -612,6 +637,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '저장 실패');
       _comments.push(data.comment);
+      lsSave();
       renderItems();
     } catch(e) {
       alert('댓글 저장 실패: ' + e.message);
@@ -631,6 +657,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '수정 실패');
       c.text = newText.trim();
+      lsSave();
       renderItems();
     } catch(e) {
       alert('수정 실패: ' + e.message);
@@ -644,6 +671,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '삭제 실패');
       _comments = _comments.filter(function(c){ return c.id !== commentId; });
+      lsSave();
       renderItems();
     } catch(e) {
       alert('삭제 실패: ' + e.message);
@@ -711,6 +739,7 @@ html,body{
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || '태그 저장 실패');
       it.tags = newTags;
+      lsSave();
       renderTagFilterBar();
       renderItems();
       renderStats();
@@ -855,16 +884,29 @@ html,body{
   }
 
   async function init() {
-    document.getElementById('gasBadge').textContent = '불러오는 중…';
+    // 1) 로컬 캐시가 있으면 네트워크를 기다리지 않고 즉시 화면을 그림 (체감 로딩 0초)
+    const cached = lsLoad();
+    if (cached && Array.isArray(cached.items)) {
+      _items = cached.items;
+      _comments = cached.comments || [];
+      document.getElementById('gasBadge').textContent = '📦 캐시에서 표시 중 (갱신 중…)';
+      renderTagFilterBar();
+      renderItems();
+      renderStats();
+    } else {
+      document.getElementById('gasBadge').textContent = '불러오는 중…';
+    }
+
+    // 2) 백그라운드로 최신 데이터를 가져와 갱신 (콜드스타트 대비 1회 자동 재시도 포함)
     try {
-      const res = await fetch(GAS_URL + '?action=listBucket');
-      const data = await res.json();
+      const data = await gasGet('listBucket');
       if (!data.ok) throw new Error(data.error || 'GAS 응답 오류');
       _items = (data.items || []).reverse();
       _comments = data.comments || [];
+      lsSave();
       document.getElementById('gasBadge').textContent = '✅ GAS 연동됨';
     } catch(e) {
-      document.getElementById('gasBadge').textContent = '⚠️ GAS 응답 실패';
+      document.getElementById('gasBadge').textContent = cached ? '⚠️ 갱신 실패 (캐시 표시 중)' : '⚠️ GAS 응답 실패';
       console.warn('[버킷리스트] 로드 실패:', e.message);
     }
     renderTagFilterBar();
