@@ -2,6 +2,16 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<script>
+(function(){
+  try {
+    var mode = localStorage.getItem('shim627_viewmode') || 'pc';
+    if (mode !== 'pc' && window.self === window.top) {
+      location.replace('../frame.html?url=' + encodeURIComponent(location.href) + '&mode=' + mode);
+    }
+  } catch(e) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>사진첩</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">

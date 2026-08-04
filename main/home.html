@@ -2,6 +2,21 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<script>
+(function(){
+  try {
+    var mode = localStorage.getItem('shim627_viewmode') || 'pc';
+    if (mode !== 'pc' && window.self === window.top) {
+      location.replace('frame.html?url=' + encodeURIComponent(location.href) + '&mode=' + mode);
+    }
+  } catch(e) {}
+})();
+function applyViewMode(mode) {
+  try { localStorage.setItem('shim627_viewmode', mode); } catch(e) {}
+  if (window.top !== window.self) window.top.location.href = window.location.href;
+  else location.reload();
+}
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>우리 둘의 아지트</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -288,9 +303,36 @@
   .activity-time{ font-size:10.5px; font-weight:500; color:#8a7286; }
   .activity-title.activity-blind{ filter:blur(3px); opacity:.55; user-select:none; letter-spacing:2px; }
   .activity-empty{ font-size:12.5px; color:#8a7286; text-align:center; padding:20px 0; }
+
+  .vm-picker{
+    position:fixed; top:14px; left:14px; z-index:50;
+    display:flex; gap:6px;
+    background:rgba(255,255,255,.7);
+    border:1px solid rgba(217,160,102,.35);
+    padding:6px; border-radius:999px;
+    box-shadow:0 6px 16px -8px rgba(74,46,68,.25);
+    backdrop-filter:blur(4px);
+  }
+  .vm-picker button{
+    font-size:12px; font-weight:700;
+    padding:6px 12px; border-radius:999px;
+    border:none; cursor:pointer;
+    background:transparent; color:#4a2e44;
+    transition:all .15s;
+  }
+  .vm-picker button.active{
+    background:linear-gradient(135deg, #d9a066, #cf8c58);
+    color:#fff8f0;
+  }
 </style>
 </head>
 <body>
+
+<div class="vm-picker" id="vmPicker">
+  <button data-mode="pc" onclick="applyViewMode('pc')">🖥 PC</button>
+  <button data-mode="mobile" onclick="applyViewMode('mobile')">📱 모바일</button>
+  <button data-mode="fold" onclick="applyViewMode('fold')">📱 폴드</button>
+</div>
 
 <div class="layout">
 <div class="wrap">
@@ -557,6 +599,12 @@
   }
   loadActivity();
   loadVisitorBadge();
+
+  try {
+    var curMode = localStorage.getItem('shim627_viewmode') || 'pc';
+    var vmBtn = document.querySelector('.vm-picker button[data-mode="' + curMode + '"]');
+    if (vmBtn) vmBtn.classList.add('active');
+  } catch(e) {}
 
 </script>
 

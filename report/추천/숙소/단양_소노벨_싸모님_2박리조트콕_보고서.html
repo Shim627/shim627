@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="소노벨 단양 패밀리 탑 취사 레이크뷰 객실의 2박 요금, 오션플레이, 게임장, 취사, 후기 분석">
+<title>소노벨 단양 | 싸모님 2박 리조트콕 보고서</title>
+<style>
+:root{
+  --bg:#f5f2ec; --paper:#fffdf9; --ink:#20201e; --muted:#6e6a63;
+  --line:#ded8ce; --accent:#8b5943; --accent2:#d7b69c; --dark:#252b27;
+  --good:#2d6a4f; --warn:#9a6700; --bad:#9b3a32; --shadow:0 18px 50px rgba(30,28,24,.10);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.72;word-break:keep-all}
+a{color:inherit}
+img{max-width:100%;display:block}
+.hero{min-height:82vh;position:relative;display:flex;align-items:flex-end;overflow:hidden;background:#111}
+.hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.16) 40%,rgba(0,0,0,.84))}
+.hero-inner{position:relative;z-index:2;color:white;width:min(1180px,calc(100% - 36px));margin:0 auto;padding:80px 0 74px}
+.kicker{display:inline-flex;gap:8px;align-items:center;padding:8px 14px;border:1px solid rgba(255,255,255,.45);border-radius:999px;background:rgba(0,0,0,.24);backdrop-filter:blur(8px);font-size:14px;font-weight:800;letter-spacing:.04em}
+.hero h1{font-size:clamp(38px,7vw,82px);line-height:1.05;margin:18px 0 18px;letter-spacing:-.055em;max-width:930px}
+.hero .lead{font-size:clamp(17px,2.2vw,24px);max-width:850px;margin:0;color:rgba(255,255,255,.92)}
+.hero-note{margin-top:25px;display:flex;flex-wrap:wrap;gap:9px}
+.hero-note span{padding:7px 11px;border-radius:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);font-size:13px}
+.nav{position:sticky;top:0;z-index:20;background:rgba(255,253,249,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav-inner{width:min(1180px,calc(100% - 28px));margin:auto;display:flex;gap:6px;overflow:auto;padding:10px 0;scrollbar-width:none}
+.nav a{white-space:nowrap;text-decoration:none;padding:9px 13px;border-radius:999px;font-weight:800;font-size:13px;color:#4b4842}
+.nav a:hover{background:#ece4d9}
+main{width:min(1180px,calc(100% - 30px));margin:0 auto;padding:44px 0 90px}
+section{scroll-margin-top:76px;margin:0 0 72px}
+.section-head{display:grid;grid-template-columns:160px 1fr;gap:24px;align-items:start;margin-bottom:24px}
+.section-no{font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;color:var(--accent)}
+.section-head h2{font-size:clamp(27px,4vw,48px);line-height:1.2;margin:0 0 10px;letter-spacing:-.045em}
+.section-head p{margin:0;color:var(--muted);max-width:850px}
+.verdict{background:var(--dark);color:white;border-radius:28px;padding:34px;box-shadow:var(--shadow);display:grid;grid-template-columns:1.45fr .8fr;gap:34px;align-items:center}
+.verdict h2{font-size:clamp(28px,4vw,48px);line-height:1.18;margin:0 0 14px;letter-spacing:-.045em}
+.verdict p{color:rgba(255,255,255,.82);margin:0}
+.score-ring{width:180px;aspect-ratio:1;border-radius:50%;margin:auto;display:grid;place-items:center;background:conic-gradient(var(--accent2) calc(var(--score)*1%),rgba(255,255,255,.12) 0);position:relative}
+.score-ring:before{content:"";position:absolute;inset:14px;border-radius:50%;background:var(--dark)}
+.score-ring b,.score-ring small{position:relative;z-index:1}
+.score-ring b{font-size:44px;line-height:1}.score-ring small{font-size:12px;color:rgba(255,255,255,.7)}
+.metric-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:18px 0}
+.metric{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:20px;min-height:138px;box-shadow:0 8px 24px rgba(30,28,24,.04)}
+.metric .label{font-size:12px;color:var(--muted);font-weight:800}
+.metric strong{display:block;font-size:22px;line-height:1.25;margin:10px 0 6px;letter-spacing:-.035em}
+.metric small{color:var(--muted);font-size:12px}
+.notice{padding:16px 18px;border-left:5px solid var(--warn);background:#fff7df;border-radius:10px;color:#66500e}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 10px 30px rgba(30,28,24,.05)}
+.card h3{margin:0 0 12px;font-size:21px;letter-spacing:-.025em}
+.card p:last-child{margin-bottom:0}
+.tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#eee4d8;color:#6d4435;font-weight:900;font-size:11px;margin-bottom:11px}
+.story{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.story-item{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:20px;position:relative}
+.story-item:before{content:attr(data-step);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--accent);color:white;font-weight:900;margin-bottom:16px}
+.story-item h3{margin:0 0 9px;font-size:18px}
+.story-item p{margin:0;font-size:14px;color:var(--muted)}
+.price-table,.detail-table{width:100%;border-collapse:collapse;background:var(--paper);overflow:hidden;border-radius:18px}
+.price-table th,.price-table td,.detail-table th,.detail-table td{padding:15px 16px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.price-table th,.detail-table th{font-size:13px;color:#5a5650;background:#f0ebe4}
+.price-table tr:last-child td,.detail-table tr:last-child td{border-bottom:0}
+.price-strong{font-size:21px;font-weight:900;color:var(--accent)}
+.bars{display:grid;gap:13px}
+.bar-row{display:grid;grid-template-columns:120px 1fr 38px;gap:12px;align-items:center}
+.bar-track{height:10px;background:#e5dfd5;border-radius:999px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px}
+.pill-list{display:flex;flex-wrap:wrap;gap:8px}
+.pill-list span{padding:7px 11px;background:#eee8df;border-radius:999px;font-size:13px;font-weight:800}
+.gallery{columns:3 270px;column-gap:14px}
+.photo{break-inside:avoid;margin:0 0 14px;background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:zoom-in;box-shadow:0 8px 22px rgba(30,28,24,.06)}
+.photo img{width:100%;height:auto;object-fit:contain;background:#e9e4dc}
+.photo figcaption{padding:10px 12px;font-size:12px;color:var(--muted)}
+.review-good{border-top:5px solid var(--good)}
+.review-warn{border-top:5px solid var(--warn)}
+.review-bad{border-top:5px solid var(--bad)}
+.checklist{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.check{padding:13px 14px;background:var(--paper);border:1px solid var(--line);border-radius:12px}
+.check b{display:block;margin-bottom:4px}
+.check small{color:var(--muted)}
+.callout{font-size:clamp(21px,3vw,34px);line-height:1.45;padding:32px;border-radius:24px;background:#eadfd4;letter-spacing:-.035em}
+.sources{font-size:13px;color:var(--muted)}
+.sources ol{padding-left:22px}
+.sources a{word-break:break-all;color:#4c5e7a}
+.foot-note{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;place-items:center;z-index:100;padding:22px}
+.lightbox.open{display:grid}
+.lightbox img{max-width:96vw;max-height:88vh;object-fit:contain}
+.lightbox button{position:absolute;right:22px;top:18px;border:0;background:white;width:42px;height:42px;border-radius:50%;font-size:25px;cursor:pointer}
+@media(max-width:900px){
+  .section-head{grid-template-columns:1fr;gap:6px}
+  .metric-grid{grid-template-columns:repeat(2,1fr)}
+  .verdict{grid-template-columns:1fr}
+  .story{grid-template-columns:1fr 1fr}
+  .grid-3{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .hero{min-height:72vh}.hero-inner{padding-bottom:46px}
+  main{width:min(100% - 20px,1180px);padding-top:28px}
+  section{margin-bottom:55px}
+  .metric-grid,.grid-2,.story,.checklist{grid-template-columns:1fr}
+  .metric{min-height:0}.card{padding:21px}
+  .bar-row{grid-template-columns:92px 1fr 34px}
+  .price-table,.detail-table{font-size:13px}
+  .price-table th,.price-table td,.detail-table th,.detail-table td{padding:12px 9px}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-1-1024x681.jpg" alt="소노벨 단양 대표 전경" referrerpolicy="no-referrer">
+  <div class="hero-inner">
+    <div class="kicker">라이트함 라인 · 취사형 리조트 · 경기·충청 2박 숙소 5선</div>
+    <h1>소노벨 단양</h1>
+    <p class="lead">숙소 선택에 너무 힘주고 싶지 않은 주말. 넓은 취사형 객실에서 먹고 자다가, 심심하면 물놀이와 스크린 스포츠만 잠깐 즐기는 가벼운 2박입니다.</p>
+    <div class="hero-note"><span>추천 객실 패밀리 탑 취사·레이크뷰·침대</span><span>오션플레이</span><span>레전드 히어로즈</span><span>객실 취사</span></div>
+  </div>
+</header>
+<nav class="nav"><div class="nav-inner">
+  <a href="#verdict">한눈 결론</a><a href="#price">요금·체류시간</a><a href="#room">추천 객실</a>
+  <a href="#story">2박 시나리오</a><a href="#play">놀이·게임</a><a href="#clean">청결·생활</a>
+  <a href="#gallery">사진</a><a href="#review">후기</a><a href="#reserve">예약 체크</a><a href="#source">출처</a>
+</div></nav>
+<main>
+<section id="verdict">
+  <div class="verdict">
+    <div><div class="kicker">부담 없이 골라 가는 리조트콕</div><h2>풀빌라 가격은 부담스럽고, 객실만 있으면 심심할 때</h2><p>전용 수영장이나 고급 신축 감성은 없지만 취사 객실, 오션플레이, 사우나, 노래방, 게임장, 스크린 스포츠가 한 리조트 안에 모여 있습니다. 2박 동안 한두 번만 시설을 이용하고 나머지는 레이크뷰 객실에서 먹고 누워 있기 좋습니다.</p></div>
+    <div class="score-ring" style="--score:84"><div style="text-align:center"><b>84</b><br><small>싸모님 적합도 / 100</small></div></div>
+  </div>
+  <div class="metric-grid"><div class="metric"><div class="label">평일 1박</div>
+        <strong>20.3만~26.6만원</strong><small>패밀리 취사·탑 객실 예시</small></div><div class="metric"><div class="label">주말·성수기 1박</div>
+        <strong>25.6만~30.5만원</strong><small>레이크뷰·탑 객실 예시</small></div><div class="metric"><div class="label">2박 기본 체류</div>
+        <strong>44시간</strong><small>첫날 15:00 → 셋째 날 11:00</small></div><div class="metric"><div class="label">실내 놀이</div>
+        <strong>물놀이+스크린</strong><small>게임장·노래방 포함</small></div><div class="metric"><div class="label">식사</div>
+        <strong>객실 취사</strong><small>외출 없이 해결 가능</small></div></div>
+  <div class="notice"><b>가격 읽는 법:</b> 패키지·전망·취사 여부·탑 등급에 따라 표시가가 달라집니다. ‘30 Hours Stay’는 1박 전용 상품 사례이므로 2박 예약에 자동 적용된다고 보지 않았습니다.</div>
+</section>
+
+<section id="price">
+  <div class="section-head"><div class="section-no">01 · PRICE &amp; TIME</div>
+    <div><h2>평일·주말 요금과 2박 체류시간</h2><p>객실료와 실제 머무는 시간을 분리해, 연박의 체감 가치를 계산했습니다.</p></div></div>
+  <div style="overflow:auto"><table class="price-table">
+  <thead><tr><th>구분</th><th>1박 표시가</th><th>2박 예상</th></tr></thead><tbody><tr><th>평일 · 패밀리 탑 취사</th><td><span class="price-strong">203,000~266,000원</span><br><small>객실·전망·요금제별 표시 범위</small></td>
+    <td><b>406,000~532,000원</b><br><small>평일 2박 가정</small></td></tr><tr><th>주말·성수기</th><td><span class="price-strong">256,000~305,000원</span><br><small>탑·레이크뷰 패밀리 계열 예시</small></td>
+    <td><b>512,000~610,000원</b><br><small>주말 2박 가정</small></td></tr><tr><th>스위트 탑 취사</th><td><span class="price-strong">295,000~409,000원</span><br><small>공간 분리를 원하는 경우</small></td>
+    <td><b>590,000~818,000원</b><br><small>날짜·패키지에 따라 변동</small></td></tr><tr><th>오션플레이 2인</th><td><span class="price-strong">약 54,600~65,800원</span><br><small>성인 39,000~47,000원, 투숙객 30% 할인 가정</small></td>
+    <td><b>1회 이용 권장</b><br><small>시즌·현장 할인 재확인</small></td></tr></tbody></table></div>
+  <div class="grid-2" style="margin-top:18px">
+    <div class="card"><span class="tag">기본 체류</span><h3>첫날 15:00부터 셋째 날 11:00까지 · 기본 44시간</h3><p>표준 체크인 15시, 체크아웃 11시입니다. 별도 1박 상품 중 11시 입실·17시 퇴실의 30시간 상품 사례가 있으나, 2박 연박에 그대로 적용되는지는 예약 조건을 따로 확인해야 합니다.</p></div>
+    <div class="card"><span class="tag">연박 핵심</span><h3>첫날은 물놀이, 둘째 날은 진짜로 뒹굴기</h3><p>취사형 객실이라 밖에 나가 식당을 찾을 필요가 없습니다. 2박이면 오션플레이를 하루만 이용하고 나머지 하루는 객실과 게임장에 가볍게 쓸 수 있습니다.</p></div>
+  </div>
+</section>
+
+<section id="room">
+  <div class="section-head"><div class="section-no">02 · ROOM PICK</div>
+    <div><h2>EAST동 패밀리 탑 취사·레이크뷰·침대</h2><p>둘이 쓰기에는 패밀리 타입도 충분히 넓습니다. ‘탑+레이크뷰+취사+침대’를 우선하고, 방이 분리된 구조를 원할 때만 스위트로 올리는 편이 합리적입니다.</p></div></div>
+  <div style="overflow:auto"><table class="detail-table"><tbody><tr><th>주소</th><td>충북 단양군 단양읍 삼봉로 187-17</td></tr><tr><th>정원</th><td>패밀리 기준 4인 / 최대 6인으로 판매되는 객실군</td></tr><tr><th>추천 조건</th><td>EAST동, 패밀리 탑, 취사, 레이크뷰, 침대형</td></tr><tr><th>취사</th><td>냉장고·전기밥솥·조리도구 등 콘도형 주방. 객실별 비품 수량 재확인</td></tr><tr><th>물놀이</th><td>오션플레이 실내·야외 풀과 사우나. 계절별 운영시간·휴장일 변동</td></tr><tr><th>놀이</th><td>레전드 히어로즈 스크린 스포츠, 게임장, 노래방 등 유료시설</td></tr><tr><th>게임</th><td>객실 PC 없음. 와이파이와 TV를 활용해 콘솔·노트북 지참</td></tr><tr><th>이동</th><td>EAST/WEST동과 부대시설 위치가 나뉘므로 객실에서 시설까지 실내 이동 동선 확인</td></tr></tbody></table></div>
+  <div class="callout" style="margin-top:18px">이 숙소는 모든 것이 최고급이라서가 아니라 <b>식사·물놀이·오락을 한 건물권에서 적당한 비용으로 해결할 수 있다는 편안함</b>이 장점입니다. 선택 피로가 적은 라이트한 2박입니다.</div>
+</section>
+
+<section id="story">
+  <div class="section-head"><div class="section-no">03 · TWO-NIGHT STORY</div>
+    <div><h2>밖에 나가지 않는 2박 3일</h2><p>체크인 순간부터 체크아웃까지, 숙소 안에서만 시간을 보내도 지루하지 않도록 흐름을 짰습니다.</p></div></div>
+  <div class="story"><article class="story-item" data-step="1"><h3>15:00 입실</h3><p>레이크뷰와 욕실 청결을 확인하고 냉장고에 2박 식재료를 정리합니다.</p></article><article class="story-item" data-step="2"><h3>첫날 저녁</h3><p>객실에서 고기·찌개·볶음 메뉴를 만들어 먹고, 게임장이나 스크린 스포츠를 짧게 이용합니다.</p></article><article class="story-item" data-step="3"><h3>둘째 날 오전</h3><p>늦잠 후 오션플레이. 오래 걷지 않고 리조트 안에서 물놀이를 끝냅니다.</p></article><article class="story-item" data-step="4"><h3>둘째 날 밤</h3><p>객실 취사와 콘솔 게임. 창밖 야경을 보다가 소파와 침대를 오갑니다.</p></article><article class="story-item" data-step="5"><h3>셋째 날 11:00</h3><p>간단히 조식 또는 남은 음식으로 아침을 해결하고 퇴실합니다.</p></article></div>
+</section>
+
+<section id="play">
+  <div class="section-head"><div class="section-no">04 · PLAY &amp; HEAL</div>
+    <div><h2>놀 거리와 뒹굴 거리의 균형</h2><p>한 가지 시설에 큰돈을 쓰기보다, 여러 실내 활동을 필요한 만큼만 골라 쓰는 숙소입니다.</p></div></div>
+  <div class="grid-2">
+    <article class="card"><span class="tag">취향 점수</span><h3>숙소콕 분석</h3><div class="bars"><div class="bar-row"><b>가성비</b><div class="bar-track"><div class="bar-fill" style="width:86%"></div></div><strong>86</strong></div><div class="bar-row"><b>숙소콕</b><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><strong>88</strong></div><div class="bar-row"><b>실내 놀이</b><div class="bar-track"><div class="bar-fill" style="width:90%"></div></div><strong>90</strong></div><div class="bar-row"><b>청결 기대</b><div class="bar-track"><div class="bar-fill" style="width:72%"></div></div><strong>72</strong></div><div class="bar-row"><b>기념일</b><div class="bar-track"><div class="bar-fill" style="width:65%"></div></div><strong>65</strong></div></div></article>
+    <article class="card"><span class="tag">게임 체크</span><h3>객실 게임+리조트 오락실의 이중 구조</h3><p>PC는 없지만 객실에 노트북·콘솔을 설치할 수 있고, 밖으로 멀리 나가지 않아도 <b>레전드 히어로즈와 게임장</b>에서 짧게 놀 수 있습니다. TV HDMI와 인터넷 속도는 객실별 확인이 필요합니다.</p>
+    <div class="pill-list"><span>콘솔·독</span><span>HDMI 케이블</span><span>멀티탭</span><span>보드게임</span><span>간식 바구니</span></div></article>
+  </div>
+  <div style="margin-top:20px"><div class="grid-3"><article class="card ">
+        <span class="tag">놀이</span>
+        <h3>오션플레이 하루</h3><p>2박 중 하루만 물놀이를 잡으면 체력 소모와 추가 비용을 조절할 수 있습니다.</p></article><article class="card ">
+        <span class="tag">게임</span>
+        <h3>스크린 스포츠·오락실</h3><p>격한 야외 액티비티 대신 실내에서 짧게 점수 대결을 하기 좋습니다.</p></article><article class="card ">
+        <span class="tag">힐링</span>
+        <h3>레이크뷰 객실에서 취사</h3><p>강과 산을 보며 커피를 마시고, 먹고 싶은 시간에 간단히 조리할 수 있습니다.</p></article></div></div>
+</section>
+
+<section id="clean">
+  <div class="section-head"><div class="section-no">05 · CLEAN &amp; LIVING</div>
+    <div><h2>싸모님 기준 생활성 검수</h2><p>화장실·침구·냉난방·식사·프라이버시처럼 실제 2박 만족도를 좌우하는 요소만 따로 점검했습니다.</p></div></div>
+  <div class="checklist"><div class="check"><b>화장실</b><small>리조트 연식에 따른 객실 편차가 있을 수 있습니다. 리뉴얼·탑 객실을 우선하고 배수·냄새를 확인하세요.</small></div><div class="check"><b>침구</b><small>패밀리형 객실의 침대 종류와 추가 침구 방식이 다양하므로 ‘침대형’을 정확히 선택하세요.</small></div><div class="check"><b>냉난방</b><small>여름 에어컨 위치와 중앙제어 여부, 겨울 온돌 난방 작동 방식을 확인하세요.</small></div><div class="check"><b>취사</b><small>고기 냄새가 오래 남을 수 있어 환기·후드 성능과 객실 내 구이 제한을 문의해야 합니다.</small></div><div class="check"><b>소음</b><small>가족 단위가 많아 성수기 복도·상하층 소음 후기가 있을 수 있습니다. 고층·엘리베이터에서 먼 방 요청.</small></div><div class="check"><b>연박</b><small>중간 객실 정비와 수건 교환 정책, 쓰레기 배출 장소를 체크인 때 확인하세요.</small></div></div>
+</section>
+
+<section id="gallery">
+  <div class="section-head"><div class="section-no">06 · PHOTO STORY</div>
+    <div><h2>실제 사진 15장으로 보는 공간</h2><p>같은 장면을 반복하지 않고 외관·객실·욕실·놀이시설·식사공간을 고르게 배치했습니다. 사진은 원본 비율을 유지합니다.</p></div></div>
+  <div class="gallery"><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-1-1024x681.jpg" alt="남한강과 산을 품은 소노벨 단양 전경" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>남한강과 산을 품은 소노벨 단양 전경 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-3.jpg" alt="리조트 로비와 공용 공간" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>리조트 로비와 공용 공간 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-5-1024x682.jpg" alt="패밀리 객실 전경" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>패밀리 객실 전경 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-6-1024x681.jpg" alt="레이크뷰 객실의 창밖 풍경" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>레이크뷰 객실의 창밖 풍경 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-7-1024x681.jpg" alt="침대와 거실이 이어지는 객실" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>침대와 거실이 이어지는 객실 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-8-1024x768.jpg" alt="취사형 객실 주방" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>취사형 객실 주방 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-9.jpg" alt="욕실과 세면 공간" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>욕실과 세면 공간 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-10-1024x681.jpg" alt="오션플레이 실내 물놀이 공간" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>오션플레이 실내 물놀이 공간 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-11-1024x682.jpg" alt="실내 풀과 휴식 공간" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>실내 풀과 휴식 공간 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-12.jpg" alt="워터 시설의 다양한 풀" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>워터 시설의 다양한 풀 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-13-1024x681.jpg" alt="레전드 히어로즈 스크린 스포츠" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>레전드 히어로즈 스크린 스포츠 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-14-1024x683.jpg" alt="게임장·오락 공간" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>게임장·오락 공간 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-15-1024x683.jpg" alt="리조트 내부 식음 시설" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>리조트 내부 식음 시설 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-16-1024x683.jpg" alt="조식과 식사 공간" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>조식과 식사 공간 · 공식/예약페이지</figcaption></figure><figure class="photo"><img src="https://dayoff.co.kr/whatsinmytrip/wp-content/uploads/2025/03/%EB%8B%A8%EC%96%91-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89-%EB%A6%AC%EC%A1%B0%ED%8A%B8-%EC%B6%94%EC%B2%9C-%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-17-1024x683.jpg" alt="밤에도 이용하기 좋은 리조트 공용부" loading="lazy" referrerpolicy="no-referrer">
+        <figcaption>밤에도 이용하기 좋은 리조트 공용부 · 공식/예약페이지</figcaption></figure></div>
+</section>
+
+<section id="review">
+  <div class="section-head"><div class="section-no">07 · REVIEW</div>
+    <div><h2>후기에서 반복된 장점과 단점</h2><p>공식 안내와 이용자 체감은 분리해서 읽었습니다. 한두 건의 후기를 전체 평가처럼 단정하지 않았습니다.</p></div></div>
+  <div class="grid-3"><article class="card review-good">
+        <span class="tag">반복 칭찬</span>
+        <h3>넓은 객실·전망·내부 편의</h3><p>객실이 넓고 전망이 좋으며, 리조트 안에서 식사·편의점·물놀이·오락을 해결하기 편하다는 의견이 강점입니다.</p></article><article class="card review-warn">
+        <span class="tag">호불호</span>
+        <h3>신축 호텔보다 콘도형</h3><p>세련된 부티크 숙소보다는 가족형 콘도 분위기입니다. 취사와 공간 실용성을 중시할 때 만족도가 높습니다.</p></article><article class="card review-bad">
+        <span class="tag">주의</span>
+        <h3>연식·성수기 혼잡·추가비용</h3><p>객실별 노후 편차, 가족 단위 소음, 오션플레이와 오락시설의 추가 지출을 고려해야 합니다.</p></article></div>
+</section>
+
+<section id="reserve">
+  <div class="section-head"><div class="section-no">08 · BEFORE BOOKING</div>
+    <div><h2>예약 전에 반드시 물을 것</h2><p>사진이 마음에 들어도 아래 항목이 확정되지 않으면 2박 만족도가 크게 달라질 수 있습니다.</p></div></div>
+  <div class="grid-2">
+    <article class="card"><span class="tag">예약 질문</span><h3>전화·채팅으로 확인</h3><ol><li>EAST동 패밀리 탑 취사·레이크뷰·침대가 정확히 확정되는 요금제인지</li><li>객실의 최근 리뉴얼 연도와 욕실 샤워부스·비데 여부</li><li>예약일 오션플레이 실내·야외 운영시간과 휴장일</li><li>레전드 히어로즈·게임장·노래방 실제 운영시간과 요금</li><li>TV HDMI 사용과 객실 와이파이 속도</li><li>객실 내 고기 구이 가능 여부와 후드·환기 성능</li><li>2박 연박 수건 교체·정비·쓰레기 배출 방식</li></ol></article>
+    <article class="card"><span class="tag">최종 구성</span><h3>추천 구성 · 패밀리 탑 취사 레이크뷰 2박</h3><p>평일 2박 약 <b>40.6만~53.2만원</b>에 오션플레이는 하루만 추가하는 구성이 좋습니다. 객실에서 요리하고 게임하며 쉬는 비중이 크다면 스위트로 올리기보다 패밀리 탑을 지키는 편이 가성비가 낫습니다.</p></article>
+  </div>
+</section>
+
+<section id="source" class="sources">
+  <div class="section-head"><div class="section-no">09 · FACT CHECK</div>
+    <div><h2>팩트체크 및 주요 출처</h2><p>조사 기준일 2026-08-04. 가격·운영시간·시설은 예약일, 계절, 판매 채널, 객실 재고에 따라 바뀔 수 있습니다.</p></div></div>
+  <ol><li><b>소노호텔앤리조트 공식 홈페이지</b> — <a href="https://www.sonohotelsresorts.com/" target="_blank" rel="noopener">https://www.sonohotelsresorts.com/</a><br>소노벨 단양 객실·부대시설·운영 공지</li><li><b>NOL 소노벨 단양</b> — <a href="https://nol.yanolja.com/stay/domestic/10062637" target="_blank" rel="noopener">https://nol.yanolja.com/stay/domestic/10062637</a><br>객실 등급, 가격, 체크인·체크아웃, 패키지</li><li><b>데이오프 소노벨 단양 소개</b> — <a href="https://dayoff.co.kr/whatsinmytrip/%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-1%EB%B0%952%EC%9D%BC-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89%EC%9D%84-%EC%9C%84%ED%95%9C-%EC%98%A4%EC%85%98%ED%94%8C%EB%A0%88%EC%9D%B4%EC%99%80-%EA%B0%9D/" target="_blank" rel="noopener">https://dayoff.co.kr/whatsinmytrip/%EC%86%8C%EB%85%B8%EB%B2%A8%EB%8B%A8%EC%96%91-1%EB%B0%952%EC%9D%BC-%EA%B0%80%EC%A1%B1%EC%97%AC%ED%96%89%EC%9D%84-%EC%9C%84%ED%95%9C-%EC%98%A4%EC%85%98%ED%94%8C%EB%A0%88%EC%9D%B4%EC%99%80-%EA%B0%9D/</a><br>객실·오션플레이·식음시설 사진과 이용 흐름</li></ol>
+  <div class="foot-note">
+    사진은 공식 홈페이지, 공식 예약 페이지, 숙박 예약 플랫폼 및 출처가 표시된 공개 후기의 이미지 주소를 사용했습니다.
+    인터넷 연결이 없거나 원 출처가 이미지를 변경하면 일부 사진이 표시되지 않을 수 있습니다.
+    본 보고서의 요금은 조사일에 확인된 표시가·판매가 범위이며 결제금액을 보장하지 않습니다.
+  </div>
+</section>
+</main>
+<div class="lightbox"><button aria-label="닫기">×</button><img alt="확대 사진"></div>
+<script>
+const box=document.querySelector('.lightbox'), boxImg=box.querySelector('img');
+document.querySelectorAll('.photo img').forEach(img=>{
+  img.addEventListener('click',()=>{boxImg.src=img.src;box.classList.add('open');document.body.style.overflow='hidden';});
+  img.addEventListener('error',()=>{img.closest('.photo').style.display='none';});
+});
+function closeBox(){box.classList.remove('open');boxImg.src='';document.body.style.overflow='';}
+box.addEventListener('click',e=>{if(e.target===box||e.target.tagName==='BUTTON')closeBox();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeBox();});
+</script>
+</body></html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>보는 중…</title>
+<style>
+  :root{ --frame-bg:#1b1420; }
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:var(--frame-bg);
+    display:flex; align-items:center; justify-content:center;
+    overflow:auto;
+  }
+  .device{
+    background:#000;
+    border-radius:36px;
+    padding:10px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.6);
+    flex-shrink:0;
+  }
+  .device.fold{ border-radius:22px; padding:8px; }
+  .device iframe{
+    display:block;
+    border:0;
+    border-radius:26px;
+    background:#fff;
+  }
+  .device.fold iframe{ border-radius:16px; }
+  .exit-btn{
+    position:fixed; top:14px; right:14px;
+    z-index:10;
+    font-family:'Segoe UI', sans-serif;
+    font-size:13px; font-weight:600;
+    color:#fff;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.25);
+    padding:8px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    backdrop-filter:blur(6px);
+  }
+  .exit-btn:hover{ background:rgba(255,255,255,.22); }
+  .frame-label{
+    position:fixed; top:16px; left:16px;
+    font-family:'Segoe UI', sans-serif;
+    font-size:12.5px; font-weight:600;
+    color:rgba(255,255,255,.55);
+    letter-spacing:.04em;
+  }
+</style>
+</head>
+<body>
+  <div class="frame-label" id="frameLabel"></div>
+  <button class="exit-btn" onclick="exitFrame()">✕ PC 화면으로</button>
+  <div class="device" id="deviceBox">
+    <iframe id="frameIframe"></iframe>
+  </div>
+
+<script>
+  var qs = new URLSearchParams(location.search);
+  var url = qs.get('url') || 'home.html';
+  var mode = qs.get('mode') || 'mobile';
+
+  var SIZES = {
+    mobile: { w: 390, h: 844, label: '📱 일반 휴대폰 뷰 (390×844)' },
+    fold:   { w: 673, h: 841, label: '📱 갤럭시 폴드 펼침 뷰 (673×841, 근사값)' }
+  };
+  var size = SIZES[mode] || SIZES.mobile;
+
+  var box = document.getElementById('deviceBox');
+  var frame = document.getElementById('frameIframe');
+  if (mode === 'fold') box.classList.add('fold');
+  frame.style.width = size.w + 'px';
+  frame.style.height = size.h + 'px';
+  document.getElementById('frameLabel').textContent = size.label;
+
+  // 프레임 안쪽 페이지는 이미 프레임 안에 있으므로(window.self !== window.top)
+  // 각 페이지 상단의 감지 스크립트가 다시 감싸려 하지 않고 그대로 로드됨.
+  frame.src = url;
+
+  function exitFrame() {
+    try { localStorage.setItem('shim627_viewmode', 'pc'); } catch(e) {}
+    location.href = url;
+  }
+</script>
+</body>
+</html>

@@ -2,6 +2,25 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<script>
+// ── 뷰모드(PC/모바일/폴드) 감지 및 강제 적용 ──
+// localStorage에 저장된 모드가 pc가 아니고, 아직 프레임(iframe) 안에 있지 않다면
+// frame.html로 리다이렉트해서 실제 좁은 뷰포트(390px/673px) 안에 이 페이지를 넣는다.
+// 이렇게 하면 이 페이지에서 다른 페이지로 이동해도(프레임 내부 네비게이션) 계속 같은 모드가 유지된다.
+(function(){
+  try {
+    var mode = localStorage.getItem('shim627_viewmode') || 'pc';
+    if (mode !== 'pc' && window.self === window.top) {
+      location.replace('frame.html?url=' + encodeURIComponent(location.href) + '&mode=' + mode);
+    }
+  } catch(e) {}
+})();
+function applyViewMode(mode) {
+  try { localStorage.setItem('shim627_viewmode', mode); } catch(e) {}
+  if (window.top !== window.self) window.top.location.href = window.location.href;
+  else location.reload();
+}
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>우리 둘만의 편지함</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,19 +40,25 @@
   html,body{
     margin:0;
     padding:0;
-    height:100%;
+    min-height:100%;
     font-family:'Gowun Dodum', sans-serif;
     background:
       radial-gradient(circle at 20% 20%, #f9e3e6 0%, transparent 45%),
       radial-gradient(circle at 80% 75%, #e6d6ef 0%, transparent 50%),
       linear-gradient(160deg, #fdf3f0 0%, #f6e6ee 55%, #ece0f2 100%);
     color:var(--ink);
-    overflow:hidden;
+    /* 모바일에서 overflow:hidden 이었던 걸 auto로 바꿔서, 화면이 좁거나
+       키보드가 올라와서 내용이 넘칠 때 스크롤해서 '열어보기' 버튼에 닿을 수 있게 함.
+       (기존엔 넘치는 부분이 그냥 잘려서 버튼을 누를 수 없었음) */
+    overflow-y:auto;
+    overflow-x:hidden;
   }
   body{
     display:flex;
     align-items:center;
     justify-content:center;
+    min-height:100dvh; /* 모바일 키보드/주소창 높이 변화에 더 안정적으로 대응 */
+    padding:24px 16px 120px; /* 하단 고정 버튼/푸터와 겹치지 않도록 여유 확보 */
   }
 
   /* 떠다니는 하트 배경 */
@@ -313,11 +338,58 @@
     letter-spacing:.1em;
     z-index:1;
   }
+  /* ── 모바일 대응 ──
+     - 화면이 낮은 기기(키보드 열림 포함)에서는 하단 고정 버튼들이 폼과 겹치지 않도록
+       fixed를 풀고 자연스러운 흐름(static)으로 바꿔서 스크롤로 전부 접근 가능하게 함. */
+  @media (max-width: 480px), (max-height: 720px) {
+    .stage{ width:100%; max-width:360px; }
+    .envelope-wrap{ width:200px; height:136px; }
+    h1{ font-size:clamp(24px, 7vw, 32px); }
+    .guest-btn{
+      position:static;
+      display:block;
+      margin:28px auto 0;
+      transform:none;
+    }
+    footer{
+      position:static;
+      margin-top:18px;
+      padding-bottom:24px;
+    }
+    body{ padding-bottom:24px; }
+  }
+
+  .vm-picker{
+    position:fixed; top:14px; left:14px; z-index:5;
+    display:flex; gap:6px;
+    background:rgba(255,255,255,.55);
+    border:1px solid rgba(217,160,102,.35);
+    padding:6px; border-radius:999px;
+    box-shadow:0 6px 16px -8px rgba(74,46,68,.25);
+  }
+  .vm-picker button{
+    font-family:'Gowun Dodum', sans-serif;
+    font-size:12px; font-weight:700;
+    padding:6px 12px; border-radius:999px;
+    border:none; cursor:pointer;
+    background:transparent; color:var(--plum);
+    transition:all .15s;
+  }
+  .vm-picker button.active{
+    background:linear-gradient(135deg, var(--gold), #cf8c58);
+    color:#fff8f0;
+  }
 </style>
 </head>
 <body>
 
 <div class="floaters" id="floaters"></div>
+
+<div class="vm-picker" id="vmPicker">
+  <button data-mode="pc" onclick="applyViewMode('pc')">🖥 PC</button>
+  <button data-mode="mobile" onclick="applyViewMode('mobile')">📱 모바일</button>
+  <button data-mode="fold" onclick="applyViewMode('fold')">📱 폴드</button>
+</div>
 
 <div class="stage" id="stage">
   <div class="intro-block">
@@ -458,6 +530,13 @@
     s.style.animationDelay = (Math.random()*10) + 's';
     wrap.appendChild(s);
   }
+
+  // 현재 저장된 뷰모드에 맞춰 버튼 활성 표시
+  try {
+    var curMode = localStorage.getItem('shim627_viewmode') || 'pc';
+    var btn = document.querySelector('.vm-picker button[data-mode="' + curMode + '"]');
+    if (btn) btn.classList.add('active');
+  } catch(e) {}
 })();
 </script>
 
